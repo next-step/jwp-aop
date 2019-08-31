@@ -1,4 +1,4 @@
-package core.aop;
+package core.aop.jdk;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
