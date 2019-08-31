@@ -1,5 +1,6 @@
 package core.aop.jdk;
 
+import core.aop.SayMethodMatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +16,11 @@ class DynamicInvocationHandlerTest {
         final Hello proxyHello = (Hello) Proxy.newProxyInstance(
                 DynamicInvocationHandlerTest.class.getClassLoader(),
                 new Class[] { Hello.class },
-                new DynamicInvocationHandler(new HelloTarget()));
+                new DynamicInvocationHandler(new HelloTarget(), new SayMethodMatcher()));
 
         assertThat(proxyHello.sayHello("tester")).isEqualTo("HELLO TESTER");
         assertThat(proxyHello.sayHi("tester")).isEqualTo("HI TESTER");
         assertThat(proxyHello.sayThankYou("tester")).isEqualTo("THANK YOU TESTER");
+        assertThat(proxyHello.pingpong()).isEqualTo("pingpong");
     }
 }
