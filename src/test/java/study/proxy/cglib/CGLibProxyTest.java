@@ -1,10 +1,9 @@
-package study.proxy;
+package study.proxy.cglib;
 
 import net.sf.cglib.proxy.Enhancer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import study.proxy.HelloTarget;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,8 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("CGLib Proxy")
 public class CGLibProxyTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(CGLibProxyTest.class);
-
     @DisplayName("반환 문자열을 대문자로 변환")
     @Test
     void CGLibProxy() {
@@ -27,6 +24,7 @@ public class CGLibProxyTest {
         String expectedSayHello = ("Hello " + myName).toUpperCase();
         String expectedSayHi = ("Hi " + myName).toUpperCase();
         String expectedSayThankYou = ("Thank You " + myName).toUpperCase();
+        String expectedPingpong = "Pong " + myName;
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
         enhancer.setCallback(new SayMethodInterceptor());
@@ -36,13 +34,12 @@ public class CGLibProxyTest {
         String sayHello = target.sayHello(myName);
         String sayHi = target.sayHi(myName);
         String sayThankYou = target.sayThankYou(myName);
-        logger.debug("{}", sayHello);
-        logger.debug("{}", sayHi);
-        logger.debug("{}", sayThankYou);
+        String pingpong = target.pingpong(myName);
 
         // then
         assertEquals(expectedSayHello, sayHello);
         assertEquals(expectedSayHi, sayHi);
         assertEquals(expectedSayThankYou, sayThankYou);
+        assertEquals(expectedPingpong, pingpong);
     }
 }

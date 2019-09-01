@@ -1,9 +1,9 @@
-package study.proxy;
+package study.proxy.jdk;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import study.proxy.Hello;
+import study.proxy.HelloTarget;
 
 import java.lang.reflect.Proxy;
 
@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("Java Dynamic Proxy")
 public class DynamicProxyTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamicProxyTest.class);
-
     @DisplayName("반환 문자열을 대문자로 변환하는 프록시")
     @Test
     void jdkProxy() {
@@ -29,6 +27,7 @@ public class DynamicProxyTest {
         String expectedSayHello = ("Hello " + myName).toUpperCase();
         String expectedSayHi = ("Hi " + myName).toUpperCase();
         String expectedSayThankYou = ("Thank You " + myName).toUpperCase();
+        String expectedPingpong = "Pong " + myName;
         Hello proxyInstance = (Hello) Proxy.newProxyInstance(
                 DynamicProxyTest.class.getClassLoader(),
                 new Class[]{Hello.class},
@@ -38,13 +37,12 @@ public class DynamicProxyTest {
         String sayHello = proxyInstance.sayHello(myName);
         String sayHi = proxyInstance.sayHi(myName);
         String sayThankYou = proxyInstance.sayThankYou(myName);
-        logger.debug("{}", sayHello);
-        logger.debug("{}", sayHi);
-        logger.debug("{}", sayThankYou);
+        String pingpong = proxyInstance.pingpong(myName);
 
         // then
         assertEquals(expectedSayHello, sayHello);
         assertEquals(expectedSayHi, sayHi);
         assertEquals(expectedSayThankYou, sayThankYou);
+        assertEquals(expectedPingpong, pingpong);
     }
 }
