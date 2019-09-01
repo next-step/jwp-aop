@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Created by youngjae.havi on 2019-09-01
  */
-public class JdkProxyTest {
+public class SayMethodJdkProxyTest {
     @Test
     void toUppercase() {
         Hello proxiedHello = (Hello) Proxy.newProxyInstance(

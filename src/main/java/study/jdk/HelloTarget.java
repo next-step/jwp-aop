@@ -3,7 +3,7 @@ package study.jdk;
 /**
  * Created by youngjae.havi on 2019-09-01
  */
-class HelloTarget implements Hello {
+public class HelloTarget implements Hello {
     public String sayHello(String name) {
         return "Hello " + name;
     }
