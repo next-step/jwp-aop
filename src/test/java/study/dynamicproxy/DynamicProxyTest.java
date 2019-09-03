@@ -2,6 +2,7 @@ package study.dynamicproxy;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import study.SayPrefixMethodMatcher;
 
 import java.lang.reflect.Proxy;
 
@@ -14,10 +15,12 @@ public class DynamicProxyTest {
 		Hello hello = (Hello) Proxy.newProxyInstance(
 			this.getClass().getClassLoader(),
 			new Class[] { Hello.class },
-			new StringUpperCaseDynamicInvocationHandler(new HelloTarget()));
+			new StringUpperCaseDynamicInvocationHandler(new HelloTarget(), new SayPrefixMethodMatcher()));
 
 		Assertions.assertThat(hello.sayHello("hwatu")).isEqualTo("HELLO HWATU");
 		Assertions.assertThat(hello.sayHi("hwatu")).isEqualTo("HI HWATU");
 		Assertions.assertThat(hello.sayThankYou("hwatu")).isEqualTo("THANK YOU HWATU");
+		Assertions.assertThat(hello.pingpoing("hwatu")).isEqualTo("Pong hwatu");
+
 	}
 }

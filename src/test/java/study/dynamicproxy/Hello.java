@@ -10,4 +10,6 @@ interface Hello {
 	String sayHi(String name);
 
 	String sayThankYou(String name);
+
+	String pingpoing(String name);
 }

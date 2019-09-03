@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.SayPrefixMethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,18 +53,13 @@ public class CglibProxyTest {
     void HelloTarget프록시_테스트() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
-            Object retObject = proxy.invokeSuper(obj, args);
-            if (retObject instanceof String) {
-                return ((String) retObject).toUpperCase();
-            }
-            return retObject;
-        });
+        enhancer.setCallback(new StringUpperCaseMethodInterceptor(new SayPrefixMethodMatcher()));
 
         HelloTarget helloTarget = (HelloTarget) enhancer.create();
 
         Assertions.assertThat(helloTarget.sayHello("hwatu")).isEqualTo("HELLO HWATU");
         Assertions.assertThat(helloTarget.sayHi("hwatu")).isEqualTo("HI HWATU");
         Assertions.assertThat(helloTarget.sayThankYou("hwatu")).isEqualTo("THANK YOU HWATU");
+        Assertions.assertThat(helloTarget.pingpoing("hwatu")).isEqualTo("Pong hwatu");
     }
 }
