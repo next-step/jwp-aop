@@ -22,6 +22,10 @@ public class QnaService {
         this.answerDao = answerDao;
     }
 
+    public List<Question> findAll() {
+        return questionDao.findAll();
+    }
+
     public Question findById(long questionId) {
         return questionDao.findById(questionId);
     }

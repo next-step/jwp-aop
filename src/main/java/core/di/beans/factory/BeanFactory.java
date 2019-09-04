@@ -3,7 +3,7 @@ package core.di.beans.factory;
 import java.util.Set;
 
 public interface BeanFactory {
-    Set<Class<?>> getBeanClasses();
+    Set<Class<?>> getBeanNames();
 
     <T> T getBean(Class<T> clazz);
 

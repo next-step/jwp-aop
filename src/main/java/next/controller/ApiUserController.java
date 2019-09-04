@@ -11,6 +11,7 @@ import next.dao.UserDao;
 import next.dto.UserCreatedDto;
 import next.dto.UserUpdatedDto;
 import next.model.User;
+import next.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,13 @@ public class ApiUserController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private UserService userService;
+
     private UserDao userDao;
 
     @Inject
-    public ApiUserController(UserDao userDao) {
+    public ApiUserController(UserService userService, UserDao userDao) {
+        this.userService = userService;
         this.userDao = userDao;
     }
 
@@ -54,7 +58,10 @@ public class ApiUserController {
         logger.debug("userId : {}", userId);
 
         ModelAndView mav = new ModelAndView(new JsonView());
-        mav.addObject("user", userDao.findByUserId(userId));
+        final User user = userService.findByUserId(userId);
+        if (user != null) {
+            mav.addObject("user", user);
+        }
         return mav;
     }
 
