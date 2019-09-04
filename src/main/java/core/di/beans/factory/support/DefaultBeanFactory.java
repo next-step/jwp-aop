@@ -24,17 +24,25 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     @Override
     public void preInstantiateSinglonetons() {
-        for (Class<?> clazz : getBeanNames()) {
+        createFactoryBeans();
+        for (Class<?> clazz : getBeanDefinitionKeys()) {
             getBean(clazz);
         }
     }
 
-    public List<BeanDefinition> getBeanDefinitions() {
-        return new ArrayList<>(beanDefinitions.values());
+    private void createFactoryBeans() {
+        beanDefinitions.values().stream()
+                .filter(BeanDefinition::isFactoryBean)
+                .forEach(beanDefinition -> {
+                    Object bean = inject(beanDefinition);
+                    bean = initialize(bean, bean.getClass());
+                    FactoryBean fb = (FactoryBean) bean;
+                    beans.put(fb.getType(), fb.getObject());
+                });
     }
 
     @Override
-    public Set<Class<?>> getBeanNames() {
+    public Set<Class<?>> getBeanDefinitionKeys() {
         return beanDefinitions.keySet();
     }
 
@@ -47,31 +55,20 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-
-        if (beanDefinition != null && beanDefinition.isFactoryBean()) {
-            bean = inject(beanDefinition);
-            bean = initialize(bean, clazz);
-            FactoryBean factoryBean = (FactoryBean) bean;
-            beans.put(factoryBean.getType(), factoryBean.getObject());
-            return (T) bean;
-        }
-
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean
-                    .ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(b -> beans.put(clazz, b));
             return (T) optionalBean
                     .map(b -> initialize(b, clazz))
                     .orElse(null);
         }
 
-        Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanNames());
+        Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanDefinitionKeys());
         if (!concreteClazz.isPresent()) {
             return null;
         }
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
-        log.debug("BeanDefinition : {}", beanDefinition.getBeanClass());
         bean = inject(beanDefinition);
         bean = initialize(bean, concreteClazz.get());
         beans.put(concreteClazz.get(), bean);

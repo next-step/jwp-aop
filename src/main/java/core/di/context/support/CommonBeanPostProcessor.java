@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class CommonBeanPostProcessor implements BeanPostProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AspectBeanPostProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommonBeanPostProcessor.class);
 
     private ApplicationContext applicationContext;
 

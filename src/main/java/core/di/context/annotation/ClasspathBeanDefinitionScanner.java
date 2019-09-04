@@ -12,7 +12,7 @@ import org.reflections.Reflections;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-public class ClasspathBeanDefinitionScanner extends BeanDefinitionSupport {
+public class ClasspathBeanDefinitionScanner {
     private final BeanDefinitionRegistry beanDefinitionRegistry;
 
     public ClasspathBeanDefinitionScanner(BeanDefinitionRegistry beanDefinitionRegistry) {
@@ -25,8 +25,7 @@ public class ClasspathBeanDefinitionScanner extends BeanDefinitionSupport {
         Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
                 Repository.class, Component.class);
         for (Class<?> clazz : beanClasses) {
-            beanDefinitionRegistry.registerBeanDefinition(resolveBeanNameClass(clazz),
-                    new DefaultBeanDefinition(clazz));
+            beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));
         }
     }
 

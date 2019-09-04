@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-public class AnnotatedBeanDefinitionReader extends BeanDefinitionSupport implements BeanDefinitionReader {
+public class AnnotatedBeanDefinitionReader implements BeanDefinitionReader {
     private static final Logger log = LoggerFactory.getLogger(AnnotatedBeanDefinitionReader.class);
 
     private BeanDefinitionRegistry beanDefinitionRegistry;
@@ -28,13 +28,13 @@ public class AnnotatedBeanDefinitionReader extends BeanDefinitionSupport impleme
     }
 
     private void registerBean(Class<?> annotatedClass) {
-        beanDefinitionRegistry.registerBeanDefinition(resolveBeanNameClass(annotatedClass),
+        beanDefinitionRegistry.registerBeanDefinition(annotatedClass,
                 new DefaultBeanDefinition(annotatedClass));
         Set<Method> beanMethods = BeanFactoryUtils.getBeanMethods(annotatedClass, Bean.class);
         for (Method beanMethod : beanMethods) {
             log.debug("@Bean method : {}", beanMethod);
             AnnotatedBeanDefinition abd =
-                    new AnnotatedBeanDefinition(resolveBeanNameClass(beanMethod.getReturnType()), beanMethod);
+                    new AnnotatedBeanDefinition(beanMethod.getReturnType(), beanMethod);
             beanDefinitionRegistry.registerBeanDefinition(beanMethod.getReturnType(), abd);
         }
     }

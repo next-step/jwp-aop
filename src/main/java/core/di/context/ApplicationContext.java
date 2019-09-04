@@ -10,6 +10,4 @@ public interface ApplicationContext {
 
     Set<Class<?>> getBeanClasses();
 
-    List<BeanDefinition> getBeanDefinitions();
-
 }

@@ -13,7 +13,9 @@ import java.util.List;
 
 @Service
 public class QnaService {
+
     private QuestionDao questionDao;
+
     private AnswerDao answerDao;
 
     @Inject
