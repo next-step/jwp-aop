@@ -1,8 +1,6 @@
 package study.dynamicproxy;
 
-import org.assertj.core.util.Arrays;
 import study.matcher.MethodMatcher;
-import study.matcher.SayMethodMatcher;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
