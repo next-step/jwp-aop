@@ -1,6 +1,7 @@
 package study.dynamicproxy;
 
 import org.junit.jupiter.api.Test;
+import study.matcher.SayMethodMatcher;
 
 import java.lang.reflect.Proxy;
 
@@ -13,11 +14,12 @@ public class DynamicProxyTest {
         Hello dynamicProxyInstance = (Hello) Proxy.newProxyInstance(
                 DynamicProxyTest.class.getClassLoader(),
                 new Class[] {Hello.class},
-                new DynamicInvocationHandler(new HelloTarget())
+                new DynamicInvocationHandler(new HelloTarget(), new SayMethodMatcher())
         );
 
         assertThat(dynamicProxyInstance.sayHello("Summer")).isEqualTo("HELLO SUMMER");
         assertThat(dynamicProxyInstance.sayHi("Summer")).isEqualTo("HI SUMMER");
         assertThat(dynamicProxyInstance.sayThankYou("Summer")).isEqualTo("THANK YOU SUMMER");
+        assertThat(dynamicProxyInstance.pingpong("Summer")).isEqualTo("Pong Summer");
     }
 }

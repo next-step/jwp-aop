@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import study.dynamicproxy.Hello;
+import study.matcher.SayMethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,11 +53,12 @@ public class CglibProxyTest {
     @Test
     void name() {
         enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback(new ToUpperCaseMethodInterceptor());
+        enhancer.setCallback(new ToUpperCaseMethodInterceptor(new SayMethodMatcher()));
         HelloTarget target = (HelloTarget)enhancer.create();
 
         assertThat(target.sayHello("Summer")).isEqualTo("HELLO SUMMER");
         assertThat(target.sayHi("Summer")).isEqualTo("HI SUMMER");
         assertThat(target.sayThankYou("Summer")).isEqualTo("THANK YOU SUMMER");
+        assertThat(target.pingpong("Summer")).isEqualTo("Pong Summer");
     }
 }
