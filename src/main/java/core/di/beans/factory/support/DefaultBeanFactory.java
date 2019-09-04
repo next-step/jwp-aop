@@ -25,7 +25,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     @Override
     public void preInstantiateSinglonetons() {
         createFactoryBeans();
-        for (Class<?> clazz : getBeanDefinitionKeys()) {
+        for (Class<?> clazz : getBeanClasses()) {
             getBean(clazz);
         }
     }
@@ -42,7 +42,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     @Override
-    public Set<Class<?>> getBeanDefinitionKeys() {
+    public Set<Class<?>> getBeanClasses() {
         return beanDefinitions.keySet();
     }
 
@@ -63,7 +63,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
                     .orElse(null);
         }
 
-        Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanDefinitionKeys());
+        Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
         if (!concreteClazz.isPresent()) {
             return null;
         }

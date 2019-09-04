@@ -56,7 +56,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
 
     @Override
     public Set<Class<?>> getBeanClasses() {
-        return beanFactory.getBeanDefinitionKeys();
+        return beanFactory.getBeanClasses();
     }
 
 }
