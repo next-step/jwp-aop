@@ -17,9 +17,8 @@ public class ToUpperCaseMethodInterceptor implements MethodInterceptor {
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         Object returnValue = proxy.invokeSuper(obj, args);
-        if (returnValue instanceof String
-                && methodMatcher.matches(method, method.getClass(), args)) {
-            return ((String) returnValue).toUpperCase();
+        if (methodMatcher.matches(method, method.getClass(), args)) {
+            return returnValue.toString().toUpperCase();
         }
 
         return returnValue;
