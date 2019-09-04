@@ -51,7 +51,7 @@ public class CglibProxyTest {
     }
 
     @Test
-    void name() {
+    void cglib_proxy_to_upper_case_test() {
         enhancer.setSuperclass(HelloTarget.class);
         enhancer.setCallback(new ToUpperCaseMethodInterceptor(new SayMethodMatcher()));
         HelloTarget target = (HelloTarget)enhancer.create();
