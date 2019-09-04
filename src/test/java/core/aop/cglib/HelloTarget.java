@@ -1,7 +1,7 @@
-package core.aop.dynamic;
+package core.aop.cglib;
 
-public class HelloTarget implements Hello{
-	public String sayHello(String name) {
+public class HelloTarget {
+    public String sayHello(String name) {
         return "Hello " + name;
     }
 
@@ -12,8 +12,8 @@ public class HelloTarget implements Hello{
     public String sayThankYou(String name) {
         return "Thank You " + name;
     }
-
-	public String pingpong(String name) {
+    
+    public String pingpong(String name) {
 		return "Pong " + name;
 	}
 }
