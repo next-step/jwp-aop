@@ -13,7 +13,8 @@ public class HelloDynamicTest {
 
     @Test
     void jdkDynamicProxy() {
-        final Hello hello = (Hello) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{Hello.class}, new HelloInvocationHandler(new HelloTarget(), methodMatcher));
+        final Hello hello = (Hello) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{Hello.class},
+                new HelloInvocationHandler(new HelloTarget(), methodMatcher));
         assertThat(hello.sayHello("jun")).isEqualTo("HELLO JUN");
         assertThat(hello.sayHi("jun")).isEqualTo("HI JUN");
         assertThat(hello.sayThankYou("jun")).isEqualTo("THANK YOU JUN");

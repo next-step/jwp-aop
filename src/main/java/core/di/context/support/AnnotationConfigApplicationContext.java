@@ -29,6 +29,8 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
         }
+
+        beanFactory.addBeanPostProcessor(new CommonBeanPostProcessor(this));
         beanFactory.preInstantiateSinglonetons();
     }
 
@@ -56,4 +58,5 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
     public Set<Class<?>> getBeanClasses() {
         return beanFactory.getBeanClasses();
     }
+
 }

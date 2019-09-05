@@ -2,9 +2,9 @@ package core.di.beans.factory.support;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import core.annotation.PostConstruct;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.context.BeanPostProcessor;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,23 +13,32 @@ import org.springframework.beans.BeanUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
     private Map<Class<?>, Object> beans = Maps.newHashMap();
-
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     @Override
     public void preInstantiateSinglonetons() {
+        createFactoryBeans();
         for (Class<?> clazz : getBeanClasses()) {
             getBean(clazz);
         }
+    }
+
+    private void createFactoryBeans() {
+        beanDefinitions.values().stream()
+                .filter(BeanDefinition::isFactoryBean)
+                .forEach(beanDefinition -> {
+                    Object bean = inject(beanDefinition);
+                    bean = initialize(bean, bean.getClass());
+                    FactoryBean fb = (FactoryBean) bean;
+                    beans.put(fb.getType(), fb.getObject());
+                });
     }
 
     @Override
@@ -49,8 +58,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
             optionalBean.ifPresent(b -> beans.put(clazz, b));
-            initialize(bean, clazz);
-            return (T) optionalBean.orElse(null);
+            return (T) optionalBean
+                    .map(b -> initialize(b, clazz))
+                    .orElse(null);
         }
 
         Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
@@ -59,23 +69,23 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
-        log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
+        bean = initialize(bean, concreteClazz.get());
         beans.put(concreteClazz.get(), bean);
-        initialize(bean, concreteClazz.get());
         return (T) bean;
     }
 
-    private void initialize(Object bean, Class<?> beanClass) {
-        Set<Method> initializeMethods = BeanFactoryUtils.getBeanMethods(beanClass, PostConstruct.class);
-        if (initializeMethods.isEmpty()) {
-            return;
+    private Object initialize(Object bean, Class<?> beanClass) {
+
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            bean = beanPostProcessor.postProcessBeforeInitialization(bean, beanClass);
         }
-        for (Method initializeMethod : initializeMethods) {
-            log.debug("@PostConstruct Initialize Method : {}", initializeMethod);
-            BeanFactoryUtils.invokeMethod(initializeMethod, bean,
-                    populateArguments(initializeMethod.getParameterTypes()));
+
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            bean = beanPostProcessor.postProcessAfterInitialization(bean, beanClass);
         }
+
+        return bean;
     }
 
     private Optional<Object> createAnnotatedBean(BeanDefinition beanDefinition) {
@@ -132,6 +142,10 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
     }
 
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        beanPostProcessors.add(beanPostProcessor);
+    }
+
     @Override
     public void clear() {
         beanDefinitions.clear();
@@ -139,7 +153,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     @Override
-    public void registerBeanDefinition(Class<?> clazz, BeanDefinition beanDefinition) {
+    public void registerBeanDefinition(Class<?>clazz, BeanDefinition beanDefinition) {
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
     }

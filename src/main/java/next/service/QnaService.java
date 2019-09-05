@@ -13,13 +13,19 @@ import java.util.List;
 
 @Service
 public class QnaService {
+
     private QuestionDao questionDao;
+
     private AnswerDao answerDao;
 
     @Inject
     public QnaService(QuestionDao questionDao, AnswerDao answerDao) {
         this.questionDao = questionDao;
         this.answerDao = answerDao;
+    }
+
+    public List<Question> findAll() {
+        return questionDao.findAll();
     }
 
     public Question findById(long questionId) {

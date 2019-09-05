@@ -36,7 +36,7 @@ public class ApiQnaController extends AbstractNewController {
 
     @RequestMapping(value = "/api/qna/list", method = RequestMethod.GET)
     public ModelAndView questions(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        return jsonView().addObject("questions", questionDao.findAll());
+        return jsonView().addObject("questions", qnaService.findAll());
     }
 
     @RequestMapping(value = "/api/qna/addAnswer", method = RequestMethod.POST)
