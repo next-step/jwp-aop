@@ -6,6 +6,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.matcher.SayMethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,12 +17,12 @@ public class CglibProxyTest {
     @BeforeEach
     void setUp() {
         enhancer = new Enhancer();
-        enhancer.setSuperclass(PersonService.class);
     }
 
     @Test
     @DisplayName("반환 값을 같도록 구현하는 Proxy")
     void same_return() {
+        enhancer.setSuperclass(PersonService.class);
         enhancer.setCallback((FixedValue) () -> "Hello JavaJiGi!");
         PersonService proxy = (PersonService) enhancer.create();
 
@@ -33,6 +34,7 @@ public class CglibProxyTest {
     @Test
     @DisplayName("메소드 signature에 따라 다르게 동작하는 Proxy")
     void method_signature() {
+        enhancer.setSuperclass(PersonService.class);
         enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
             if (method.getDeclaringClass() != Object.class && method.getReturnType() == String.class) {
                 return "Hello JavaJiGi!";
@@ -45,5 +47,17 @@ public class CglibProxyTest {
 
         assertThat(proxy.sayHello(null)).isEqualTo("Hello JavaJiGi!");
         assertThat(proxy.lengthOfName("SanJiGi")).isEqualTo(7);
+    }
+
+    @Test
+    void cglib_proxy_to_upper_case_test() {
+        enhancer.setSuperclass(HelloTarget.class);
+        enhancer.setCallback(new ToUpperCaseMethodInterceptor(new SayMethodMatcher()));
+        HelloTarget target = (HelloTarget)enhancer.create();
+
+        assertThat(target.sayHello("Summer")).isEqualTo("HELLO SUMMER");
+        assertThat(target.sayHi("Summer")).isEqualTo("HI SUMMER");
+        assertThat(target.sayThankYou("Summer")).isEqualTo("THANK YOU SUMMER");
+        assertThat(target.pingpong("Summer")).isEqualTo("Pong Summer");
     }
 }
