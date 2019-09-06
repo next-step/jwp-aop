@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class CommonBeanPostProcessor implements BeanPostProcessor {
@@ -42,15 +44,14 @@ public class CommonBeanPostProcessor implements BeanPostProcessor {
     }
 
     private Object[] populateArguments(Class<?>[] paramTypes) {
-        List<Object> args = Lists.newArrayList();
-        for (Class<?> param : paramTypes) {
-            Object bean = applicationContext.getBean(param);
-            if (bean == null) {
-                throw new NullPointerException(param + "에 해당하는 Bean이 존재하지 않습니다.");
-            }
-            args.add(applicationContext.getBean(param));
-        }
-        return args.toArray();
+        return Arrays.stream(paramTypes)
+                .map(this::getBeanInApplicationContext)
+                .toArray();
+    }
+
+    private Object getBeanInApplicationContext(Class<?> type) {
+        return Objects.requireNonNull(applicationContext.getBean(type), type + "으로 요청된 빈이 존재하지 " +
+                "않습니다");
     }
 }
 

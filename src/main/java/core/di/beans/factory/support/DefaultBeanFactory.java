@@ -31,14 +31,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     private void createFactoryBeans() {
-        beanDefinitions.values().stream()
-                .filter(BeanDefinition::isFactoryBean)
-                .forEach(beanDefinition -> {
-                    Object bean = inject(beanDefinition);
-                    bean = initialize(bean, bean.getClass());
-                    FactoryBean fb = (FactoryBean) bean;
-                    beans.put(fb.getType(), fb.getObject());
-                });
+        for (BeanDefinition bd : beanDefinitions.values()) {
+            if (bd.isFactoryBean()) {
+                postProcess(inject(bd), bd.getBeanClass());
+            }
+        }
     }
 
     @Override
@@ -55,11 +52,10 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
-            return (T) optionalBean
-                    .map(b -> initialize(b, clazz))
+            return optionalBean
+                    .map(b -> postProcess(b, clazz))
                     .orElse(null);
         }
 
@@ -70,12 +66,10 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         bean = inject(beanDefinition);
-        bean = initialize(bean, concreteClazz.get());
-        beans.put(concreteClazz.get(), bean);
-        return (T) bean;
+        return (T) postProcess(bean, concreteClazz.get());
     }
 
-    private Object initialize(Object bean, Class<?> beanClass) {
+    private <T> T postProcess(Object bean, Class<T> beanClass) {
 
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             bean = beanPostProcessor.postProcessBeforeInitialization(bean, beanClass);
@@ -85,7 +79,15 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             bean = beanPostProcessor.postProcessAfterInitialization(bean, beanClass);
         }
 
-        return bean;
+        if (bean instanceof FactoryBean) {
+            FactoryBean fb = (FactoryBean) bean;
+            beans.put(fb.getType(), fb.getObject());
+            return (T) bean;
+        }
+
+        beans.put(beanClass, bean);
+
+        return (T) bean;
     }
 
     private Optional<Object> createAnnotatedBean(BeanDefinition beanDefinition) {
