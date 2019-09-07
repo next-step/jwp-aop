@@ -1,25 +1,28 @@
 package proxy.util;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 public class ThreadLocalTest {
 
     private static ExecutorService executor = Executors.newFixedThreadPool(3);
 
-    public static void main(String[] args) {
-        IntStream.range(0, 10).forEach(i -> {
+    @Test
+    void threadLocal() {
+        for (int i = 0 ; i < 10; i++) {
+            final int id = i;
             executor.execute(() -> {
-                String taskId = "Task" + i;
+                String taskId = "Task" + id;
                 ThreadLocalHolder.set(taskId);
                 try {
-                    TimeUnit.SECONDS.sleep(i);
+                    TimeUnit.SECONDS.sleep(id);
                 } catch (InterruptedException ignore) {}
                 System.out.println(ThreadLocalHolder.get());
             });
-        });
+        }
 
         executor.shutdown();
     }
