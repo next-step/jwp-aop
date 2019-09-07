@@ -52,9 +52,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
         if (beanDefinition instanceof AnnotatedBeanDefinition) {
-            Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            return optionalBean
-                    .map(b -> postProcess(b, clazz))
+            return (T) createAnnotatedBean(beanDefinition, clazz)
                     .orElse(null);
         }
 
@@ -63,9 +61,13 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             return null;
         }
 
-        beanDefinition = beanDefinitions.get(concreteClazz.get());
-        bean = inject(beanDefinition);
-        return (T) postProcess(bean, concreteClazz.get());
+        return createBean(concreteClazz.get());
+    }
+
+    private <T> T createBean(Class<?> clazz) {
+        BeanDefinition beanDefinition = beanDefinitions.get(clazz);
+        Object bean = inject(beanDefinition);
+        return (T) postProcess(bean, clazz);
     }
 
     @SuppressWarnings("unchecked")
@@ -86,11 +88,13 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         return (T) bean;
     }
 
-    private Optional<Object> createAnnotatedBean(BeanDefinition beanDefinition) {
+    private Optional<Object> createAnnotatedBean(BeanDefinition beanDefinition, Class<?> clazz) {
         AnnotatedBeanDefinition abd = (AnnotatedBeanDefinition) beanDefinition;
         Method method = abd.getMethod();
         Object[] args = populateArguments(method.getParameterTypes());
-        return BeanFactoryUtils.invokeMethod(method, getBean(method.getDeclaringClass()), args);
+        return BeanFactoryUtils.invokeMethod(method,
+                getBean(method.getDeclaringClass()), args)
+                .map(b -> postProcess(b, clazz));
     }
 
     private Object[] populateArguments(Class<?>[] paramTypes) {
