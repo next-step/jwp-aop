@@ -23,7 +23,7 @@ public class HelloCglibProxyTest {
     @DisplayName("인터셉터 객체를 사용한 CGLIB 프록시를 적용하여 모든 메서드 대문자 반환")
     @Test
     void toUpperProxyUsingInstanceOfInterceptor() {
-        toUpperProxy(new ToUppserMethodInterceptor());
+        toUpperProxy(new ToUpperMethodInterceptor());
     }
 
     private void toUpperProxy(Callback callback) {
