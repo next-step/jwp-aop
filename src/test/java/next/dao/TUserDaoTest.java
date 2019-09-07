@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserDaoTest {
+public class TUserDaoTest {
     private UserDao userDao;
 
     @BeforeEach

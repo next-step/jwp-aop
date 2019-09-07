@@ -1,5 +1,7 @@
 package core.jdbc;
 
+import org.apache.taglibs.standard.tag.common.sql.DataSourceUtil;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,11 +19,17 @@ public class JdbcTemplate {
     }
 
     public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        try {
+            conn = DataSourceUtils.getConnection(dataSource);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pss.setParameters(pstmt);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            DataSourceUtils.closeConnection(conn);
         }
     }
 
@@ -30,7 +38,10 @@ public class JdbcTemplate {
     }
 
     public void update(PreparedStatementCreator psc, KeyHolder holder) {
-        try (Connection conn = dataSource.getConnection()) {
+        Connection conn = null;
+
+        try {
+            conn = DataSourceUtils.getConnection(dataSource);
             PreparedStatement ps = psc.createPreparedStatement(conn);
             ps.executeUpdate();
 
@@ -38,9 +49,12 @@ public class JdbcTemplate {
             if (rs.next()) {
                 holder.setId(rs.getLong(1));
             }
+            ps.close();
             rs.close();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            DataSourceUtils.closeConnection(conn);
         }
     }
 
@@ -58,7 +72,11 @@ public class JdbcTemplate {
 
     public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
         ResultSet rs = null;
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = DataSourceUtils.getConnection(dataSource);
+            pstmt = conn.prepareStatement(sql);
             pss.setParameters(pstmt);
             rs = pstmt.executeQuery();
 
@@ -66,17 +84,13 @@ public class JdbcTemplate {
             while (rs.next()) {
                 list.add(rm.mapRow(rs));
             }
+
+            rs.close();
+            pstmt.close();
+            DataSourceUtils.closeConnection(conn);
             return list;
         } catch (SQLException e) {
             throw new DataAccessException(e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                throw new DataAccessException(e);
-            }
         }
     }
 

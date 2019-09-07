@@ -25,11 +25,6 @@ public class CommonBeanPostProcessor implements BeanPostProcessor {
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, Class<?> clazz) {
-        return bean;
-    }
-
-    @Override
     public Object postProcessAfterInitialization(Object bean, Class<?> clazz) {
         Set<Method> initializeMethods
                 = BeanFactoryUtils.getBeanMethods(clazz, PostConstruct.class);

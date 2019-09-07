@@ -31,6 +31,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         }
 
         beanFactory.addBeanPostProcessor(new CommonBeanPostProcessor(this));
+        beanFactory.addBeanPostProcessor(new TransactionBeanPostProcessor(this));
         beanFactory.preInstantiateSinglonetons();
     }
 

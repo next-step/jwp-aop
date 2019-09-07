@@ -72,10 +72,6 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private <T> T postProcess(Object bean, Class<T> beanClass) {
 
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
-            bean = beanPostProcessor.postProcessBeforeInitialization(bean, beanClass);
-        }
-
-        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             bean = beanPostProcessor.postProcessAfterInitialization(bean, beanClass);
         }
 
@@ -98,15 +94,13 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     private Object[] populateArguments(Class<?>[] paramTypes) {
-        List<Object> args = Lists.newArrayList();
-        for (Class<?> param : paramTypes) {
-            Object bean = getBean(param);
-            if (bean == null) {
-                throw new NullPointerException(param + "에 해당하는 Bean이 존재하지 않습니다.");
-            }
-            args.add(getBean(param));
-        }
-        return args.toArray();
+        return Arrays.stream(paramTypes)
+                .map(this::getBeanInternal)
+                .toArray();
+    }
+
+    private Object getBeanInternal(Class<?> param) {
+        return Objects.requireNonNull(getBean(param), param + "…에 해당하는 Bean이 존재하지 않습니다");
     }
 
     private Object inject(BeanDefinition beanDefinition) {

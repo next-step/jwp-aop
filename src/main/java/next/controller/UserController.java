@@ -9,6 +9,7 @@ import core.mvc.tobe.AbstractNewController;
 import next.dao.UserDao;
 import next.dto.UserUpdatedDto;
 import next.model.User;
+import next.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +23,11 @@ public class UserController extends AbstractNewController {
 
     private UserDao userDao;
 
+    private UserService userService;
+
     @Inject
-    public UserController(UserDao userDao) {
+    public UserController(UserService userService, UserDao userDao) {
+        this.userService = userService;
         this.userDao = userDao;
     }
 
@@ -56,7 +60,9 @@ public class UserController extends AbstractNewController {
         User user = new User(request.getParameter("userId"), request.getParameter("password"),
                 request.getParameter("name"), request.getParameter("email"));
         log.debug("User : {}", user);
-        userDao.insert(user);
+
+        userService.insertUserWithAdmin(user);
+
         return jspView("redirect:/");
     }
 

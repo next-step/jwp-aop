@@ -20,8 +20,9 @@ public class UserDao {
     }
 
     public void insert(User user) {
-        String sql = "INSERT INTO USERS VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, user.getUserId(), user.getPassword(), user.getName(), user.getEmail());
+        String sql = "INSERT INTO USERS VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, user.getUserId(), user.getPassword(), user.getName(),
+                user.getEmail(), user.getRole());
     }
 
     public User findByUserId(String userId) {
@@ -53,7 +54,8 @@ public class UserDao {
     }
 
     public void update(User user) {
-        String sql = "UPDATE USERS set password = ?, name = ?, email = ? WHERE userId = ?";
-        jdbcTemplate.update(sql, user.getPassword(), user.getName(), user.getEmail(), user.getUserId());
+        String sql = "UPDATE USERS set password = ?, name = ?, email = ?, role = ? WHERE userId = ?";
+        jdbcTemplate.update(sql, user.getPassword(), user.getName(), user.getEmail(),
+                user.getRole(), user.getUserId());
     }
 }
