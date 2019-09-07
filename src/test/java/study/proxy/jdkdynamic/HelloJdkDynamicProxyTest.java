@@ -2,6 +2,7 @@ package study.proxy.jdkdynamic;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.proxy.MethodResultHelper;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -16,10 +17,7 @@ class HelloJdkDynamicProxyTest {
     void toUpperProxyWithLambda() {
         toUpperProxy((proxy, method, args) -> {
             Object result = method.invoke(new HelloTarget(), args);
-            if (method.getReturnType() == String.class) {
-                return ((String) result).toUpperCase();
-            }
-            return result;
+            return MethodResultHelper.toUpper(method, result);
         });
     }
 

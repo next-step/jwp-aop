@@ -5,6 +5,7 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.proxy.MethodResultHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -15,10 +16,7 @@ public class HelloCglibProxyTest {
     void toUpperProxyUsingLambda() {
         toUpperProxy((MethodInterceptor) (obj, method, args, proxy) -> {
             Object result = proxy.invokeSuper(obj, args);
-            if (method.getDeclaringClass() != Object.class && method.getReturnType() == String.class) {
-                return ((String) result).toUpperCase();
-            }
-            return result;
+            return MethodResultHelper.toUpper(method, result);
         });
     }
 

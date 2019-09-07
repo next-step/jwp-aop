@@ -2,6 +2,7 @@ package study.proxy.jdkdynamic;
 
 import com.google.common.collect.Maps;
 import org.reflections.ReflectionUtils;
+import study.proxy.MethodResultHelper;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -24,9 +25,6 @@ class ToUpperInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object result = methodMap.get(method.getName()).invoke(target, args);
-        if (result.getClass() == String.class) {
-            return ((String) result).toUpperCase();
-        }
-        return result;
+        return MethodResultHelper.toUpper(method, result);
     }
 }
