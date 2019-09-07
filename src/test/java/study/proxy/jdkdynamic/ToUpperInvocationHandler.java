@@ -8,12 +8,12 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
-class ToUpperJdkDynamicProxy implements InvocationHandler {
+class ToUpperInvocationHandler implements InvocationHandler {
 
     private final Object target;
     private final Map<String, Method> methodMap = Maps.newHashMap();
 
-    ToUpperJdkDynamicProxy(Object target) {
+    ToUpperInvocationHandler(Object target) {
         this.target = target;
         Set<Method> methodSet = ReflectionUtils.getMethods(target.getClass());
         for (Method method : methodSet) {
