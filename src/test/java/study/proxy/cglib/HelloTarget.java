@@ -1,15 +1,19 @@
 package study.proxy.cglib;
 
 class HelloTarget {
-    public String sayHello(String name) {
+    String sayHello(String name) {
         return "Hello " + name;
     }
 
-    public String sayHi(String name) {
+    String sayHi(String name) {
         return "Hi " + name;
     }
 
-    public String sayThankYou(String name) {
+    String sayThankYou(String name) {
         return "Thank you " + name;
+    }
+
+    String pingpong(String name) {
+        return "Pong " + name;
     }
 }
