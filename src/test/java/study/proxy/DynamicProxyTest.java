@@ -17,7 +17,9 @@ public class DynamicProxyTest {
         proxyInstance = (Hello) Proxy.newProxyInstance(
                 DynamicProxyTest.class.getClassLoader(),
                 new Class[]{Hello.class},
-                new DynamicInvocationHandler(new HelloTarget())
+                new DynamicInvocationHandler(
+                        new HelloTarget(),
+                        (method, target, args) -> method.getName().startsWith("say") && method.getReturnType() == String.class)
         );
     }
 

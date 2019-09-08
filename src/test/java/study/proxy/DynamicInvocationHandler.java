@@ -12,10 +12,12 @@ public class DynamicInvocationHandler implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(DynamicInvocationHandler.class);
 
     private Object target;
+    private MethodMatcher methodMatcher;
     private final Map<String, Method> methods = Maps.newHashMap();
 
-    public DynamicInvocationHandler(Object target) {
+    public DynamicInvocationHandler(Object target, MethodMatcher methodMatcher) {
         this.target = target;
+        this.methodMatcher = methodMatcher;
         addMethods(target);
     }
 
@@ -31,7 +33,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 
         Object result = methods.get(method.getName()).invoke(target, args);
 
-        if (method.getName().startsWith("say") && method.getReturnType() == String.class) {
+        if (methodMatcher.matches(method, target.getClass(), args)) {
             result = ((String) result).toUpperCase();
         }
 
