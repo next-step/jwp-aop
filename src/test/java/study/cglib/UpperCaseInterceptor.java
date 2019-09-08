@@ -14,7 +14,7 @@ public class UpperCaseInterceptor implements MethodInterceptor {
 
         Object result = proxy.invokeSuper(obj, args);
 
-        if (result instanceof String) {
+        if (method.getName().startsWith("say") && method.getReturnType() == String.class) {
             result = ((String) result).toUpperCase();
         }
 
