@@ -31,8 +31,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 
         Object result = methods.get(method.getName()).invoke(target, args);
 
-        //
-        if (result instanceof String) {
+        if (method.getName().startsWith("say") && method.getReturnType() == String.class) {
             result = ((String) result).toUpperCase();
         }
 

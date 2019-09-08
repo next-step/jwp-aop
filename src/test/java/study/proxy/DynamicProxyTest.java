@@ -35,4 +35,9 @@ public class DynamicProxyTest {
     void sayThankYou() {
         assertThat(proxyInstance.sayThankYou("jinho")).isEqualTo("THANK YOU JINHO");
     }
+
+    @Test
+    void sayPingpong() {
+        assertThat(proxyInstance.pingpong("jinho")).isEqualTo("Pong jinho");
+    }
 }
