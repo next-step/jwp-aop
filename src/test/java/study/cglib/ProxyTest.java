@@ -1,8 +1,6 @@
 package study.cglib;
 
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.NoOp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,11 +14,11 @@ public class ProxyTest {
     void setUp() {
         enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
+        enhancer.setCallback(new UpperCaseInterceptor((method, targetClass, args) -> method.getName().startsWith("say") && method.getReturnType() == String.class));
     }
 
     @Test
     void sayHi() {
-        enhancer.setCallback(new UpperCaseInterceptor());
         Object proxyInstance = enhancer.create();
 
         HelloTarget helloTarget = (HelloTarget) proxyInstance;
@@ -29,7 +27,6 @@ public class ProxyTest {
 
     @Test
     void sayHello() {
-        enhancer.setCallback(new UpperCaseInterceptor());
         Object proxyInstance = enhancer.create();
 
         HelloTarget helloTarget = (HelloTarget) proxyInstance;
@@ -38,7 +35,6 @@ public class ProxyTest {
 
     @Test
     void sayThankYou() {
-        enhancer.setCallback(new UpperCaseInterceptor());
         Object proxyInstance = enhancer.create();
 
         HelloTarget helloTarget = (HelloTarget) proxyInstance;
@@ -47,7 +43,6 @@ public class ProxyTest {
 
     @Test
     void pingpong() {
-        enhancer.setCallback(new UpperCaseInterceptor());
         Object proxyInstance = enhancer.create();
 
         HelloTarget helloTarget = (HelloTarget) proxyInstance;
