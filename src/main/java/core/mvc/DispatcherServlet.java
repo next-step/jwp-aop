@@ -22,6 +22,10 @@ public class DispatcherServlet extends HttpServlet {
 
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
+    public void addInterceptor(HandlerInterceptor interceptor) {
+        handlerMappingResolver.addInterceptor(interceptor);
+    }
+
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingResolver.addHandlerMpping(handlerMapping);
     }
@@ -47,12 +51,12 @@ public class DispatcherServlet extends HttpServlet {
                 return;
             }
 
-            ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandlerExecution.get());
+            ModelAndView mav = handlerExecutor.handle(req, resp,
+                    maybeHandlerExecution
+                        .map(HandlerExecutionChain::getHandlerMapping)
+                        .get());
 
-            if (postHandle(req, resp, maybeHandlerExecution.get(), mav)) {
-
-            }
-
+            postHandle(req, resp, maybeHandlerExecution.get(), mav);
             render(mav, req, resp);
         } catch (Throwable e) {
             logger.error("Exception : {}", e);
@@ -60,25 +64,26 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private boolean postHandle(HttpServletRequest req, HttpServletResponse resp,
+    private void postHandle(HttpServletRequest req, HttpServletResponse resp,
                                HandlerExecutionChain hec, ModelAndView mav) {
         final List<HandlerInterceptor> interceptors = hec.getInterceptors();
         for (int i = interceptors.size() - 1; i >= 0; i--) {
             final HandlerInterceptor interceptor = interceptors.get(i);
             interceptor.postHandle(req, resp, hec, mav);
         }
-
-        return false;
     }
 
     private boolean preHandle(HttpServletRequest req, HttpServletResponse resp, HandlerExecutionChain hec) {
         final List<HandlerInterceptor> interceptors = hec.getInterceptors();
+
         for (int i = 0; i < interceptors.size(); i++) {
             final HandlerInterceptor interceptor = interceptors.get(i);
-            if (interceptor.preHandle(req, resp, hec)) {
+            if (!interceptor.preHandle(req, resp, hec)) {
                 return false;
             }
         }
+
+        return true;
     }
 
     private void render(ModelAndView mav, HttpServletRequest req, HttpServletResponse resp) throws Exception {

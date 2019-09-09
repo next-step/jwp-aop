@@ -7,8 +7,8 @@ public class HandlerExecutionChain {
     private Object handlerMapping;
     private List<HandlerInterceptor> interceptors;
 
-    public HandlerExecutionChain(Object handlerMappping, List<HandlerInterceptor> interceptors) {
-        this.handlerMapping= handlerMapping;
+    public HandlerExecutionChain(Object handlerMapping, List<HandlerInterceptor> interceptors) {
+        this.handlerMapping = handlerMapping;
         this.interceptors = interceptors;
     }
 
@@ -19,4 +19,5 @@ public class HandlerExecutionChain {
     public List<HandlerInterceptor> getInterceptors() {
         return interceptors;
     }
+
 }

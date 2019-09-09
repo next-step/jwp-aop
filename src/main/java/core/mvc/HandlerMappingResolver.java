@@ -15,6 +15,10 @@ public class HandlerMappingResolver {
         handlerMappings.add(handlerMapping);
     }
 
+    public void addInterceptor(HandlerInterceptor interceptor) {
+        interceptors.add(interceptor);
+    }
+
     public Optional<HandlerExecutionChain> getHandler(HttpServletRequest request) {
         return handlerMappings.stream()
                 .map(hm -> hm.getHandler(request))

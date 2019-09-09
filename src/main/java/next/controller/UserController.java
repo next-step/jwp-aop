@@ -125,4 +125,12 @@ public class UserController extends AbstractNewController {
         session.removeAttribute("user");
         return jspView("redirect:/");
     }
+
+    // using test
+    @RequestMapping(value = "/admin/user", method = RequestMethod.GET)
+    public ModelAndView adminUser(HttpServletRequest request, HttpServletResponse response) {
+        return jspView("redirect:/");
+    }
+
+
 }

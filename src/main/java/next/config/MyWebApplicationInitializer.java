@@ -5,6 +5,8 @@ import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
+import core.mvc.support.AuthorizationInterceptor;
+import core.mvc.support.ExecutionTimeHandlerInterceptor;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
@@ -29,6 +31,9 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
+
+        dispatcherServlet.addInterceptor(new AuthorizationInterceptor());
+        dispatcherServlet.addInterceptor(new ExecutionTimeHandlerInterceptor());
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
