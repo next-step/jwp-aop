@@ -4,52 +4,61 @@ import next.config.MyConfiguration;
 import org.aspectj.weaver.tools.PointcutExpression;
 import org.aspectj.weaver.tools.PointcutParser;
 import org.aspectj.weaver.tools.ShadowMatch;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.lang.reflect.Method;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ParserTest {
+class ParserTest {
 
     private static final PointcutParser parser =
             PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution();
 
+    @DisplayName("Execution Pointcut Test selected")
     @Test
-    void execution_parser() throws NoSuchMethodException {
+    void execution_selected() throws NoSuchMethodException {
 
         final PointcutExpression pe1 =
                 parser.parsePointcutExpression("execution(public void proxy.pointcut.JunExample.test())");
+
         assertTrue(pe1.couldMatchJoinPointsInType(JunExample.class));
         assertFalse(pe1.couldMatchJoinPointsInType(JunExample2.class));
 
-        Method m1 = JunExample.class.getMethod("test");
+        final ShadowMatch matchTest = pe1.matchesMethodExecution(JunExample.class.getMethod("test"));
 
-        final ShadowMatch shadowMatch1 = pe1.matchesMethodExecution(m1);
-        assertTrue(shadowMatch1.alwaysMatches());
-        assertTrue(shadowMatch1.maybeMatches());
-        assertFalse(shadowMatch1.neverMatches());
+        assertTrue(matchTest.alwaysMatches());
+        assertTrue(matchTest.maybeMatches());
+        assertFalse(matchTest.neverMatches());
+    }
 
-        final PointcutExpression pe2 = parser.parsePointcutExpression("execution(* proxy.pointcut.*.*())");
+    @DisplayName("Execution Pointcut Test")
+    @ParameterizedTest(name = "pointcut: {0}, clazz: {1}")
+    @MethodSource("samplePointcut")
+    void execution_all(String pointcut, Class<?> clazz) throws NoSuchMethodException {
+        final PointcutExpression pe2 = parser.parsePointcutExpression(pointcut);
 
-        assertTrue(pe2.couldMatchJoinPointsInType(JunExample.class));
-        assertTrue(pe2.couldMatchJoinPointsInType(JunExample2.class));
+        assertTrue(pe2.couldMatchJoinPointsInType(clazz));
 
-        Method m2_1 = JunExample.class.getMethod("test");
-        Method m2_2 = JunExample.class.getMethod("test2");
-        Method m2_3 = JunExample2.class.getMethod("test");
-        Method m2_4 = JunExample2.class.getMethod("test2");
+        final ShadowMatch matchTest = pe2.matchesMethodExecution(clazz.getMethod("test"));
+        final ShadowMatch matchTest2 = pe2.matchesMethodExecution(clazz.getMethod("test2"));
 
-        final ShadowMatch shadowMatch2_1 = pe2.matchesMethodExecution(m2_1);
-        final ShadowMatch shadowMatch2_2 = pe2.matchesMethodExecution(m2_2);
-        final ShadowMatch shadowMatch2_3 = pe2.matchesMethodExecution(m2_3);
-        final ShadowMatch shadowMatch2_4 = pe2.matchesMethodExecution(m2_4);
+        assertTrue(matchTest.maybeMatches());
+        assertTrue(matchTest2.maybeMatches());
+    }
 
-        assertTrue(shadowMatch2_1.maybeMatches());
-        assertTrue(shadowMatch2_2.maybeMatches());
-        assertTrue(shadowMatch2_3.maybeMatches());
-        assertTrue(shadowMatch2_4.maybeMatches());
+    private static Stream<Arguments> samplePointcut() {
+        return Stream.of(
+                Arguments.of("execution(* proxy.pointcut.*.*())",
+                        JunExample.class),
+                Arguments.of("execution(* proxy.pointcut.*.*())",
+                        JunExample2.class)
+        );
     }
 
     @Test

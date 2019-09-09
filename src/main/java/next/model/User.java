@@ -7,6 +7,7 @@ public class User {
     private String password;
     private String name;
     private String email;
+    private String role;
 
     public User(String userId, String password, String name, String email) {
         this.userId = userId;
@@ -29,6 +30,14 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public void updateRole(String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public void update(UserUpdatedDto updateUser) {
