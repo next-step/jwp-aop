@@ -11,13 +11,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserDaoTest {
-    private UserDao userDao;
+public class AspectUserDaoTest {
+    private AspectUserDao userDao;
 
     @BeforeEach
     public void setup() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        userDao = ac.getBean(UserDao.class);
+        userDao = ac.getBean(AspectUserDao.class);
     }
 
     @Test

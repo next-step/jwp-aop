@@ -6,7 +6,7 @@ import core.annotation.web.RequestMapping;
 import core.annotation.web.RequestMethod;
 import core.mvc.ModelAndView;
 import core.mvc.tobe.AbstractNewController;
-import next.dao.UserDao;
+import next.dao.AspectUserDao;
 import next.dto.UserUpdatedDto;
 import next.model.User;
 import next.service.UserService;
@@ -21,12 +21,12 @@ import javax.servlet.http.HttpSession;
 public class UserController extends AbstractNewController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    private UserDao userDao;
+    private AspectUserDao userDao;
 
     private UserService userService;
 
     @Inject
-    public UserController(UserService userService, UserDao userDao) {
+    public UserController(UserService userService, AspectUserDao userDao) {
         this.userService = userService;
         this.userDao = userDao;
     }
