@@ -7,7 +7,7 @@ import core.annotation.web.RequestMapping;
 import core.annotation.web.RequestMethod;
 import core.mvc.JsonView;
 import core.mvc.ModelAndView;
-import next.dao.UserDao;
+import next.dao.AspectUserDao;
 import next.dto.UserCreatedDto;
 import next.dto.UserUpdatedDto;
 import next.model.User;
@@ -27,10 +27,10 @@ public class ApiUserController {
 
     private UserService userService;
 
-    private UserDao userDao;
+    private AspectUserDao userDao;
 
     @Inject
-    public ApiUserController(UserService userService, UserDao userDao) {
+    public ApiUserController(UserService userService, AspectUserDao userDao) {
         this.userService = userService;
         this.userDao = userDao;
     }

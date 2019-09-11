@@ -3,7 +3,7 @@ package next.service;
 import core.annotation.Inject;
 import core.annotation.Service;
 import core.annotation.Transactional;
-import next.dao.UserDao;
+import next.dao.AspectUserDao;
 import next.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +13,11 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    private final UserDao userDao;
+    private final AspectUserDao userDao;
     private final UserLogService userLogService;
 
     @Inject
-    public UserService(UserDao userDao, UserLogService userLogService) {
+    public UserService(AspectUserDao userDao, UserLogService userLogService) {
         this.userLogService = userLogService;
         this.userDao = userDao;
     }

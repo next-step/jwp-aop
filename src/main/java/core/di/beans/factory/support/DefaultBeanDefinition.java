@@ -6,6 +6,8 @@ import core.di.beans.factory.config.BeanDefinition;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class DefaultBeanDefinition implements BeanDefinition {
@@ -13,6 +15,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private Class<?> beanClazz;
     private Constructor<?> injectConstructor;
     private Set<Field> injectFields;
+    private List<AspectBean> aspectBeans = new ArrayList<>();
 
     public DefaultBeanDefinition(Class<?> clazz) {
         this.beanClazz = clazz;
@@ -90,5 +93,10 @@ public class DefaultBeanDefinition implements BeanDefinition {
     @Override
     public boolean isFactoryBean() {
         return FactoryBean.class.isAssignableFrom(beanClazz);
+    }
+
+    @Override
+    public void addAspect(AspectBean aspectBean) {
+        aspectBeans.add(aspectBean);
     }
 }
