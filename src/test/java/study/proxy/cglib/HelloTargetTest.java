@@ -1,45 +1,27 @@
 package study.proxy.cglib;
 
 import net.sf.cglib.proxy.Enhancer;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import study.proxy.MethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HelloTargetTest {
 
-    private static final String NAME = "test!!!";
+    @Test
+    void toUppercase() {
+        MethodMatcher methodMatcher = (method, targetClass, args) -> method.getName().startsWith("say");
 
-    private HelloTarget helloTarget;
-
-    @BeforeEach
-    void setup() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback(new HelloTargetInterceptor());
+        enhancer.setCallback(new HelloTargetInterceptor(methodMatcher));
 
-        helloTarget = (HelloTarget) enhancer.create();
-    }
+        HelloTarget proxiedHello = (HelloTarget) enhancer.create();
 
-    @Test
-    void sayHello() throws Exception {
-        String result = helloTarget.sayHello(NAME);
-
-        assertThat(result).isEqualTo("HELLO TEST!!!");
-    }
-
-    @Test
-    void sayHi() throws Exception {
-        String result = helloTarget.sayHi(NAME);
-
-        assertThat(result).isEqualTo("HI TEST!!!");
-    }
-
-    @Test
-    void sayThankYou() throws Exception {
-        String result = helloTarget.sayThankYou(NAME);
-
-        assertThat(result).isEqualTo("THANK YOU TEST!!!");
+        assertThat(proxiedHello.sayHello("javajigi")).isEqualTo("HELLO JAVAJIGI");
+        assertThat(proxiedHello.sayHi("javajigi")).isEqualTo("HI JAVAJIGI");
+        assertThat(proxiedHello.sayThankYou("javajigi")).isEqualTo("THANK YOU JAVAJIGI");
+        assertThat(proxiedHello.pingpong("javajigi")).isEqualTo("Pong javajigi");
     }
 
 }
