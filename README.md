@@ -7,3 +7,17 @@
 
 ## 온라인 코드 리뷰 과정
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+
+
+---
+### 요구사항 정리 
+1. 1단계 : JDK Proxy와 CGLib Proxy
+- [x] 인터페이스와 구현 클래스가 있을 때 모든 메소드의 반환 값을 대문자로 변환한다. 
+
+
+---
+Proxy 
+- JDK Dynamic Proxy 
+Java Proxy는 인터페이스를 반드시 구현 필요 
+(리플렉션을 이용하여 구현한 기술로 퍼포먼스가 상대적으로 떨어진다 )
+ 
