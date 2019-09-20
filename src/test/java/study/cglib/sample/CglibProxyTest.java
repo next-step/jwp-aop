@@ -1,4 +1,4 @@
-package study.cglib;
+package study.cglib.sample;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.FixedValue;
@@ -6,6 +6,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.cglib.sample.PersonService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
