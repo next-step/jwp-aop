@@ -1,10 +1,12 @@
-package study.dynamic;
+package study;
+
+import study.dynamic.Hello;
 
 public class HelloTarget implements Hello {
 
-    static final String TEXT_OF_HELLO = "Hello %s";
-    static final String TEXT_OF_HI = "Hi %s";
-    static final String TEXT_OF_THANK_YOU = "Thank You %s";
+    public static final String TEXT_OF_HELLO = "Hello %s";
+    public static final String TEXT_OF_HI = "Hi %s";
+    public static final String TEXT_OF_THANK_YOU = "Thank You %s";
 
     @Override
     public String sayHello(String name) {

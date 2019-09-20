@@ -5,13 +5,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import study.HelloTarget;
 
 import java.lang.reflect.Proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static study.dynamic.HelloTarget.TEXT_OF_HELLO;
-import static study.dynamic.HelloTarget.TEXT_OF_HI;
-import static study.dynamic.HelloTarget.TEXT_OF_THANK_YOU;
+import static study.HelloTarget.TEXT_OF_HELLO;
+import static study.HelloTarget.TEXT_OF_HI;
+import static study.HelloTarget.TEXT_OF_THANK_YOU;
 
 public class JDKDynamicProxyTest {
 
