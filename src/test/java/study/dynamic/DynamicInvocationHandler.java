@@ -26,6 +26,9 @@ public class DynamicInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         log.debug("Invoke method name : {}, args : {}", method.getName(), args[0]);
         Object invoke = methods.get(method.getName()).invoke(target, args);
-        return invoke.toString().toUpperCase();
+        if(method.getName().startsWith("say")){
+            return invoke.toString().toUpperCase();
+        }
+        return invoke;
     }
 }

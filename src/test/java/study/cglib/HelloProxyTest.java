@@ -8,38 +8,50 @@ import org.junit.jupiter.api.Test;
 import study.HelloTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static study.HelloTarget.TEXT_OF_HELLO;
-import static study.HelloTarget.TEXT_OF_HI;
-import static study.HelloTarget.TEXT_OF_THANK_YOU;
+import static study.HelloTarget.*;
 
-public class HelloProxyTest {
+class HelloProxyTest {
 
     private Enhancer enhancer;
+    private static final String REQUEST_PARAMETER = "Juyoung";
 
     @BeforeEach
     void setUp() {
         enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-    }
-
-    @DisplayName("Hello 객체의 리턴 값은 대문자여야 한다")
-    @Test
-    void whenRequestThenToUpperCase() {
-        String name = "name";
 
         enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
             Object target = proxy.invokeSuper(obj, args);
-            return target.toString().toUpperCase();
+            if (method.getName().startsWith("say")) {
+                return target.toString().toUpperCase();
+            }
+            return target;
         });
-
-        HelloTarget proxy = (HelloTarget) enhancer.create();
-
-        assertThat(proxy.sayHello(name)).isEqualTo(formatToUpperCase(TEXT_OF_HELLO, name));
-        assertThat(proxy.sayHi(name)).isEqualTo(formatToUpperCase(TEXT_OF_HI, name));
-        assertThat(proxy.sayThankYou(name)).isEqualTo(formatToUpperCase(TEXT_OF_THANK_YOU, name));
     }
 
-    private String formatToUpperCase(String expectedText, String arg) {
-        return String.format(expectedText, arg).toUpperCase();
+    @DisplayName("Hello의 say로 시작하는 메서드 호출할 경우 리턴 값은 모두 대문자이다")
+    @Test
+    void whenStartWithSayThenToUpperCase() {
+        HelloTarget proxy = (HelloTarget) enhancer.create();
+
+        assertThat(proxy.sayHello(REQUEST_PARAMETER)).isEqualTo(formatToUpperCase(TEXT_OF_HELLO));
+        assertThat(proxy.sayHi(REQUEST_PARAMETER)).isEqualTo(formatToUpperCase(TEXT_OF_HI));
+        assertThat(proxy.sayThankYou(REQUEST_PARAMETER)).isEqualTo(formatToUpperCase(TEXT_OF_THANK_YOU));
+    }
+
+    @DisplayName("Hello의 pingpong 결과를 출력한다")
+    @Test
+    void pingpong() {
+        HelloTarget proxy = (HelloTarget) enhancer.create();
+
+        assertThat(proxy.pingpong(REQUEST_PARAMETER)).isEqualTo(format(TEXT_OF_PINGPONG));
+    }
+
+    private String format(String expectedText) {
+        return String.format(expectedText, REQUEST_PARAMETER);
+    }
+
+    private String formatToUpperCase(String expectedText) {
+        return format(expectedText).toUpperCase();
     }
 }

@@ -10,16 +10,14 @@ import study.HelloTarget;
 import java.lang.reflect.Proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static study.HelloTarget.TEXT_OF_HELLO;
-import static study.HelloTarget.TEXT_OF_HI;
-import static study.HelloTarget.TEXT_OF_THANK_YOU;
+import static study.HelloTarget.*;
 
 public class JDKDynamicProxyTest {
 
     private static final Logger log = LoggerFactory.getLogger(JDKDynamicProxyTest.class);
 
     private Hello proxyHello;
-    private static final String NAME = "Juyoung";
+    private static final String REQUEST_PARAMETER = "Juyoung";
 
     @DisplayName("hello proxy 생성")
     @BeforeEach
@@ -30,14 +28,25 @@ public class JDKDynamicProxyTest {
         log.debug("Create proxy!");
     }
 
+    @DisplayName("say로 시작하는 메서드 호출 시 결과 값을 대문자로 반환한다")
     @Test
-    void initialize() {
-        assertThat(proxyHello.sayHello(NAME)).isEqualTo(getFormat(TEXT_OF_HELLO));
-        assertThat(proxyHello.sayHi(NAME)).isEqualTo(getFormat(TEXT_OF_HI));
-        assertThat(proxyHello.sayThankYou(NAME)).isEqualTo(getFormat(TEXT_OF_THANK_YOU));
+    void toUpperCaseWhenRequestMethodStartWithSay() {
+        assertThat(proxyHello.sayHello(REQUEST_PARAMETER)).isEqualTo(formatToUpperCase(TEXT_OF_HELLO));
+        assertThat(proxyHello.sayHi(REQUEST_PARAMETER)).isEqualTo(formatToUpperCase(TEXT_OF_HI));
+        assertThat(proxyHello.sayThankYou(REQUEST_PARAMETER)).isEqualTo(formatToUpperCase(TEXT_OF_THANK_YOU));
     }
 
-    private String getFormat(String textOfHello) {
-        return String.format(textOfHello, NAME).toUpperCase();
+    @DisplayName("pingpong 메서드 호출 시 결과 값을 target 그대로 반환한다")
+    @Test
+    void pingpong() {
+        assertThat(proxyHello.pingpong(REQUEST_PARAMETER)).isEqualTo(format(TEXT_OF_PINGPONG));
+    }
+
+    private String format(String expectedText) {
+        return String.format(expectedText, REQUEST_PARAMETER);
+    }
+
+    private String formatToUpperCase(String expectedText) {
+        return format(expectedText).toUpperCase();
     }
 }

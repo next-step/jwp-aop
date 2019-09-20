@@ -13,9 +13,15 @@
 ### 요구사항 정리 
 1. 1단계 : JDK Proxy와 CGLib Proxy
 - [x] 인터페이스와 구현 클래스가 있을 때 모든 메소드의 반환 값을 대문자로 변환한다.
-2. 2단계 : CGLib Proxy 적용
-- [x] 앞의 Hello 예제에서 Hello 인터페이스가 없고 구현체 밖에 없다. 이에 대한 Proxy를 생성해 대문자로 반환하도록 한다. 
 
+2. 2단계 : CGLib Proxy 적용
+- [x] 앞의 Hello 예제에서 Hello 인터페이스가 없고 구현체 밖에 없다. 이에 대한 Proxy를 생성해 대문자로 반환하도록 한다.
+
+3. 3단계 : say로 시작하는 메소드에 한해서만 메소드의 반환 값을 대문자로 변환해야한다. 이 외 target 결과값 그대로 반환.
+- [x] HelloTarget pingpong method 추가
+(공통) method say로 시작 시 결과값 대문자로 반환, 이외 target 결과값 그대로 반환 
+- [x] JDKDynamicProxy 구현
+- [x] CGLib proxy 구현 
 
 ---
 Proxy 
