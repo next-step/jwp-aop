@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import study.HelloTarget;
+import study.PrefixSayMethodMatcher;
 
 import java.lang.reflect.Proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static study.HelloTarget.*;
+import static study.PrefixSayMethodMatcher.PREFIX_METHOD;
 
 public class JDKDynamicProxyTest {
 
@@ -24,11 +26,11 @@ public class JDKDynamicProxyTest {
     void setUp() {
         proxyHello = (Hello) Proxy.newProxyInstance(JDKDynamicProxyTest.class.getClassLoader(),
                 new Class[]{Hello.class},
-                new DynamicInvocationHandler(new HelloTarget()));
+                new DynamicInvocationHandler(new HelloTarget(), new PrefixSayMethodMatcher()));
         log.debug("Create proxy!");
     }
 
-    @DisplayName("say로 시작하는 메서드 호출 시 결과 값을 대문자로 반환한다")
+    @DisplayName(PREFIX_METHOD + "로 시작하는 메서드 호출 시 결과 값을 대문자로 반환한다")
     @Test
     void toUpperCaseWhenRequestMethodStartWithSay() {
         assertThat(proxyHello.sayHello(REQUEST_PARAMETER)).isEqualTo(formatToUpperCase(TEXT_OF_HELLO));

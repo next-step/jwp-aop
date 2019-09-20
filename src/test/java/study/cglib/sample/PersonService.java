@@ -1,4 +1,4 @@
-package study.cglib;
+package study.cglib.sample;
 
 public class PersonService {
 

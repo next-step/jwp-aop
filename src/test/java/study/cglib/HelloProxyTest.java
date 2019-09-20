@@ -1,14 +1,15 @@
 package study.cglib;
 
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import study.HelloTarget;
+import study.PrefixSayMethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static study.HelloTarget.*;
+import static study.PrefixSayMethodMatcher.PREFIX_METHOD;
 
 class HelloProxyTest {
 
@@ -19,17 +20,10 @@ class HelloProxyTest {
     void setUp() {
         enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-
-        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
-            Object target = proxy.invokeSuper(obj, args);
-            if (method.getName().startsWith("say")) {
-                return target.toString().toUpperCase();
-            }
-            return target;
-        });
+        enhancer.setCallback(new HelloMethodInterceptor(new PrefixSayMethodMatcher()));
     }
 
-    @DisplayName("Hello의 say로 시작하는 메서드 호출할 경우 리턴 값은 모두 대문자이다")
+    @DisplayName(PREFIX_METHOD + "로 시작하는 메서드 호출할 경우 리턴 값은 모두 대문자이다")
     @Test
     void whenStartWithSayThenToUpperCase() {
         HelloTarget proxy = (HelloTarget) enhancer.create();
