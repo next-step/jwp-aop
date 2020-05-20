@@ -15,7 +15,7 @@ public class MyConfiguration {
     public DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();
         ds.setDriverClassName("org.h2.Driver");
-        ds.setUrl("jdbc:h2:~/jwp-framework;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE");
+        ds.setUrl("jdbc:h2:mem://localhost/~/jwp-jdbc;DB_CLOSE_DELAY=-1");
         ds.setUsername("sa");
         ds.setPassword("");
         return ds;
