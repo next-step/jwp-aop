@@ -12,7 +12,7 @@
 <div class="container" id="main">
     <div class="col-md-6 col-md-offset-3">
         <div class="panel panel-default content-main">
-            <form name="question" method="post" action="/users/update">
+            <form name="question" method="post" action="/users/${user.userId}">
                 <input type="hidden" name="userId" value="${user.userId}" />
                 <div class="form-group">
                     <label>사용자 아이디</label>

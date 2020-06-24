@@ -3,10 +3,15 @@ package next.model;
 import next.dto.UserUpdatedDto;
 
 public class User {
+    public static final User GUEST_USER = new GuestUser();
+
     private String userId;
     private String password;
     private String name;
     private String email;
+
+    public User() {
+    }
 
     public User(String userId, String password, String name, String email) {
         this.userId = userId;
@@ -53,6 +58,10 @@ public class User {
         return userId.equals(newUserId);
     }
 
+    public boolean isGuest() {
+        return false;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -93,5 +102,12 @@ public class User {
     @Override
     public String toString() {
         return "User [userId=" + userId + ", name=" + name + ", email=" + email + "]";
+    }
+
+    private static class GuestUser extends User {
+        @Override
+        public boolean isGuest() {
+            return true;
+        }
     }
 }

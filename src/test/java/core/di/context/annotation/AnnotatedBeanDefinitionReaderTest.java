@@ -20,7 +20,7 @@ public class AnnotatedBeanDefinitionReaderTest {
         DefaultBeanFactory beanFactory = new DefaultBeanFactory();
         BeanDefinitionReader abdr = new AnnotatedBeanDefinitionReader(beanFactory);
         abdr.loadBeanDefinitions(ExampleConfig.class);
-        beanFactory.preInstantiateSinglonetons();
+        beanFactory.preInstantiateSingletons();
 
         assertThat(beanFactory.getBean(DataSource.class)).isNotNull();
     }
@@ -34,7 +34,7 @@ public class AnnotatedBeanDefinitionReaderTest {
         ClasspathBeanDefinitionScanner cbds = new ClasspathBeanDefinitionScanner(beanFactory);
         cbds.doScan("core.di.factory.example");
 
-        beanFactory.preInstantiateSinglonetons();
+        beanFactory.preInstantiateSingletons();
 
         assertNotNull(beanFactory.getBean(DataSource.class));
 

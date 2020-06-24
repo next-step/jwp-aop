@@ -30,7 +30,9 @@ public class UserDao {
         RowMapper<User> rm = new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs) throws SQLException {
-                return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
+                return new User(rs.getString("userId"),
+                        rs.getString("password"),
+                        rs.getString("name"),
                         rs.getString("email"));
             }
         };
@@ -44,7 +46,9 @@ public class UserDao {
         RowMapper<User> rm = new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs) throws SQLException {
-                return new User(rs.getString("userId"), rs.getString("password"), rs.getString("name"),
+                return new User(rs.getString("userId"),
+                        rs.getString("password"),
+                        rs.getString("name"),
                         rs.getString("email"));
             }
         };
