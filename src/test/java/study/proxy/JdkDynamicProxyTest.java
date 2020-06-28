@@ -3,19 +3,37 @@ package study.proxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Proxy;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("JDK Dynamic Proxy 학습 테스트")
 public class JdkDynamicProxyTest {
 
     @Test
-    @DisplayName("모든 메소드의 값을 대문자로 변환하기 : 프록시 클래스 이용")
+    @DisplayName("모든 메소드의 리턴값을 대문자로 변환하기 : 프록시 클래스 이용")
     void toUpperCase() {
         Hello hello = new HelloUppercase(new HelloTarget());
 
+        checkReturnValue(hello);
+    }
+
+    private void checkReturnValue(Hello hello) {
         assertThat(hello.sayHello("nokchax")).isEqualTo("HELLO NOKCHAX");
         assertThat(hello.sayHi("nokchax")).isEqualTo("HI NOKCHAX");
         assertThat(hello.sayThankYou("nokchax")).isEqualTo("THANK YOU NOKCHAX");
+    }
+
+    @Test
+    @DisplayName("모든 메소드의 리턴값을 대문자로 변환하기 : 다이나믹 프록시 이용")
+    void toUpperCaseWithDynamicProxy() {
+        Hello proxyHello = (Hello) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class[]{Hello.class},
+                new HelloUppercaseInvocationHandler(new HelloTarget())
+        );
+
+        checkReturnValue(proxyHello);
     }
 
     public class HelloUppercase implements Hello {
