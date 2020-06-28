@@ -19,7 +19,7 @@ public class AnnotationHandlerMappingTest {
     @BeforeEach
     public void setup() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        handlerMapping = new AnnotationHandlerMapping(ac);
+        handlerMapping = new AnnotationHandlerMapping(ac, new HandlerConverter());
         handlerMapping.initialize();
 
         userDao = ac.getBean(UserDao.class);
