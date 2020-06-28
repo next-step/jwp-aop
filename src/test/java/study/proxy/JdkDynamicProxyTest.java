@@ -46,7 +46,7 @@ public class JdkDynamicProxyTest {
 
         @Override
         public String sayHello(String name) {
-            return hello.sayHello(name).toUpperCase();
+            return hello.sayHello(name).toUpperCase(); //toUpperCase() 중복
         }
 
         @Override
