@@ -17,12 +17,14 @@ public class ProxyTest implements MethodMatcher {
     void test_JdkDynamicProxy() {
         Hello proxy = (Hello) createJdkDynamicProxyInstance();
 
-        String expectedName = "NINJASUL";
 
-        assertThat(proxy.sayHi(expectedName.toLowerCase())).isEqualTo("HI " + expectedName);
-        assertThat(proxy.sayHello(expectedName.toLowerCase())).isEqualTo("HELLO " + expectedName);
-        assertThat(proxy.sayThankYou(expectedName.toLowerCase())).isEqualTo("THANK YOU " + expectedName);
-        assertThat(proxy.pingpong(expectedName)).isEqualTo("Pong " + expectedName);
+        String expectedName = "NINJASUL";
+        String actualName = expectedName.toLowerCase();
+
+        assertThat(proxy.sayHi(actualName)).isEqualTo("HI " + expectedName);
+        assertThat(proxy.sayHello(actualName)).isEqualTo("HELLO " + expectedName);
+        assertThat(proxy.sayThankYou(actualName)).isEqualTo("THANK YOU " + expectedName);
+        assertThat(proxy.pingpong(actualName)).isEqualTo("Pong " + actualName);
     }
 
     private Object createJdkDynamicProxyInstance() {
@@ -37,12 +39,14 @@ public class ProxyTest implements MethodMatcher {
     @DisplayName("CglibProxy를 이용하여 특정 메소드의 반환값을 대문자로 변경하는 테스트")
     void test_CglibProxy() {
         HelloCglibTarget proxy = (HelloCglibTarget) createCglibProxyInstance();
-        String expectedName = "NINJASUL";
 
-        assertThat(proxy.sayHi(expectedName.toLowerCase())).isEqualTo("HI " + expectedName);
-        assertThat(proxy.sayHello(expectedName.toLowerCase())).isEqualTo("HELLO " + expectedName);
-        assertThat(proxy.sayThankYou(expectedName.toLowerCase())).isEqualTo("THANK YOU " + expectedName);
-        assertThat(proxy.pingpong(expectedName)).isEqualTo("Pong " + expectedName);
+        String expectedName = "NINJASUL";
+        String actualName = expectedName.toLowerCase();
+
+        assertThat(proxy.sayHi(actualName)).isEqualTo("HI " + expectedName);
+        assertThat(proxy.sayHello(actualName)).isEqualTo("HELLO " + expectedName);
+        assertThat(proxy.sayThankYou(actualName)).isEqualTo("THANK YOU " + expectedName);
+        assertThat(proxy.pingpong(actualName)).isEqualTo("Pong " + actualName);
     }
 
     private Object createCglibProxyInstance() {
