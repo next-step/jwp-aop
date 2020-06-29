@@ -28,18 +28,29 @@ public class CGLibProxyTest {
     @Test
     @DisplayName("인터페이스가 아니라 구현체만 있더라도 프록시를 생성할 수 있다")
     void proxy() {
-        enhancer.setCallback(new UppercaseInterceptor());
+        enhancer.setCallback(new UppercaseInterceptor(new MethodNameStartWithMatcher("say")));
 
         HelloTargetConcrete hello = (HelloTargetConcrete) enhancer.create();
 
         assertThat(hello.sayHello("nokchax")).isEqualTo("HELLO NOKCHAX");
         assertThat(hello.sayHi("nokchax")).isEqualTo("HI NOKCHAX");
         assertThat(hello.sayThankYou("nokchax")).isEqualTo("THANK YOU NOKCHAX");
+        assertThat(hello.pingpong("nokchax")).isEqualTo("Pong nokchax");
     }
 
     private class UppercaseInterceptor implements MethodInterceptor {
+        private final MethodMatcher methodMatcher;
+
+        public UppercaseInterceptor(MethodMatcher methodMatcher) {
+            this.methodMatcher = methodMatcher;
+        }
+
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+            if (!methodMatcher.matches(method, obj.getClass(), args)) {
+                return proxy.invokeSuper(obj, args);
+            }
+
             return ((String) proxy.invokeSuper(obj, args)).toUpperCase();
         }
     }

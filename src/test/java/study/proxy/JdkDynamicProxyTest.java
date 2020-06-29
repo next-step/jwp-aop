@@ -22,6 +22,7 @@ public class JdkDynamicProxyTest {
         assertThat(hello.sayHello("nokchax")).isEqualTo("HELLO NOKCHAX");
         assertThat(hello.sayHi("nokchax")).isEqualTo("HI NOKCHAX");
         assertThat(hello.sayThankYou("nokchax")).isEqualTo("THANK YOU NOKCHAX");
+        assertThat(hello.pingPong("nokchax")).isEqualTo("Pong nokchax");
     }
 
     @Test
@@ -30,7 +31,10 @@ public class JdkDynamicProxyTest {
         Hello proxyHello = (Hello) Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[]{Hello.class},
-                new HelloUppercaseInvocationHandler(new HelloTarget())
+                new HelloUppercaseInvocationHandler(
+                        new HelloTarget(),
+                        new MethodNameStartWithMatcher("say")
+                )
         );
 
         checkReturnValue(proxyHello);
@@ -57,6 +61,11 @@ public class JdkDynamicProxyTest {
         @Override
         public String sayThankYou(String name) {
             return hello.sayThankYou(name).toUpperCase();
+        }
+
+        @Override
+        public String pingPong(String name) {
+            return hello.pingPong(name);
         }
     }
 }
