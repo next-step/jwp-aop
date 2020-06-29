@@ -22,7 +22,7 @@ class DispatcherServletTest {
     @BeforeEach
     void setUp() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac);
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, null);
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
