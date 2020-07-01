@@ -9,9 +9,9 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 public class DefaultBeanDefinition implements BeanDefinition {
-    private Class<?> beanClazz;
-    private Constructor<?> injectConstructor;
-    private Set<Field> injectFields;
+    private final Class<?> beanClazz;
+    private final Constructor<?> injectConstructor;
+    private final Set<Field> injectFields;
 
     public DefaultBeanDefinition(Class<?> clazz) {
         this.beanClazz = clazz;
@@ -84,5 +84,10 @@ public class DefaultBeanDefinition implements BeanDefinition {
         }
 
         return InjectType.INJECT_NO;
+    }
+
+    @Override
+    public boolean isFactoryBean() {
+        return FactoryBean.class.isAssignableFrom(beanClazz);
     }
 }
