@@ -22,9 +22,9 @@ public class JavaDynamicProxyTest {
         assertThat(hello.sayThankYou("kingcjy")).isEqualTo("THANK YOU KINGCJY");
     }
 
-    class UppercaseInvocationHandler implements InvocationHandler {
+    static class UppercaseInvocationHandler implements InvocationHandler {
 
-        private Object target;
+        private final Object target;
 
         public UppercaseInvocationHandler(Object target) {
             this.target = target;
