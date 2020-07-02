@@ -4,7 +4,11 @@ import net.sf.cglib.proxy.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.Hello;
 import study.HelloTarget;
+import study.MethodMatcher;
+
+import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +51,7 @@ public class CglibProxyTest {
     }
 
     @Test
-    public void CGLIBToUppserCaseTest() {
+    public void CGLIBToUpperCaseTest() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
         enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
@@ -58,8 +62,46 @@ public class CglibProxyTest {
         HelloTarget hello = (HelloTarget) enhancer.create();
         System.out.println(hello.sayHello("kingcjy"));
 
+        testSayMethod(hello);
+    }
+
+    @Test
+    @DisplayName("say로 시작하는 메서드의 한해서만 반환값을 대문자로 변환")
+    public void CGLIBToUppserCaseTestWithMethodName() {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(HelloTarget.class);
+
+        enhancer.setCallback(new UppercaseMethodInterceptor(method -> method.getName().startsWith("say")));
+
+        HelloTarget hello = (HelloTarget) enhancer.create();
+        System.out.println(hello.sayHello("kingcjy"));
+
+        testSayMethod(hello);
+        assertThat(hello.pingpong()).isEqualTo("pingpong");
+    }
+
+    private void testSayMethod(Hello hello) {
         assertThat(hello.sayHello("kingcjy")).isEqualTo("HELLO KINGCJY");
         assertThat(hello.sayHi("kingcjy")).isEqualTo("HI KINGCJY");
         assertThat(hello.sayThankYou("kingcjy")).isEqualTo("THANK YOU KINGCJY");
+    }
+
+    static class UppercaseMethodInterceptor implements MethodInterceptor {
+        private final MethodMatcher methodMatcher;
+
+        public UppercaseMethodInterceptor(MethodMatcher methodMatcher) {
+            this.methodMatcher = methodMatcher;
+        }
+
+        @Override
+        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+            Object returnValue = proxy.invokeSuper(obj, args);
+
+            if(returnValue instanceof String && methodMatcher.matches(method)) {
+                return String.valueOf(returnValue).toUpperCase();
+            }
+
+            return returnValue;
+        }
     }
 }
