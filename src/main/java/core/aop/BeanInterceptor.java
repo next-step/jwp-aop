@@ -16,11 +16,11 @@ public class BeanInterceptor implements MethodInterceptor {
     }
 
     @Override
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        if (!pointCut.matches(method, obj.getClass(), args)) {
-            return proxy.invokeSuper(obj, args);
+    public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy) throws Throwable {
+        if (!pointCut.matches(method, object.getClass(), arguments)) {
+            return proxy.invokeSuper(object, arguments);
         }
 
-        return advice.doAdvice(obj, method, args, proxy);
+        return advice.doAdvice(object, method, arguments, proxy);
     }
 }
