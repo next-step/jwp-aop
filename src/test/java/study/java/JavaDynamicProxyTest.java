@@ -1,6 +1,8 @@
 package study.java;
 
 import org.junit.jupiter.api.Test;
+import study.Hello;
+import study.HelloTarget;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

@@ -1,11 +1,10 @@
 package study.cglib;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.FixedValue;
-import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.HelloTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,5 +44,22 @@ public class CglibProxyTest {
 
         assertThat(proxy.sayHello(null)).isEqualTo("Hello JavaJiGi!");
         assertThat(proxy.lengthOfName("SanJiGi")).isEqualTo(7);
+    }
+
+    @Test
+    public void CGLIBToUppserCaseTest() {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(HelloTarget.class);
+        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+            Object returnValue = proxy.invokeSuper(obj, args);
+            return returnValue instanceof String ? String.valueOf(returnValue).toUpperCase() : returnValue;
+        });
+
+        HelloTarget hello = (HelloTarget) enhancer.create();
+        System.out.println(hello.sayHello("kingcjy"));
+
+        assertThat(hello.sayHello("kingcjy")).isEqualTo("HELLO KINGCJY");
+        assertThat(hello.sayHi("kingcjy")).isEqualTo("HI KINGCJY");
+        assertThat(hello.sayThankYou("kingcjy")).isEqualTo("THANK YOU KINGCJY");
     }
 }

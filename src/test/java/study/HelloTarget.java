@@ -1,9 +1,9 @@
-package study.java;
+package study;
 
 /**
  * @author KingCjy
  */
-class HelloTarget implements Hello {
+public class HelloTarget implements Hello {
     public String sayHello(String name) {
         return "Hello " + name;
     }
