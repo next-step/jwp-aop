@@ -1,5 +1,7 @@
 package core.aop;
 
+import java.lang.reflect.Method;
+
 public interface PointCut {
-    MethodMatcher getMethodMatcher();
+    boolean matches(Method method, Class<?> targetClass, Object[] arguments);
 }
