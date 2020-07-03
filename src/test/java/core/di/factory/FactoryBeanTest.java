@@ -3,16 +3,22 @@ package core.di.factory;
 import core.di.beans.factory.support.DefaultBeanFactory;
 import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
-import core.di.factory.example.*;
-import next.model.User;
+import core.di.factory.example.IntegrationConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import study.proxy.HelloTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("FactoryBean 테스트")
 public class FactoryBeanTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(FactoryBeanTest.class);
+
     private DefaultBeanFactory beanFactory;
 
     @BeforeEach
@@ -27,15 +33,14 @@ public class FactoryBeanTest {
         beanFactory.preInstantiateSingletons();
     }
 
-    @DisplayName("팩토리 빈 생성 테스트")
+    @DisplayName("팩토리빈으로 빈 생성 테스트")
     @Test
     void factoryBeanCreationTest() {
-
         // given
-        User factoryBeanSample = beanFactory.getBean(User.class);
+        HelloTarget factoryBean = beanFactory.getBean(HelloTarget.class);
 
         // when & then
-        assertThat(factoryBeanSample).isNotNull();
+        assertThat(factoryBean).isNotNull();
     }
 
     @AfterEach
