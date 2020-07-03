@@ -2,19 +2,19 @@ package core.di.factory.example;
 
 import core.annotation.Component;
 import core.di.beans.factory.support.FactoryBean;
-import next.model.User;
+import study.proxy.HelloTarget;
 
 @Component
-public class FactoryBeanSample implements FactoryBean<User> {
+public class HelloTargetFactory implements FactoryBean<HelloTarget> {
 
     @Override
-    public User getObject() {
-        return new User();
+    public HelloTarget getObject() {
+        return new HelloTarget();
     }
 
     @Override
     public Class<?> getObjectType() {
-        return User.class;
+        return HelloTarget.class;
     }
 
 }
