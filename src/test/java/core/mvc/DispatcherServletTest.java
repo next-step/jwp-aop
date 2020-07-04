@@ -1,9 +1,6 @@
 package core.mvc;
 
-import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
-import core.mvc.asis.ControllerHandlerAdapter;
-import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
@@ -14,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import support.test.DBInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,16 +21,11 @@ class DispatcherServletTest {
 
     @BeforeEach
     void setUp() {
-        ApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        HandlerConverter handlerConverter = ac.getBean(HandlerConverter.class);
-        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
-        ahm.initialize();
-
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
-        dispatcher.addHandlerMapping(new RequestMapping());
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
-        dispatcher.addHandlerAdapter(new ControllerHandlerAdapter());
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();

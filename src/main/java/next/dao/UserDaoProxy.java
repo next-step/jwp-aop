@@ -22,23 +22,28 @@ public class UserDaoProxy extends ProxyFactoryBean<UserDao> {
         return (object, method, arguments, proxy) -> {
             StopWatch stopWatch = new StopWatch(method.getName());
             stopWatch.start();
-            Object o = null;
+
+            Object ret = null;
             try {
-                o = proxy.invokeSuper(object, arguments);
+                ret = proxy.invokeSuper(object, arguments);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
             stopWatch.stop();
-            logger.info("Proxy [{}]\n[{}]", method.getName(), stopWatch.prettyPrint());
-            return o;
+
+            logger.info("Proxy [{}]\n{}", method.getName(), stopWatch.prettyPrint());
+            return ret;
         };
     }
 
     @Override
     protected PointCut pointCut() {
         return (method, targetClass, arguments) -> {
-            logger.info("PointCut : [{}]", method.getName());
-            return true;
+            boolean match = method.getName()
+                    .startsWith("find");
+
+            logger.info("PointCut : [{}] / match : [{}]", method.getName(), match);
+            return match;
         };
     }
 

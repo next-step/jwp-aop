@@ -35,7 +35,7 @@ public class HandlerConverter {
             addHandlerExecution(handlers, target, controller.getMethods());
         }
 
-        return handlers;
+        return sortHandlers(handlers);
     }
 
     private void addHandlerExecution(Map<HandlerKey, HandlerExecution> handlers, final Object target, Method[] methods) {
@@ -48,6 +48,17 @@ public class HandlerConverter {
                     handlers.put(handlerKey, handlerExecution);
                     logger.info("Add - method: {}, path: {}, HandlerExecution: {}", requestMapping.method(), requestMapping.value(), method.getName());
                 });
+    }
+
+    private Map<HandlerKey, HandlerExecution> sortHandlers(Map<HandlerKey, HandlerExecution> handlers) {
+        Map<HandlerKey, HandlerExecution> sortedHandlers = new LinkedHashMap<>();
+        List<HandlerKey> handlerKeys = new ArrayList<>(handlers.keySet());
+        Collections.sort(handlerKeys);
+        for (HandlerKey handlerKey : handlerKeys) {
+            sortedHandlers.put(handlerKey, handlers.get(handlerKey));
+        }
+
+        return sortedHandlers;
     }
 
 }
