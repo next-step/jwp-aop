@@ -1,13 +1,14 @@
-package core.aop.example;
+package core.aop.example.di;
 
+import core.annotation.Component;
 import core.aop.Advice;
 import core.aop.PointCut;
 import core.aop.ProxyFactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 
-public class Proxy extends ProxyFactoryBean<SimpleTarget> {
-
-    public Proxy(BeanDefinition beanDefinition, Object... arguments) {
+@Component
+public class ProxyClass extends ProxyFactoryBean<TargetClass> {
+    public ProxyClass(BeanDefinition beanDefinition, Object... arguments) {
         super(beanDefinition, arguments);
     }
 
@@ -24,11 +25,11 @@ public class Proxy extends ProxyFactoryBean<SimpleTarget> {
 
     @Override
     protected PointCut pointCut() {
-        return (method, targetClass, arguments) -> method.getReturnType().isAssignableFrom(String.class);
+        return (method, targetClass, arguments) -> method.getName().startsWith("get");
     }
 
     @Override
     public Class<?> getClassType() {
-        return SimpleTarget.class;
+        return TargetClass.class;
     }
 }

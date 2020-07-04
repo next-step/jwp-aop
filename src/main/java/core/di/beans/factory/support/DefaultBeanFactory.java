@@ -72,6 +72,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
+
+        if (beanDefinition == null) {
+            return null;
+        }
+
         bean = inject(beanDefinition);
         beans.put(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
