@@ -56,11 +56,6 @@ public class ProxyBeanDefinition implements BeanDefinition {
         if (targetBeanDefinition.getInjectConstructor() == null) {
             return new Class<?>[0];
         }
-        System.out.println(targetBeanDefinition);
-
-        System.out.println(targetBeanDefinition.getInjectConstructor());
-
-        System.out.println(Arrays.toString(targetBeanDefinition.getInjectConstructor().getParameterTypes()));
 
         return targetBeanDefinition.getInjectConstructor().getParameterTypes();
     }
