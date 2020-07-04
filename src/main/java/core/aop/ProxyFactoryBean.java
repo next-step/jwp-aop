@@ -1,14 +1,16 @@
 package core.aop;
 
+import core.di.beans.factory.BeanFactory;
+import core.di.beans.factory.support.BeanFactoryAware;
+import core.di.beans.factory.support.BeanFactoryUtils;
 import core.di.beans.factory.support.FactoryBean;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -20,13 +22,24 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
 
     private Pointcut pointcut = Pointcut.DEFAULT;
     private Object target;
+    private BeanFactory beanFactory;
 
     @Override
     public Object getObject() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(getObjectType());
         enhancer.setCallback(new InvocableMethodChain(pointcut.getMethodMatcher(), advices));
-        return getObjectType().cast(enhancer.create());
+
+        Constructor<?> injectedConstructor = BeanFactoryUtils.getInjectedConstructor(getObjectType());
+
+        if (injectedConstructor != null) {
+            Object[] args = Arrays.stream(injectedConstructor.getParameterTypes())
+                    .map(dependency -> beanFactory.getBean(dependency))
+                    .toArray();
+            return enhancer.create(injectedConstructor.getParameterTypes(), args);
+
+        }
+        return enhancer.create();
     }
 
     @Override
@@ -42,8 +55,16 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
         this.advices.add(advice);
     }
 
+    public void addAdvices(Collection<Advice> advices) {
+        this.advices.addAll(advices);
+    }
+
     public void setPointcut(Pointcut pointcut) {
         this.pointcut = pointcut;
+    }
+
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
     private static class InvocableMethodChain implements MethodInterceptor {
@@ -64,8 +85,6 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
 
             // target invocation
             MethodInvocation invocation = () -> proxy.invokeSuper(obj, args);
-
-            System.out.println(advices);
             if (methodMatcher.matches(method, obj.getClass())) {
                 for (int i = advices.size() - 1; i >= 0; i--) {
                     int index = i;
