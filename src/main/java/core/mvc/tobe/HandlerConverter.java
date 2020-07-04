@@ -28,7 +28,7 @@ public class HandlerConverter {
     }
 
     public Map<HandlerKey, HandlerExecution> convert(Map<Class<?>, Object> controllers) {
-        Map<HandlerKey, HandlerExecution> handlers = new HashMap<>();
+        Map<HandlerKey, HandlerExecution> handlers = new LinkedHashMap<>();
         Set<Class<?>> controllerClazz = controllers.keySet();
         for (Class<?> controller : controllerClazz) {
             Object target = controllers.get(controller);
