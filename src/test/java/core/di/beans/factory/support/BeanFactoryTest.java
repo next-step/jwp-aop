@@ -19,7 +19,7 @@ public class BeanFactoryTest {
         beanFactory = new DefaultBeanFactory();
         ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
         scanner.doScan("core.di.factory.example");
-        beanFactory.preInstantiateSinglonetons();
+        beanFactory.preInstantiateSingletons();
     }
 
     @Test

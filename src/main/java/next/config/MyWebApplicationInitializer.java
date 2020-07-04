@@ -6,6 +6,7 @@ import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
 import org.slf4j.Logger;
@@ -21,7 +22,8 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         ApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac);
+        HandlerConverter handlerConverter = ac.getBean(HandlerConverter.class);
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
         ahm.initialize();
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();

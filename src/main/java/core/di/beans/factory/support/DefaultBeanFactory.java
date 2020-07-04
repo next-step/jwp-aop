@@ -26,7 +26,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     @Override
-    public void preInstantiateSinglonetons() {
+    public void preInstantiateSingletons() {
         for (Class<?> clazz : getBeanClasses()) {
             getBean(clazz);
         }

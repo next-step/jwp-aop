@@ -29,7 +29,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
         }
-        beanFactory.preInstantiateSinglonetons();
+        beanFactory.preInstantiateSingletons();
     }
 
     private Object[] findBasePackages(Class<?>[] annotatedClasses) {

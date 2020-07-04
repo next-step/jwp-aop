@@ -13,24 +13,24 @@ public class MyServletContainerInitializer implements ServletContainerInitialize
     @Override
     public void onStartup(Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)
             throws ServletException {
-        List<WebApplicationInitializer> initializers = new LinkedList<WebApplicationInitializer>();
+        List<WebApplicationInitializer> initializes = new LinkedList<>();
 
         if (webAppInitializerClasses != null) {
             for (Class<?> waiClass : webAppInitializerClasses) {
                 try {
-                    initializers.add((WebApplicationInitializer) waiClass.newInstance());
+                    initializes.add((WebApplicationInitializer) waiClass.newInstance());
                 } catch (Throwable ex) {
                     throw new ServletException("Failed to instantiate WebApplicationInitializer class", ex);
                 }
             }
         }
 
-        if (initializers.isEmpty()) {
+        if (initializes.isEmpty()) {
             servletContext.log("No Spring WebApplicationInitializer types detected on classpath");
             return;
         }
 
-        for (WebApplicationInitializer initializer : initializers) {
+        for (WebApplicationInitializer initializer : initializes) {
             initializer.onStartup(servletContext);
         }
     }
