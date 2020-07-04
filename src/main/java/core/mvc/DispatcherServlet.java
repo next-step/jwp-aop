@@ -1,5 +1,6 @@
 package core.mvc;
 
+import next.security.RequiredLoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,8 @@ public class DispatcherServlet extends HttpServlet {
 
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
+        } catch (RequiredLoginException e) {
+            resp.sendRedirect("/users/loginForm");
         } catch (Throwable e) {
             logger.error("Exception : {}", e);
             throw new ServletException(e.getMessage());

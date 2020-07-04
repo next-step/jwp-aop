@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class AnnotationHandlerMapping implements HandlerMapping {
@@ -19,6 +22,7 @@ public class AnnotationHandlerMapping implements HandlerMapping {
     private HandlerConverter handlerConverter;
 
     private Map<HandlerKey, HandlerExecution> handlerExecutions = Maps.newHashMap();
+    private List<HandlerKey> handlerKeys = new ArrayList<>();
 
     public AnnotationHandlerMapping(ApplicationContext applicationContext, HandlerConverter handlerConverter) {
         this.applicationContext = applicationContext;
@@ -28,6 +32,8 @@ public class AnnotationHandlerMapping implements HandlerMapping {
     public void initialize() {
         Map<Class<?>, Object> controllers = getControllers(applicationContext);
         handlerExecutions.putAll(handlerConverter.convert(controllers));
+        handlerKeys.addAll(handlerExecutions.keySet());
+        Collections.sort(handlerKeys);
         logger.info("Initialized AnnotationHandlerMapping!");
     }
 
@@ -51,7 +57,7 @@ public class AnnotationHandlerMapping implements HandlerMapping {
     }
 
     private HandlerExecution getHandlerInternal(HandlerKey requestHandlerKey) {
-        for (HandlerKey handlerKey : handlerExecutions.keySet()) {
+        for (HandlerKey handlerKey : handlerKeys) {
             if (handlerKey.isMatch(requestHandlerKey)) {
                 return handlerExecutions.get(handlerKey);
             }

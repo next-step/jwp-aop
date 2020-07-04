@@ -3,8 +3,9 @@ package core.mvc.tobe;
 import core.annotation.web.RequestMethod;
 
 import static core.util.PathPatternUtil.isUrlMatch;
+import static core.util.PathPatternUtil.pathPattern;
 
-public class HandlerKey {
+public class HandlerKey implements Comparable<HandlerKey> {
     private String url;
     private RequestMethod requestMethod;
 
@@ -62,4 +63,10 @@ public class HandlerKey {
             return false;
         return true;
     }
+
+    @Override
+    public int compareTo(HandlerKey anotherKey) {
+        return pathPattern(this.url).compareTo(pathPattern(anotherKey.url));
+    }
+
 }
