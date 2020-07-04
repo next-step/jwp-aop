@@ -10,6 +10,7 @@ public class JdkProxyTest {
     private String hello_expected = "HELLO EESEUL";
     private String hi_expected = "HI EESEUL";
     private String thankYou_expected = "THANK YOU EESEUL";
+    private String pingPong_expected = "Pong eeseul";
 
     @Test
     void proxyTest() {
@@ -21,10 +22,12 @@ public class JdkProxyTest {
         String hello_actual = proxyInstance.sayHello("eeseul");
         String hi_actual = proxyInstance.sayHi("eeseul");
         String thankYou_actual = proxyInstance.sayThankYou("eeseul");
+        String pingPong_actual = proxyInstance.pingPong("eeseul");
 
         assertThat(hello_actual).isEqualTo(hello_expected);
         assertThat(hi_actual).isEqualTo(hi_expected);
         assertThat(thankYou_actual).isEqualTo(thankYou_expected);
+        assertThat(pingPong_actual).isEqualTo(pingPong_expected);
     }
 
     @Test

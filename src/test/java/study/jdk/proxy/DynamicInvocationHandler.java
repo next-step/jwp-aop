@@ -1,5 +1,8 @@
 package study.jdk.proxy;
 
+import study.MethodMatcher;
+import study.SayMethodMatcher;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -19,6 +22,11 @@ public class DynamicInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String result = (String) this.methods.get(method.getName()).invoke(target, args);
-        return result.toUpperCase();
+
+        MethodMatcher matcher = new SayMethodMatcher();
+        if(matcher.matches(method, target.getClass(), args)) {
+            return result.toUpperCase();
+        }
+        return result;
     }
 }
