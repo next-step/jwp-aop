@@ -1,6 +1,7 @@
 package core.di.beans.factory.support;
 
 import com.google.common.collect.Sets;
+import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 
 import java.lang.reflect.Constructor;
@@ -84,5 +85,10 @@ public class DefaultBeanDefinition implements BeanDefinition {
         }
 
         return InjectType.INJECT_NO;
+    }
+
+    @Override
+    public boolean isFactoryBean() {
+        return FactoryBean.class.isAssignableFrom(beanClazz);
     }
 }

@@ -5,6 +5,8 @@ import core.annotation.Component;
 import core.annotation.Repository;
 import core.annotation.Service;
 import core.annotation.web.Controller;
+import core.aop.ProxyBeanDefinition;
+import core.aop.ProxyFactoryBean;
 import core.di.beans.factory.support.BeanDefinitionRegistry;
 import core.di.beans.factory.support.DefaultBeanDefinition;
 import org.reflections.Reflections;
@@ -25,7 +27,13 @@ public class ClasspathBeanDefinitionScanner {
         Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
                 Repository.class, Component.class);
         for (Class<?> clazz : beanClasses) {
-            beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));
+            if (ProxyFactoryBean.class.isAssignableFrom(clazz)) {
+                System.out.println("ProxyBean register : " + clazz);
+                ProxyBeanDefinition proxyBeanDefinition = new ProxyBeanDefinition(clazz);
+                beanDefinitionRegistry.registerBeanDefinition(proxyBeanDefinition.getTargetClass(), proxyBeanDefinition);
+            } else {
+                beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));
+            }
         }
     }
 
