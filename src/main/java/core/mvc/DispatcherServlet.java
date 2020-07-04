@@ -46,7 +46,7 @@ public class DispatcherServlet extends HttpServlet {
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
         } catch (RequiredLoginException e) {
-            resp.sendRedirect("/");
+            resp.sendRedirect("/users/loginForm");
         } catch (Throwable e) {
             logger.error("Exception : {}", e);
             throw new ServletException(e.getMessage());
