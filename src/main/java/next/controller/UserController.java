@@ -59,7 +59,7 @@ public class UserController extends AbstractNewController {
         return mav;
     }
 
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST)
     public ModelAndView update(@LoginUser User loginUser,
                                @PathVariable String userId,
                                UserUpdatedDto updateUser) throws Exception {
