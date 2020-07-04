@@ -3,6 +3,10 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.AutoProxyCreator;
+import core.aop.Pointcut;
+import core.aop.transaction.TransactionalProxyCreator;
+import core.di.beans.factory.BeanPostProcessor;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
@@ -46,10 +50,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
-            initialize(bean, clazz);
+            optionalBean.ifPresent(b -> beans.put(clazz, initialize(b, clazz)));
             return (T) optionalBean.orElse(null);
         }
 
@@ -60,22 +63,58 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
+
+        if (beanDefinition.isFactoryBean()) {
+            FactoryBean<T> factory = (FactoryBean<T>) inject(beanDefinition);
+            bean = factory.getObject();
+            beans.put(factory.getObjectType(), bean);
+            return factory.getObject();
+        }
+
         bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
-        initialize(bean, concreteClazz.get());
-        return (T) bean;
+        Object wrapped = initialize(bean, concreteClazz.get());
+        beans.put(concreteClazz.get(), wrapped);
+        return (T) wrapped;
     }
 
-    private void initialize(Object bean, Class<?> beanClass) {
+    private Object initialize(Object bean, Class<?> beanClass) {
+
+        invokeBeanFactoryAwareMethods(bean);
+
         Set<Method> initializeMethods = BeanFactoryUtils.getBeanMethods(beanClass, PostConstruct.class);
-        if (initializeMethods.isEmpty()) {
-            return;
-        }
         for (Method initializeMethod : initializeMethods) {
             log.debug("@PostConstruct Initialize Method : {}", initializeMethod);
             BeanFactoryUtils.invokeMethod(initializeMethod, bean,
                     populateArguments(initializeMethod.getParameterTypes()));
         }
+
+        return beanPostProcess(bean, beanClass);
+
+    }
+
+    private Object beanPostProcess(Object bean, Class<?> beanClass) {
+        Object wrapped = bean;
+        for (BeanPostProcessor postProcessor : getBeanPostProcessors()) {
+            if (postProcessor instanceof AutoProxyCreator) {
+                Pointcut pointcut = ((AutoProxyCreator) postProcessor).getPointcut();
+                if (pointcut.getClassFilter().matches(beanClass)) {
+                    wrapped = postProcessor.postProcess(wrapped);
+                }
+            }
+        }
+        return wrapped;
+    }
+
+    private void invokeBeanFactoryAwareMethods(Object bean) {
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(this);
+        }
+    }
+
+    private List<BeanPostProcessor> getBeanPostProcessors() {
+        return Lists.newArrayList(
+                new TransactionalProxyCreator(this)
+        );
     }
 
     private Optional<Object> createAnnotatedBean(BeanDefinition beanDefinition) {
@@ -99,7 +138,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     private Object inject(BeanDefinition beanDefinition) {
         if (beanDefinition.getResolvedInjectMode() == InjectType.INJECT_NO) {
-            return BeanUtils.instantiate(beanDefinition.getBeanClass());
+            return BeanUtils.instantiateClass(beanDefinition.getBeanClass());
         } else if (beanDefinition.getResolvedInjectMode() == InjectType.INJECT_FIELD) {
             return injectFields(beanDefinition);
         } else {
@@ -114,7 +153,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     private Object injectFields(BeanDefinition beanDefinition) {
-        Object bean = BeanUtils.instantiate(beanDefinition.getBeanClass());
+        Object bean = BeanUtils.instantiateClass(beanDefinition.getBeanClass());
         Set<Field> injectFields = beanDefinition.getInjectFields();
         for (Field field : injectFields) {
             injectField(bean, field);

@@ -50,8 +50,7 @@ public class ApiQnaController extends AbstractNewController {
                 Long.parseLong(req.getParameter("questionId")));
         logger.debug("answer : {}", answer);
 
-        Answer savedAnswer = answerDao.insert(answer);
-        questionDao.updateCountOfAnswer(savedAnswer.getQuestionId());
+        Answer savedAnswer = qnaService.addAnswer(answer);
 
         return jsonView().addObject("answer", savedAnswer).addObject("result", Result.ok());
     }
