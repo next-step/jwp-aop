@@ -18,7 +18,7 @@ public class AnnotationHandlerMapping implements HandlerMapping {
     private ApplicationContext applicationContext;
     private HandlerConverter handlerConverter;
 
-    private Map<HandlerKey, HandlerExecution> handlerExecutions = Maps.newHashMap();
+    private Map<HandlerKey, HandlerExecution> handlerExecutions = new LinkedHashMap<>();
 
     public AnnotationHandlerMapping(ApplicationContext applicationContext, HandlerConverter handlerConverter) {
         this.applicationContext = applicationContext;
