@@ -16,5 +16,4 @@ public interface BeanDefinition {
 
     InjectType getResolvedInjectMode();
 
-    boolean isFactoryBean();
 }

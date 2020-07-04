@@ -43,11 +43,6 @@ public class ProxyBeanDefinition implements BeanDefinition {
         return InjectType.INJECT_CONSTRUCTOR;
     }
 
-    @Override
-    public boolean isFactoryBean() {
-        return true;
-    }
-
     public Class<?> getTargetClass() {
         return targetClass;
     }

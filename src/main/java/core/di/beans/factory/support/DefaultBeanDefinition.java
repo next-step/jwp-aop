@@ -87,8 +87,4 @@ public class DefaultBeanDefinition implements BeanDefinition {
         return InjectType.INJECT_NO;
     }
 
-    @Override
-    public boolean isFactoryBean() {
-        return FactoryBean.class.isAssignableFrom(beanClazz);
-    }
 }

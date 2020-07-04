@@ -30,25 +30,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     @Override
     public void preInstantiateSingletons() {
-//        initializeProxyBeans();
         for (Class<?> clazz : getBeanClasses()) {
             getBean(clazz);
         }
-    }
-
-    private void initializeProxyBeans() {
-        beanDefinitions.values()
-                .stream()
-                .filter(BeanDefinition::isFactoryBean)
-                .forEach(this::initializeProxyBean);
-    }
-
-    private void initializeProxyBean(BeanDefinition beanDefinition) {
-        Object bean = inject(beanDefinition);
-        initialize(bean, bean.getClass());
-        FactoryBean factoryBean = (FactoryBean) bean;
-
-        beans.put(factoryBean.getClassType(), factoryBean.getObject());
     }
 
     @Override
