@@ -45,14 +45,13 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getBean(Class<T> clazz) {
-        Object bean = beans.get(clazz);
-        if (bean != null) {
-            return (T) bean;
+        if (beans.containsKey(clazz)) {
+            return (T) beans.get(clazz);
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
 
-        bean = beanGenerators.stream()
+        Object bean = beanGenerators.stream()
                 .filter(beanGenerator -> beanGenerator.support(beanDefinition))
                 .map(beanGenerator -> beanGenerator.generate(clazz, beanDefinition))
                 .filter(Objects::nonNull)
