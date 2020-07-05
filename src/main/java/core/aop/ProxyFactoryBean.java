@@ -36,7 +36,6 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         return (T) enhancer.create(argumentTypes, targetArguments);
     }
 
-    // TODO: 2020-07-05 삭제할것
     @Override
     public Class<?> getClassType() {
         return targetClass;
