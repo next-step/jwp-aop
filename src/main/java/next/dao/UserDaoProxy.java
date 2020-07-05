@@ -3,14 +3,14 @@ package next.dao;
 import core.annotation.Component;
 import core.aop.Advice;
 import core.aop.PointCut;
-import core.aop.ProxyFactoryBean;
+import core.aop.TempProxyFactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StopWatch;
 
 @Component
-public class UserDaoProxy extends ProxyFactoryBean<UserDao> {
+public class UserDaoProxy extends TempProxyFactoryBean<UserDao> {
     private final Logger logger = LoggerFactory.getLogger(UserDaoProxy.class);
 
     public UserDaoProxy(BeanDefinition beanDefinition, Object... arguments) {

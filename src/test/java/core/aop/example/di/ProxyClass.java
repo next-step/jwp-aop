@@ -3,11 +3,11 @@ package core.aop.example.di;
 import core.annotation.Component;
 import core.aop.Advice;
 import core.aop.PointCut;
-import core.aop.ProxyFactoryBean;
+import core.aop.TempProxyFactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 
 @Component
-public class ProxyClass extends ProxyFactoryBean<TargetClass> {
+public class ProxyClass extends TempProxyFactoryBean<TargetClass> {
     public ProxyClass(BeanDefinition beanDefinition, Object... arguments) {
         super(beanDefinition, arguments);
     }

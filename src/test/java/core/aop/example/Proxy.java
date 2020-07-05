@@ -2,10 +2,10 @@ package core.aop.example;
 
 import core.aop.Advice;
 import core.aop.PointCut;
-import core.aop.ProxyFactoryBean;
+import core.aop.TempProxyFactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 
-public class Proxy extends ProxyFactoryBean<SimpleTarget> {
+public class Proxy extends TempProxyFactoryBean<SimpleTarget> {
 
     public Proxy(BeanDefinition beanDefinition, Object... arguments) {
         super(beanDefinition, arguments);

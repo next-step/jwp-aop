@@ -4,11 +4,11 @@ import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import net.sf.cglib.proxy.Enhancer;
 
-public abstract class ProxyFactoryBean<T> implements FactoryBean<T> {
+public abstract class TempProxyFactoryBean<T> implements FactoryBean<T> {
     protected Object[] targetArguments;
     protected BeanDefinition beanDefinition;
 
-    public ProxyFactoryBean(BeanDefinition beanDefinition, Object... arguments) {
+    public TempProxyFactoryBean(BeanDefinition beanDefinition, Object... arguments) {
         this.beanDefinition = beanDefinition;
         this.targetArguments = arguments;
     }
