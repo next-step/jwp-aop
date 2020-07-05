@@ -4,9 +4,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.aop.ProxyBeanDefinition;
+import core.di.beans.factory.BeanGenerator;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.beans.factory.generator.AnnotatedBeanGenerator;
+import core.di.beans.factory.generator.ConcreteClassBeanGenerator;
+import core.di.beans.factory.generator.ProxyBeanGenerator;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +20,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
-    private Map<Class<?>, Object> beans = Maps.newHashMap();
+    private final Map<Class<?>, Object> beans = Maps.newHashMap();
+    private final Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private final List<BeanGenerator> beanGenerators = new ArrayList<>();
 
-    private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    public DefaultBeanFactory() {
+        beanGenerators.add(new ProxyBeanGenerator(this));
+        beanGenerators.add(new AnnotatedBeanGenerator(this));
+        beanGenerators.add(new ConcreteClassBeanGenerator(this));
+    }
 
     @Override
     public void preInstantiateSingletons() {
@@ -42,6 +49,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     @Override
+    public BeanDefinition getBeanDefinition(Class<?> clazz) {
+        return beanDefinitions.get(clazz);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getBean(Class<T> clazz) {
         Object bean = beans.get(clazz);
@@ -50,6 +62,19 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
+
+/*
+        beanGenerators.stream()
+                .filter(beanGenerator -> beanGenerator.support(beanDefinition))
+                .map(beanGenerator -> beanGenerator.generate(clazz, beanDefinition))
+*/
+
+
+
+
+
+
+
         if (beanDefinition instanceof ProxyBeanDefinition) {
             FactoryBean proxyBean = (FactoryBean)createProxyBean(beanDefinition);
             Object targetBean = proxyBean.getObject();
