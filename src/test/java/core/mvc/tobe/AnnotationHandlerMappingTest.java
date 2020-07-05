@@ -25,7 +25,6 @@ public class AnnotationHandlerMappingTest {
         handlerMapping = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
         handlerMapping.initialize();
 
-        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
         ConnectionHolder.releaseConnection();
         userDao = ac.getBean(UserDao.class);
     }

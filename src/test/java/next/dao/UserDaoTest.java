@@ -20,7 +20,6 @@ public class UserDaoTest {
     public void setup() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         userDao = ac.getBean(UserDao.class);
-        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
         ConnectionHolder.releaseConnection();
     }
 

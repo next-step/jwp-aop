@@ -38,7 +38,6 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
-        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
         log.info("Start MyWebApplication Initializer");
     }
 }

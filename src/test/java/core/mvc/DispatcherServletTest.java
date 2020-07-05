@@ -31,7 +31,6 @@ class DispatcherServletTest {
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
 
-        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
         ConnectionHolder.releaseConnection();
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();

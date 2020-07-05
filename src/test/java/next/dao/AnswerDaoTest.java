@@ -22,7 +22,6 @@ public class AnswerDaoTest {
     public void setup() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         answerDao = ac.getBean(AnswerDao.class);
-        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
         ConnectionHolder.releaseConnection();
     }
 

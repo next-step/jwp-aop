@@ -3,6 +3,7 @@ package next.config;
 import core.annotation.Bean;
 import core.annotation.ComponentScan;
 import core.annotation.Configuration;
+import core.jdbc.ConnectionHolder;
 import core.jdbc.JdbcTemplate;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.support.*;
@@ -24,6 +25,8 @@ public class MyConfiguration {
         ds.setUrl("jdbc:h2:~/jwp-framework;DB_CLOSE_DELAY=-1");
         ds.setUsername("sa");
         ds.setPassword("");
+
+        ConnectionHolder.setDataSource(ds);
         return ds;
     }
 
