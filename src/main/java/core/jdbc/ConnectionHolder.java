@@ -18,11 +18,6 @@ public class ConnectionHolder {
     private static void initConnection() {
         try {
             Connection connection = getDataSource().getConnection();
-            System.out.println("Connection : " + connection);
-            System.out.println("Connection : " + connection);
-            System.out.println("Connection : " + connection);
-            System.out.println("Connection : " + connection);
-            System.out.println("Connection : " + connection);
             holder.set(connection);
         } catch (Exception e) {
             throw new DataAccessException("Fail to get connection " + e.getMessage());
@@ -34,22 +29,10 @@ public class ConnectionHolder {
     }
 
     public static void setDataSource(DataSource dataSource) {
-        System.out.println("Set Data Source");
-        System.out.println("Set Data Source");
-        System.out.println("Set Data Source");
-        System.out.println("Set Data Source");
-        System.out.println("Set Data Source");
-        System.out.println("Set Data Source");
         ConnectionHolder.dataSource = dataSource;
     }
 
     public static DataSource getDataSource() {
-        System.out.println("Get Data Source" + dataSource);
-        System.out.println("Get Data Source" + dataSource);
-        System.out.println("Get Data Source" + dataSource);
-        System.out.println("Get Data Source" + dataSource);
-        System.out.println("Get Data Source" + dataSource);
-        System.out.println("Get Data Source" + dataSource);
         return dataSource;
     }
 }

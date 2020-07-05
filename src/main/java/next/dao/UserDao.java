@@ -20,13 +20,11 @@ public class UserDao {
     }
 
     public void insert(User user) {
-        System.out.println(user);
         String sql = "INSERT INTO USERS VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getUserId(), user.getPassword(), user.getName(), user.getEmail());
     }
 
     public User findByUserId(String userId) {
-        System.out.println(userId);
         String sql = "SELECT userId, password, name, email FROM USERS WHERE userid=?";
 
         RowMapper<User> rm = new RowMapper<User>() {
