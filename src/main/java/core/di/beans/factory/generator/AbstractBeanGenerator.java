@@ -1,6 +1,7 @@
 package core.di.beans.factory.generator;
 
 import com.google.common.collect.Lists;
+import core.annotation.PostConstruct;
 import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.BeanGenerator;
 import core.di.beans.factory.config.BeanDefinition;
@@ -26,6 +27,18 @@ public abstract class AbstractBeanGenerator implements BeanGenerator {
         this.beanFactory = beanFactory;
     }
 
+    protected void initialize(Object bean, Class<?> beanClass) {
+        Set<Method> initializeMethods = BeanFactoryUtils.getBeanMethods(beanClass, PostConstruct.class);
+        if (initializeMethods.isEmpty()) {
+            return;
+        }
+        for (Method initializeMethod : initializeMethods) {
+            log.debug("@PostConstruct Initialize Method : {}", initializeMethod);
+            BeanFactoryUtils.invokeMethod(initializeMethod, bean,
+                    populateArguments(initializeMethod.getParameterTypes()));
+        }
+    }
+
     protected Optional<Object> createAnnotatedBean(BeanDefinition beanDefinition) {
         AnnotatedBeanDefinition abd = (AnnotatedBeanDefinition) beanDefinition;
         Method method = abd.getMethod();
@@ -33,7 +46,6 @@ public abstract class AbstractBeanGenerator implements BeanGenerator {
 
         return BeanFactoryUtils.invokeMethod(method, beanFactory.getBean(method.getDeclaringClass()), args);
     }
-
 
     protected Object[] populateArguments(Class<?>[] paramTypes) {
         List<Object> args = Lists.newArrayList();

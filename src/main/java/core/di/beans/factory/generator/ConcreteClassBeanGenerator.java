@@ -32,6 +32,10 @@ public class ConcreteClassBeanGenerator extends AbstractBeanGenerator {
             return null;
         }
 
-        return (T) inject(beanDefinition);
+        Object bean = inject(beanDefinition);
+        beanFactory.putBean(concreteClazz.get(), bean);
+        initialize(bean, concreteClazz.get());
+
+        return (T) bean;
     }
 }

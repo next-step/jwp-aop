@@ -21,6 +21,11 @@ public class AnnotatedBeanGenerator extends AbstractBeanGenerator {
     public <T> T generate(Class<T> clazz, BeanDefinition beanDefinition) {
         Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
 
+        optionalBean.ifPresent(bean -> {
+            beanFactory.putBean(clazz, bean);
+            initialize(bean, clazz);
+        });
+
         return (T) optionalBean.orElse(null);
     }
 }

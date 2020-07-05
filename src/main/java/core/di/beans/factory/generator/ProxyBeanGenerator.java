@@ -26,6 +26,9 @@ public class ProxyBeanGenerator extends AbstractBeanGenerator {
         FactoryBean proxyBean = (FactoryBean) createProxyBean(beanDefinition);
         Object targetBean = proxyBean.getObject();
 
+        initialize(targetBean, clazz);
+        beanFactory.putBean(clazz, targetBean);
+
         return (T) targetBean;
     }
 

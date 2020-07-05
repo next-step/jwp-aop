@@ -63,50 +63,19 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
 
-/*
-        beanGenerators.stream()
+        bean = beanGenerators.stream()
                 .filter(beanGenerator -> beanGenerator.support(beanDefinition))
                 .map(beanGenerator -> beanGenerator.generate(clazz, beanDefinition))
-*/
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
 
-
-
-
-
-
-
-        if (beanDefinition instanceof ProxyBeanDefinition) {
-            FactoryBean proxyBean = (FactoryBean)createProxyBean(beanDefinition);
-            Object targetBean = proxyBean.getObject();
-
-            initialize(targetBean, clazz);
-            beans.put(clazz, targetBean);
-            return (T) targetBean;
-        }
-
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
-            Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
-            initialize(bean, clazz);
-            return (T) optionalBean.orElse(null);
-        }
-
-        Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
-        if (!concreteClazz.isPresent()) {
-            return null;
-        }
-
-        beanDefinition = beanDefinitions.get(concreteClazz.get());
-        log.debug("BeanDefinition : {}", beanDefinition);
-
-        if (beanDefinition == null) {
-            return null;
-        }
-
-        bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
-        initialize(bean, concreteClazz.get());
         return (T) bean;
+    }
+
+    @Override
+    public void putBean(Class<?> clazz, Object bean) {
+        beans.put(clazz, bean);
     }
 
     private void initialize(Object bean, Class<?> beanClass) {

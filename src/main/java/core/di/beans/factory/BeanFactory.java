@@ -11,5 +11,7 @@ public interface BeanFactory {
 
     <T> T getBean(Class<T> clazz);
 
+    void putBean(Class<?> clazz, Object bean);
+
     void clear();
 }
