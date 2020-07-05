@@ -1,7 +1,9 @@
-package core.di.beandefinition.example;
+package core.beandefinition.example;
 
+import core.annotation.Component;
 import core.annotation.Inject;
 
+@Component
 public class HigherClassUsingConstructor {
     private LowerClass lowerClass;
 

@@ -28,7 +28,6 @@ public class ClasspathBeanDefinitionScanner {
                 Repository.class, Component.class);
         for (Class<?> clazz : beanClasses) {
             if (ProxyFactoryBean.class.isAssignableFrom(clazz)) {
-                System.out.println("ProxyBean register : " + clazz);
                 ProxyBeanDefinition proxyBeanDefinition = new ProxyBeanDefinition(clazz);
                 beanDefinitionRegistry.registerBeanDefinition(proxyBeanDefinition.getTargetClass(), proxyBeanDefinition);
             } else {

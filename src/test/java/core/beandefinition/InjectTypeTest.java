@@ -1,8 +1,8 @@
-package core.di.beandefinition;
+package core.beandefinition;
 
-import core.di.beandefinition.example.HigherClass;
-import core.di.beandefinition.example.HigherClassUsingConstructor;
-import core.di.beandefinition.example.LowerClass;
+import core.beandefinition.example.HigherClass;
+import core.beandefinition.example.HigherClassUsingConstructor;
+import core.beandefinition.example.LowerClass;
 import core.di.beans.factory.support.DefaultBeanDefinition;
 import core.di.beans.factory.support.InjectType;
 import org.junit.jupiter.api.DisplayName;

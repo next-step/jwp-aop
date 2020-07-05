@@ -2,6 +2,7 @@ package core.aop;
 
 import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.beans.factory.support.InjectType;
 import net.sf.cglib.proxy.Enhancer;
 
 public class ProxyFactoryBean<T> implements FactoryBean<T> {
@@ -28,12 +29,16 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         enhancer.setSuperclass(targetClass);
         enhancer.setCallback(new BeanInterceptor(advice, pointCut));
 
+        if (beanDefinition.getResolvedInjectMode() == InjectType.INJECT_FIELD) {
+            Class aClass = enhancer.createClass();
+        }
+
         if (beanDefinition.getInjectConstructor() == null) {
-            return (T) enhancer.create();
+            return (T) enhancer.create(); //생성자를 통한 생성
         }
 
         Class<?>[] argumentTypes = beanDefinition.getInjectConstructor().getParameterTypes();
-        return (T) enhancer.create(argumentTypes, targetArguments);
+        return (T) enhancer.create(argumentTypes, targetArguments); // argument type에 맞는 생성자를 찾아 생성
     }
 
     @Override
