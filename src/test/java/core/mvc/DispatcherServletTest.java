@@ -1,6 +1,8 @@
 package core.mvc;
 
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.jdbc.ConnectionHolder;
+import core.jdbc.ConnectionManager;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
@@ -11,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +31,7 @@ class DispatcherServletTest {
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
 
+        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
     }

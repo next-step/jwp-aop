@@ -2,6 +2,7 @@ package next.config;
 
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.jdbc.ConnectionHolder;
 import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.sql.DataSource;
 
 public class MyWebApplicationInitializer implements WebApplicationInitializer {
     private static final Logger log = LoggerFactory.getLogger(MyWebApplicationInitializer.class);
@@ -36,6 +38,7 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
+        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
         log.info("Start MyWebApplication Initializer");
     }
 }
