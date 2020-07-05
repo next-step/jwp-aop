@@ -25,7 +25,7 @@ class ProxyBeanDefinitionTest {
     @Test
     @DisplayName("제네릭 타입을 잘 가져올까?")
     void getGenericType() {
-        assertThat(proxyBeanDefinition.getTargetClass()).isEqualTo(SimpleTarget.class);
+        assertThat(proxyBeanDefinition.getBeanClass()).isEqualTo(SimpleTarget.class);
     }
 
     @Test

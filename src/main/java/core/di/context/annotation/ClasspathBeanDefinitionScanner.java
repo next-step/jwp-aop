@@ -29,7 +29,7 @@ public class ClasspathBeanDefinitionScanner {
         for (Class<?> clazz : beanClasses) {
             if (ProxyFactoryBean.class.isAssignableFrom(clazz)) {
                 ProxyBeanDefinition proxyBeanDefinition = new ProxyBeanDefinition(clazz);
-                beanDefinitionRegistry.registerBeanDefinition(proxyBeanDefinition.getTargetClass(), proxyBeanDefinition);
+                beanDefinitionRegistry.registerBeanDefinition(proxyBeanDefinition.getBeanClass(), proxyBeanDefinition);
             } else {
                 // TODO: 2020-07-05 @Transactional 이 붙은경우 처리를 해줘야 함
                 beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));

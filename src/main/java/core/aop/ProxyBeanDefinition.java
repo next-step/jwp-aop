@@ -50,16 +50,12 @@ public class ProxyBeanDefinition implements BeanDefinition {
 
     @Override
     public Class<?> getBeanClass() {
-        return targetBeanDefinition.getBeanClass();
+        return targetClass;
     }
 
     @Override
     public InjectType getResolvedInjectMode() {
         return InjectType.INJECT_CONSTRUCTOR;
-    }
-
-    public Class<?> getTargetClass() {
-        return targetClass;
     }
 
     public Class<?>[] getTargetConstructorParameterTypes() {
