@@ -1,10 +1,14 @@
 package core.mvc.tobe;
 
 import core.annotation.web.RequestMethod;
+import core.util.PathPatternUtil;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import static core.util.PathPatternUtil.isUrlMatch;
+import static core.util.PathPatternUtil.pathPattern;
 
-public class HandlerKey {
+public class HandlerKey implements Comparable<HandlerKey> {
     private String url;
     private RequestMethod requestMethod;
 
@@ -61,5 +65,11 @@ public class HandlerKey {
         } else if (!url.equals(other.url))
             return false;
         return true;
+    }
+
+    // path를 정렬하고 좀더 상세한 path를 앞쪽에 두기 위함
+    @Override
+    public int compareTo(HandlerKey anotherKey) {
+        return pathPattern(this.url).compareTo(pathPattern(anotherKey.url));
     }
 }

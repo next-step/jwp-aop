@@ -1,6 +1,7 @@
 package core.util;
 
 import org.springframework.http.server.PathContainer;
+import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPattern.PathMatchInfo;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -31,5 +32,8 @@ public class PathPatternUtil {
         return parser.parse(pattern).matches(PathContainer.parsePath(path));
     }
 
+    public static PathPattern pathPattern(String url) {
+        return parser.parse(url);
+    }
 
 }

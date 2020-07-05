@@ -3,7 +3,9 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.ProxyBeanDefinition;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
+import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,15 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
+        if (beanDefinition instanceof ProxyBeanDefinition) {
+            FactoryBean proxyBean = (FactoryBean)createProxyBean(beanDefinition);
+            Object targetBean = proxyBean.getObject();
+
+            initialize(targetBean, clazz);
+            beans.put(clazz, targetBean);
+            return (T) targetBean;
+        }
+
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
             optionalBean.ifPresent(b -> beans.put(clazz, b));
@@ -60,6 +72,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
+
+        if (beanDefinition == null) {
+            return null;
+        }
+
         bean = inject(beanDefinition);
         beans.put(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
@@ -83,6 +100,22 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         Method method = abd.getMethod();
         Object[] args = populateArguments(method.getParameterTypes());
         return BeanFactoryUtils.invokeMethod(method, getBean(method.getDeclaringClass()), args);
+    }
+
+    private Object createProxyBean(BeanDefinition beanDefinition) {
+        ProxyBeanDefinition proxyBeanDefinition = (ProxyBeanDefinition) beanDefinition;
+
+        Constructor<?> constructor = proxyBeanDefinition.getInjectConstructor();
+        Object[] args = populateArguments(proxyBeanDefinition.getTargetConstructorParameterTypes());
+
+        try {
+            constructor.setAccessible(true);
+            return constructor.newInstance(proxyBeanDefinition.getTargetBeanDefinition(), args);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            log.error("Fail to make proxy bean");
+            throw new RuntimeException(e);
+        }
     }
 
     private Object[] populateArguments(Class<?>[] paramTypes) {

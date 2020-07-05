@@ -15,4 +15,5 @@ public interface BeanDefinition {
     Class<?> getBeanClass();
 
     InjectType getResolvedInjectMode();
+
 }
