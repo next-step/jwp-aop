@@ -2,10 +2,7 @@ package next.dao;
 
 import core.annotation.Inject;
 import core.annotation.Repository;
-import core.jdbc.JdbcTemplate;
-import core.jdbc.KeyHolder;
-import core.jdbc.PreparedStatementCreator;
-import core.jdbc.RowMapper;
+import core.jdbc.*;
 import next.model.Answer;
 
 import java.sql.*;
@@ -37,6 +34,8 @@ public class JdbcAnswerDao implements AnswerDao {
 
         KeyHolder keyHolder = new KeyHolder();
         jdbcTemplate.update(psc, keyHolder);
+        // TODO: 2020-07-06 remove
+        ConnectionHolder.releaseConnection();
         return findById(keyHolder.getId());
     }
 

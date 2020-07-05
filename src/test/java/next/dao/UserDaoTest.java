@@ -1,12 +1,14 @@
 package next.dao;
 
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.jdbc.ConnectionHolder;
 import next.config.MyConfiguration;
 import next.dto.UserUpdatedDto;
 import next.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,18 +20,24 @@ public class UserDaoTest {
     public void setup() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         userDao = ac.getBean(UserDao.class);
+        ConnectionHolder.setDataSource(ac.getBean(DataSource.class));
+        ConnectionHolder.releaseConnection();
     }
 
     @Test
     public void crud() throws Exception {
         User expected = new User("userId", "password", "name", "javajigi@email.com");
         userDao.insert(expected);
+        ConnectionHolder.releaseConnection();
         User actual = userDao.findByUserId(expected.getUserId());
+        ConnectionHolder.releaseConnection();
         assertThat(actual).isEqualTo(expected);
 
         expected.update(new UserUpdatedDto("userId", "password2", "name2", "sanjigi@email.com"));
         userDao.update(expected);
+        ConnectionHolder.releaseConnection();
         actual = userDao.findByUserId(expected.getUserId());
+        ConnectionHolder.releaseConnection();
         assertThat(actual).isEqualTo(expected);
     }
 
