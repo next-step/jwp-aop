@@ -7,22 +7,37 @@ import core.di.beans.factory.support.InjectType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
 import java.util.Set;
 
 public class ProxyBeanDefinition implements BeanDefinition {
     private final Class<?> proxyClass;
     private final Class<?> targetClass;
+    private final Advice advice;
+    private final PointCut pointCut;
     private final BeanDefinition targetBeanDefinition;
 
     public ProxyBeanDefinition(Class<?> clazz) {
+        this(clazz, null, null);
+    }
+
+    public ProxyBeanDefinition(Class<?> clazz, Advice advice, PointCut pointCut) {
         this.proxyClass = clazz;
-        this.targetClass = (Class<?>) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
+        if (advice != null) {
+            this.targetClass = clazz;
+        } else {
+            this.targetClass = (Class<?>) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
+        }
         this.targetBeanDefinition = new DefaultBeanDefinition(targetClass);
+        this.advice = advice;
+        this.pointCut = pointCut;
     }
 
     @Override
     public Constructor<?> getInjectConstructor() {
+        if (advice != null) {
+            return ProxyFactoryBean.class.getDeclaredConstructors()[0];
+        }
+
         Constructor<?>[] declaredConstructors = proxyClass.getDeclaredConstructors();
 
         return declaredConstructors[0];
@@ -57,5 +72,13 @@ public class ProxyBeanDefinition implements BeanDefinition {
 
     public BeanDefinition getTargetBeanDefinition() {
         return targetBeanDefinition;
+    }
+
+    public Advice getAdvice() {
+        return advice;
+    }
+
+    public PointCut getPointCut() {
+        return pointCut;
     }
 }

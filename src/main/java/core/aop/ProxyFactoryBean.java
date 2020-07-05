@@ -68,13 +68,13 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
     }
 
     private T createWithDefaultConstructor(Enhancer enhancer) {
-        enhancer.setCallback(new BeanInterceptor(advice, pointCut));
+        enhancer.setCallback(beanInterceptor);
 
         return (T) enhancer.create(); //생성자를 통한 생성
     }
 
     private T createWithConstructor(Enhancer enhancer) {
-        enhancer.setCallback(new BeanInterceptor(advice, pointCut));
+        enhancer.setCallback(beanInterceptor);
 
         Class<?>[] argumentTypes = beanDefinition.getInjectConstructor().getParameterTypes();
         return (T) enhancer.create(argumentTypes, targetArguments); // argument type에 맞는 생성자를 찾아 생성

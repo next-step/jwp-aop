@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
@@ -106,14 +107,31 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         ProxyBeanDefinition proxyBeanDefinition = (ProxyBeanDefinition) beanDefinition;
 
         Constructor<?> constructor = proxyBeanDefinition.getInjectConstructor();
-        Object[] args = populateArguments(proxyBeanDefinition.getTargetConstructorParameterTypes());
+        Object[] args = null;
+        if (proxyBeanDefinition.getAdvice() == null) {
+            args = populateArguments(proxyBeanDefinition.getTargetConstructorParameterTypes());
+        } else {
+            Class<?>[] objects = proxyBeanDefinition.getInjectFields()
+                    .stream()
+                    .map(Field::getType)
+                    .collect(Collectors.toSet()).toArray(new Class<?>[] {});
+            args = populateArguments(objects);
+        }
 
         try {
             constructor.setAccessible(true);
-            return constructor.newInstance(proxyBeanDefinition.getTargetBeanDefinition(), args);
+            if (proxyBeanDefinition.getAdvice() != null) {
+                return constructor.newInstance(
+                        proxyBeanDefinition.getTargetBeanDefinition(),
+                        args,
+                        proxyBeanDefinition.getAdvice(),
+                        proxyBeanDefinition.getPointCut()
+                );
+            } else {
+                return constructor.newInstance(proxyBeanDefinition.getTargetBeanDefinition(), args);
+            }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-            log.error("Fail to make proxy bean");
+            log.error("Fail to make proxy bean {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
