@@ -16,7 +16,7 @@ class UserDaoProxyTest {
     void getClassType() {
         DefaultBeanDefinition defaultBeanDefinition = new DefaultBeanDefinition(UserDao.class);
         UserDaoProxy userDaoProxy =
-                new UserDaoProxy(defaultBeanDefinition, new JdbcTemplate(ConnectionManager.getDataSource()));
+                new UserDaoProxy(defaultBeanDefinition, new JdbcTemplate());
 
         assertThat(userDaoProxy.getClassType()).isEqualTo(UserDao.class);
     }
