@@ -1,6 +1,8 @@
 package core.di.beans.factory;
 
 import core.di.beans.factory.aop.Advice;
+import core.di.beans.factory.aop.MethodMatcher;
+import core.di.beans.factory.aop.PointCut;
 import net.sf.cglib.proxy.MethodProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,8 +46,21 @@ class ProxyFactoryBeanTest {
 
     @DisplayName("HelloTarget 포인트컷")
     @Test
-    void pointcut() {
+    void pointcut() throws Exception {
 
+        // given
+        final String name = "hyeyoom";
+        proxyFactoryBean.setAdvice(new UpperCaseAdvice());
+        proxyFactoryBean.setPointCut(new StartWithSayPointCut());
+        final HelloTarget helloTarget = (HelloTarget) proxyFactoryBean.getObject();
+
+        // when
+        final String result1 = helloTarget.sayHello(name);
+        final String result2 = helloTarget.pingpong(name);
+
+        // then
+        assertThat(result1).isEqualTo("HELLO " + name.toUpperCase());
+        assertThat(result2).isEqualTo("Pong " + name);
     }
 
     // HelloCglibInterceptor
@@ -57,4 +72,13 @@ class ProxyFactoryBeanTest {
         }
     }
 
+    public static class StartWithSayPointCut implements PointCut {
+
+        private MethodMatcher methodMatcher = (method, targetClass) -> method.getName().startsWith("say");
+
+        @Override
+        public MethodMatcher getMethodMatcher() {
+            return null;
+        }
+    }
 }
