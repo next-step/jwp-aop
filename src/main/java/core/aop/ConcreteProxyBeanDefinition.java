@@ -6,26 +6,25 @@ import core.di.beans.factory.support.InjectType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
-public class ProxyBeanDefinition implements BeanDefinition {
+public class ConcreteProxyBeanDefinition implements BeanDefinition {
     private final Class<?> proxyClass;
     private final Class<?> targetClass;
-    private final Advice advice;
-    private final PointCut pointCut;
     private final BeanDefinition targetBeanDefinition;
 
-    public ProxyBeanDefinition(Class<?> clazz, Advice advice, PointCut pointCut) {
+    public ConcreteProxyBeanDefinition(Class<?> clazz) {
         this.proxyClass = clazz;
-        this.targetClass = clazz;
+        this.targetClass = (Class<?>) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
         this.targetBeanDefinition = new DefaultBeanDefinition(targetClass);
-        this.advice = advice;
-        this.pointCut = pointCut;
     }
 
     @Override
     public Constructor<?> getInjectConstructor() {
-        return ProxyFactoryBean.class.getDeclaredConstructors()[0];
+        Constructor<?>[] declaredConstructors = proxyClass.getDeclaredConstructors();
+
+        return declaredConstructors[0];
     }
 
     @Override
@@ -50,17 +49,5 @@ public class ProxyBeanDefinition implements BeanDefinition {
 
         return targetBeanDefinition.getInjectConstructor()
                 .getParameterTypes();
-    }
-
-    public BeanDefinition getTargetBeanDefinition() {
-        return targetBeanDefinition;
-    }
-
-    public Advice getAdvice() {
-        return advice;
-    }
-
-    public PointCut getPointCut() {
-        return pointCut;
     }
 }

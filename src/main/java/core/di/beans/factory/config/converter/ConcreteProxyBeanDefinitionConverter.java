@@ -1,6 +1,6 @@
 package core.di.beans.factory.config.converter;
 
-import core.aop.ProxyBeanDefinition;
+import core.aop.ConcreteProxyBeanDefinition;
 import core.aop.ProxyFactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.beans.factory.config.BeanDefinitionConverter;
@@ -15,6 +15,6 @@ public class ConcreteProxyBeanDefinitionConverter implements BeanDefinitionConve
 
     @Override
     public BeanDefinition convert(Class<?> clazz) {
-        return new ProxyBeanDefinition(clazz);
+        return new ConcreteProxyBeanDefinition(clazz);
     }
 }
