@@ -1,9 +1,12 @@
 package core.di.beans.factory;
 
+import core.annotation.Component;
 import core.annotation.Inject;
 import core.di.beans.factory.aop.Advice;
 import core.di.beans.factory.aop.MethodMatcher;
 import core.di.beans.factory.aop.PointCut;
+import core.di.beans.factory.support.DefaultBeanFactory;
+import core.di.context.annotation.ClasspathBeanDefinitionScanner;
 import net.sf.cglib.proxy.MethodProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,12 +75,18 @@ class ProxyFactoryBeanTest {
     void injectDependencies() throws Exception {
 
         // given
+        final DefaultBeanFactory beanFactory = new DefaultBeanFactory();
+        ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
+        scanner.doScan(ProxyFactoryBeanTest.class);
+        final IAmADep bean = beanFactory.getBean(IAmADep.class);
+        오브젝트가_존재_해야함(bean);
+
         final ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
         proxyFactoryBean.setTarget(new IAmATarget());
         proxyFactoryBean.setAdvice(new UpperCaseAdvice());
         proxyFactoryBean.setPointCut(new StartWithSayPointCut());
+        proxyFactoryBean.setBeanFactory(beanFactory);
         final IAmATarget target = (IAmATarget) proxyFactoryBean.getObject();
-
         오브젝트가_존재_해야함(target);
 
         // when
@@ -103,10 +112,7 @@ class ProxyFactoryBeanTest {
         }
     }
 
-    public static void 오브젝트가_존재_해야함(Object obj) {
-        assertThat(obj).isNotNull();
-    }
-
+    @Component
     public static class IAmADep {
         public String sayHello() {
             return "Hello World";
@@ -138,5 +144,9 @@ class ProxyFactoryBeanTest {
         public boolean matches(Method method, Class<?> targetClass) {
             return method.getName().startsWith("say");
         }
+    }
+
+    private static void 오브젝트가_존재_해야함(Object obj) {
+        assertThat(obj).isNotNull();
     }
 }
