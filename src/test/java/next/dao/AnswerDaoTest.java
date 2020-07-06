@@ -22,7 +22,6 @@ public class AnswerDaoTest {
     public void setup() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         answerDao = ac.getBean(AnswerDao.class);
-        ConnectionHolder.releaseConnection();
     }
 
     @Test
@@ -30,7 +29,6 @@ public class AnswerDaoTest {
         long questionId = 1L;
         Answer expected = new Answer("javajigi", "answer contents", questionId);
         Answer answer = answerDao.insert(expected);
-        ConnectionHolder.releaseConnection();
         log.debug("Answer : {}", answer);
         assertThat(answer).isNotNull();
     }

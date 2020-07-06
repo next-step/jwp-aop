@@ -31,7 +31,6 @@ class DispatcherServletTest {
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
 
-        ConnectionHolder.releaseConnection();
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
     }
@@ -62,7 +61,6 @@ class DispatcherServletTest {
         request.setParameter("email", user.getEmail());
 
         dispatcher.service(request, response);
-        ConnectionHolder.releaseConnection(); // 아직 transaction 적용전이라 connection holder를 사용하면 문제가 생김
     }
 
     @Test

@@ -25,7 +25,6 @@ public class AnnotationHandlerMappingTest {
         handlerMapping = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
         handlerMapping.initialize();
 
-        ConnectionHolder.releaseConnection();
         userDao = ac.getBean(UserDao.class);
     }
 
@@ -33,12 +32,9 @@ public class AnnotationHandlerMappingTest {
     public void create_find() throws Exception {
         User user = new User("pobi", "password", "포비", "pobi@nextstep.camp");
         createUser(user);
-        ConnectionHolder.releaseConnection();
         assertThat(userDao.findByUserId(user.getUserId())).isEqualTo(user);
-        ConnectionHolder.releaseConnection();
 
         assertThat(userDao.findByUserId(user.getUserId())).isEqualTo(user);
-        ConnectionHolder.releaseConnection();
 
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/users/profile");
         request.setParameter("userId", user.getUserId());

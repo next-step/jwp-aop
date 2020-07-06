@@ -4,6 +4,7 @@ import core.aop.ProxyBeanDefinition;
 import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.beans.factory.support.InjectType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,13 +35,8 @@ public class ProxyBeanGenerator extends AbstractBeanGenerator {
 
     private Object createProxyBean(BeanDefinition beanDefinition) {
         ProxyBeanDefinition proxyBeanDefinition = (ProxyBeanDefinition) beanDefinition;
-
         Constructor<?> constructor = proxyBeanDefinition.getInjectConstructor();
-        Class<?>[] objects = proxyBeanDefinition.getInjectFields()
-                    .stream()
-                    .map(Field::getType)
-                    .collect(Collectors.toSet()).toArray(new Class<?>[] {});
-        Object[] args = populateArguments(objects);
+        Object[] args = populateArguments(getArgumentTypes(((ProxyBeanDefinition) beanDefinition).getTargetBeanDefinition()));
 
         try {
             constructor.setAccessible(true);
@@ -53,6 +49,20 @@ public class ProxyBeanGenerator extends AbstractBeanGenerator {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             log.error("Fail to make proxy bean {}", e.getMessage());
             throw new RuntimeException(e);
+        }
+    }
+
+    private Class<?>[] getArgumentTypes(BeanDefinition beanDefinition) {
+        if (beanDefinition.getResolvedInjectMode() == InjectType.INJECT_NO) {
+            return new Class<?>[] {};
+        } else if (beanDefinition.getResolvedInjectMode() == InjectType.INJECT_FIELD) {
+            return beanDefinition.getInjectFields()
+                    .stream()
+                    .map(Field::getType)
+                    .collect(Collectors.toSet()).toArray(new Class<?>[] {});
+        } else {
+            return beanDefinition.getInjectConstructor()
+                    .getParameterTypes();
         }
     }
 }

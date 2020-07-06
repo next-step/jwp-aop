@@ -1,6 +1,5 @@
 package core.jdbc;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +10,8 @@ import java.util.List;
 public class JdbcTemplate {
 
     public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
-        try (Connection conn = ConnectionHolder.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = ConnectionHolder.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pss.setParameters(pstmt);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -24,7 +24,8 @@ public class JdbcTemplate {
     }
 
     public void update(PreparedStatementCreator psc, KeyHolder holder) {
-        try (Connection conn = ConnectionHolder.getConnection()) {
+        Connection conn = ConnectionHolder.getConnection();
+        try {
             PreparedStatement ps = psc.createPreparedStatement(conn);
             ps.executeUpdate();
 
@@ -51,8 +52,10 @@ public class JdbcTemplate {
     }
 
     public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
+        Connection conn = ConnectionHolder.getConnection();
+        System.out.println("query before try : " + conn);
         ResultSet rs = null;
-        try (Connection conn = ConnectionHolder.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pss.setParameters(pstmt);
             rs = pstmt.executeQuery();
 
@@ -71,6 +74,7 @@ public class JdbcTemplate {
             } catch (SQLException e) {
                 throw new DataAccessException(e);
             }
+            System.out.println("query after try : " + conn);
         }
     }
 

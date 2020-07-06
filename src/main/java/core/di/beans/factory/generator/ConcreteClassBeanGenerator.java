@@ -3,6 +3,7 @@ package core.di.beans.factory.generator;
 import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.beans.factory.support.BeanFactoryUtils;
+import core.di.beans.factory.support.DefaultBeanDefinition;
 
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public class ConcreteClassBeanGenerator extends AbstractBeanGenerator {
 
     @Override
     public boolean support(BeanDefinition beanDefinition) {
-        return true;
+        return beanDefinition instanceof DefaultBeanDefinition || beanDefinition == null;
     }
 
     @Override
@@ -26,11 +27,14 @@ public class ConcreteClassBeanGenerator extends AbstractBeanGenerator {
         }
 
         beanDefinition = beanFactory.getBeanDefinition(concreteClazz.get());
-        log.debug("BeanDefinition : {}", beanDefinition);
-
         if (beanDefinition == null) {
             return null;
         }
+
+        if (!(beanDefinition instanceof DefaultBeanDefinition)) {
+            return (T) beanFactory.getBean(concreteClazz.get());
+        }
+        log.debug("BeanDefinition : {}", beanDefinition);
 
         Object bean = inject(beanDefinition);
         beanFactory.putBean(concreteClazz.get(), bean);

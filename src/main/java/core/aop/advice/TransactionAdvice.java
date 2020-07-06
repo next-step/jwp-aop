@@ -13,7 +13,7 @@ public class TransactionAdvice implements Advice {
 
     @Override
     public Object doAdvice(Object object, Method method, Object[] arguments, MethodProxy proxy) {
-        Connection connection = ConnectionHolder.getConnection();
+        Connection connection = ConnectionHolder.getConnectionForTransaction();
 
         Object ret;
         try {
@@ -26,10 +26,19 @@ public class TransactionAdvice implements Advice {
             rollback(connection);
             throw new DataAccessException("Fail to execute query : " + throwable.getMessage());
         } finally {
-            ConnectionHolder.releaseConnection();
+            close(connection);
         }
 
         return ret;
+    }
+
+    private void close(Connection connection) {
+        try {
+            connection.close();
+        } catch (SQLException throwables) {
+            throw new DataAccessException("Fail to close : " + throwables.getMessage());
+        }
+        ConnectionHolder.releaseConnection();
     }
 
     private void rollback(Connection connection) {

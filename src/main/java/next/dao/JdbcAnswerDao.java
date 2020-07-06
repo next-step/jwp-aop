@@ -2,6 +2,7 @@ package next.dao;
 
 import core.annotation.Inject;
 import core.annotation.Repository;
+import core.annotation.Transactional;
 import core.jdbc.*;
 import next.model.Answer;
 
@@ -18,6 +19,7 @@ public class JdbcAnswerDao implements AnswerDao {
     }
 
     @Override
+    @Transactional
     public Answer insert(Answer answer) {
         String sql = "INSERT INTO ANSWERS (writer, contents, createdDate, questionId) VALUES (?, ?, ?, ?)";
         PreparedStatementCreator psc = new PreparedStatementCreator() {
@@ -34,8 +36,6 @@ public class JdbcAnswerDao implements AnswerDao {
 
         KeyHolder keyHolder = new KeyHolder();
         jdbcTemplate.update(psc, keyHolder);
-        // TODO: 2020-07-06 remove
-        ConnectionHolder.releaseConnection();
         return findById(keyHolder.getId());
     }
 

@@ -2,6 +2,7 @@ package next.dao;
 
 import core.annotation.Inject;
 import core.annotation.Repository;
+import core.annotation.Transactional;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.RowMapper;
 import next.model.User;
@@ -10,7 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-//@Repository
+@Repository
+@Transactional
 public class UserDao {
     private JdbcTemplate jdbcTemplate;
 
@@ -20,8 +22,10 @@ public class UserDao {
     }
 
     public void insert(User user) {
+        System.out.println("insert in");
         String sql = "INSERT INTO USERS VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getUserId(), user.getPassword(), user.getName(), user.getEmail());
+        System.out.println("insert out");
     }
 
     public User findByUserId(String userId) {
