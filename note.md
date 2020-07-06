@@ -74,3 +74,6 @@ ctx.getBean("target");
         - MethodInterceptor 구현체를 만들어서 넘기자..
             - 그래서 cglib 의존적인 Advice는 어쩌신다구요?
                 - 몰라..
+- 현재 ProxyFactoryBean의 문제점
+    - 의존성 주입 어떻게 하실겁니까?  
+        - BeanFactory를 넘겨주자.  
