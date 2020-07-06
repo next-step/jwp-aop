@@ -7,10 +7,10 @@ public class ProxyBeanDefinition extends DefaultBeanDefinition {
 
     private final ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
 
-    public ProxyBeanDefinition(Class<?> clazz) {
-        super(clazz);
-        final Object target = BeanUtils.instantiateClass(clazz);
-        proxyFactoryBean.setTarget(target);
+    public ProxyBeanDefinition(Class<?> targetClass) {
+        super(targetClass);
+        final Object targetInstance = BeanUtils.instantiateClass(targetClass);
+        proxyFactoryBean.setTarget(targetInstance);
     }
 
     private ProxyFactoryBean getProxyFactoryBean() {
