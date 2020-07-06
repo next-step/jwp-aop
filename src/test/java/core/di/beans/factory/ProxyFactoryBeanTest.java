@@ -39,7 +39,7 @@ class ProxyFactoryBeanTest {
         final String result = helloTarget.sayHello(name);
 
         // then
-        assertThat(result).isEqualTo("HELLO " + name);
+        assertThat(result).isEqualTo("HELLO " + name.toUpperCase());
     }
 
     @DisplayName("HelloTarget 포인트컷")
@@ -49,7 +49,7 @@ class ProxyFactoryBeanTest {
     }
 
     // HelloCglibInterceptor
-    private static class UpperCaseAdvice implements Advice {
+    public static class UpperCaseAdvice implements Advice {
         @Override
         public Object invoke(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
             final String returnValue = (String) methodProxy.invokeSuper(obj, args);

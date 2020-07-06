@@ -1,6 +1,8 @@
 package core.di.beans.factory;
 
 import core.di.beans.factory.aop.Advice;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
  * todo: 우선 cglib
@@ -12,12 +14,15 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
 
     @Override
     public Object getObject() throws Exception {
-        return null;
+        final Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(getObjectType());
+        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> advice.invoke(obj, method, args, proxy));
+        return enhancer.create();
     }
 
     @Override
     public Class<?> getObjectType() {
-        return null;
+        return target.getClass();
     }
 
     public void setTarget(Object target) {
@@ -25,6 +30,6 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     }
 
     public void setAdvice(Advice advice) {
-
+        this.advice = advice;
     }
 }
