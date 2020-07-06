@@ -13,7 +13,7 @@ public class ProxyBeanDefinition extends DefaultBeanDefinition {
         proxyFactoryBean.setTarget(targetInstance);
     }
 
-    private ProxyFactoryBean getProxyFactoryBean() {
+    public ProxyFactoryBean getProxyFactoryBean() {
         return proxyFactoryBean;
     }
 }

@@ -26,7 +26,7 @@ public class DefaultMethodInterceptor implements MethodInterceptor {
 
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        if (methodMatcher.matches(method, obj.getClass())) {
+        if (methodMatcher.matches(method, obj.getClass()) && advice != null) {
             return advice.invoke(obj, method, args, proxy);
         }
         return proxy.invokeSuper(obj, args);

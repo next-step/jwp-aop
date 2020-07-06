@@ -11,7 +11,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import study.aop.HelloTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +48,8 @@ public class BeanFactoryTest {
         MyUserController userController = beanFactory.getBean(MyUserController.class);
 
         assertThat(userController);
-        assertThat(userController.getUserService()).isNotNull();;
+        assertThat(userController.getUserService()).isNotNull();
+        ;
     }
 
     @DisplayName("ProxyFactoryBean을 등록해서 Bean을 잘 가지고 오는지 확인해보자.")
@@ -59,6 +59,8 @@ public class BeanFactoryTest {
         // given
         final ProxyBeanDefinition pbd = new ProxyBeanDefinition(IAmATarget.class);
         beanFactory.registerBeanDefinition(IAmATarget.class, pbd);
+        final DefaultBeanDefinition dbd = new DefaultBeanDefinition(IAmADep.class);
+        beanFactory.registerBeanDefinition(IAmADep.class, dbd);
 
         // when
         final IAmATarget bean = beanFactory.getBean(IAmATarget.class);
@@ -67,6 +69,7 @@ public class BeanFactoryTest {
         final String result = bean.say();
         assertThat(bean).isNotNull();
         assertThat(result).isEqualTo("Hello World");
+        assertThat(bean).isInstanceOf(IAmATarget.class);
     }
 
     @AfterEach
