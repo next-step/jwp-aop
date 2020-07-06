@@ -62,3 +62,15 @@ ctx.getBean("target");
 - JDK Proxy, Cglib Proxy를 따로 구현해야 할 것 같은데..
     - 구현하다보면 인터페이스를 뽑을 수 있겠지..?
         - TODO
+- 구현체를 만들고 잘못된 점 파악됨..
+    - Advice -> 이미 cglib 의존적임..
+    - getObject 꼬라지를 보자.. ~~facepalm~~
+    - 다른 인터페이스들은 스프링 참고했으니 멀쩡.. 내가 한 것만 안멀쩡
+- Advice를 어떻게 할까?  
+    - setCallback의 현재 상황을 보면서 느낀 부분
+        - 콜백에 넘길 적절한 객체가 필요함. 필요한 것, 역할을 정리해보자.
+            - 필요한 것: advice, pointcut
+            - 역할: 포인트컷에 맞는 advice를 실행하고, 아니면 기존 invokeSuper
+        - MethodInterceptor 구현체를 만들어서 넘기자..
+            - 그래서 cglib 의존적인 Advice는 어쩌신다구요?
+                - 몰라..
