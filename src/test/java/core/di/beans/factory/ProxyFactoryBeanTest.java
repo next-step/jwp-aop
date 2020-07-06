@@ -74,11 +74,19 @@ class ProxyFactoryBeanTest {
 
     public static class StartWithSayPointCut implements PointCut {
 
-        private MethodMatcher methodMatcher = (method, targetClass) -> method.getName().startsWith("say");
+        private final MethodMatcher methodMatcher = new StartWithSayMethodMatcher();
 
         @Override
         public MethodMatcher getMethodMatcher() {
-            return null;
+            return methodMatcher;
+        }
+    }
+
+    public static class StartWithSayMethodMatcher implements MethodMatcher {
+
+        @Override
+        public boolean matches(Method method, Class<?> targetClass) {
+            return method.getName().startsWith("say");
         }
     }
 }
