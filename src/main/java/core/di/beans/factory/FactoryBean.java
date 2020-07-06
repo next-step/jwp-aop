@@ -12,7 +12,7 @@ public interface FactoryBean<T> {
      * @throws Exception 장비를 정지합니다. 왜 얘만 한글이냐.
      */
     @Nullable
-    T getObject() throws Exception;
+    T getObject();
 
     /**
      * @return the type of object

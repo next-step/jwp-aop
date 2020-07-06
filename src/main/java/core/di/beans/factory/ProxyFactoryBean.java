@@ -20,7 +20,7 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     private Object instance;
 
     @Override
-    public Object getObject() throws Exception {
+    public Object getObject() {
         if (isSingleton() && instance != null) {
             return instance;
         }
