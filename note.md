@@ -49,9 +49,9 @@ ctx.getBean("target");
 
 - FactoryBean 정의
 - ProxyFactoryBean 구현 (프록시 구현체)
-    - Advice
-    - PointCut
-    - Target
+    - Advice - 추가 기능 넣을 친구
+    - PointCut - 적용될 타겟(메소드) 지정해주는 친구 
+    - Target - ㅇㅇ
 - ProxyBeanDefinition 정의
     - BeanFactory가 이 친구 잘 쓰도록 해주면 됨 
     
