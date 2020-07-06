@@ -6,6 +6,7 @@ import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.beans.factory.generator.AnnotatedBeanGenerator;
 import core.di.beans.factory.generator.ConcreteClassBeanGenerator;
+import core.di.beans.factory.generator.ConcreteProxyBeanGenerator;
 import core.di.beans.factory.generator.ProxyBeanGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     public DefaultBeanFactory() {
         beanGenerators.add(new ProxyBeanGenerator(this));
+        beanGenerators.add(new ConcreteProxyBeanGenerator(this));
         beanGenerators.add(new AnnotatedBeanGenerator(this));
         beanGenerators.add(new ConcreteClassBeanGenerator(this));
     }

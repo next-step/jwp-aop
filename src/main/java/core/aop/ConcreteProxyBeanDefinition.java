@@ -50,4 +50,8 @@ public class ConcreteProxyBeanDefinition implements BeanDefinition {
         return targetBeanDefinition.getInjectConstructor()
                 .getParameterTypes();
     }
+
+    public BeanDefinition getTargetBeanDefinition() {
+        return targetBeanDefinition;
+    }
 }

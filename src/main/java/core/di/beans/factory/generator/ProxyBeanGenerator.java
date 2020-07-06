@@ -36,29 +36,20 @@ public class ProxyBeanGenerator extends AbstractBeanGenerator {
         ProxyBeanDefinition proxyBeanDefinition = (ProxyBeanDefinition) beanDefinition;
 
         Constructor<?> constructor = proxyBeanDefinition.getInjectConstructor();
-        Object[] args = null;
-        if (proxyBeanDefinition.getAdvice() == null) {
-            args = populateArguments(proxyBeanDefinition.getTargetConstructorParameterTypes());
-        } else {
-            Class<?>[] objects = proxyBeanDefinition.getInjectFields()
+        Class<?>[] objects = proxyBeanDefinition.getInjectFields()
                     .stream()
                     .map(Field::getType)
                     .collect(Collectors.toSet()).toArray(new Class<?>[] {});
-            args = populateArguments(objects);
-        }
+        Object[] args = populateArguments(objects);
 
         try {
             constructor.setAccessible(true);
-            if (proxyBeanDefinition.getAdvice() != null) {
-                return constructor.newInstance(
-                        proxyBeanDefinition.getTargetBeanDefinition(),
-                        args,
-                        proxyBeanDefinition.getAdvice(),
-                        proxyBeanDefinition.getPointCut()
-                );
-            } else {
-                return constructor.newInstance(proxyBeanDefinition.getTargetBeanDefinition(), args);
-            }
+            return constructor.newInstance(
+                    proxyBeanDefinition.getTargetBeanDefinition(),
+                    args,
+                    proxyBeanDefinition.getAdvice(),
+                    proxyBeanDefinition.getPointCut()
+            );
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             log.error("Fail to make proxy bean {}", e.getMessage());
             throw new RuntimeException(e);
