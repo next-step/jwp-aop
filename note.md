@@ -76,4 +76,11 @@ ctx.getBean("target");
                 - 몰라..
 - 현재 ProxyFactoryBean의 문제점
     - 의존성 주입 어떻게 하실겁니까?  
-        - BeanFactory를 넘겨주자.  
+        - BeanFactory를 넘겨주자.
+- DefaultBeanFactory와 일관성을 맞추면서 ProxyBeanDefinition을 추가하고 싶다.
+    - 현재는 Bean 생성의 책임이 DefaultBeanFactory에 존재한다.
+        - 문제점: instantiation 방법이 추가되면 여기에도 코드가 추가된다.  
+    - 내가 이전 과제에서 이 문제를 해결한 방법
+        - Bean 생성의 책임을 InstantiatableBean에 맡겼다.  
+    - 으어 소리지르면서 점프뛰고 싶다.
+    

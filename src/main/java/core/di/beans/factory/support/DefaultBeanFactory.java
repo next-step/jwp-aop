@@ -21,9 +21,9 @@ import java.util.Set;
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
-    private Map<Class<?>, Object> beans = Maps.newHashMap();
+    private final Map<Class<?>, Object> beans = Maps.newHashMap();
 
-    private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private final Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     @Override
     public void preInstantiateSingletons() {
@@ -46,7 +46,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
             optionalBean.ifPresent(b -> beans.put(clazz, b));
             initialize(bean, clazz);
