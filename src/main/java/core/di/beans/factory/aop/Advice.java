@@ -16,5 +16,5 @@ public interface Advice {
      * @param methodProxy proxy
      * @return result
      */
-    Object invoke(Object obj, Method method, Object[] args, MethodProxy methodProxy);
+    Object invoke(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable;
 }

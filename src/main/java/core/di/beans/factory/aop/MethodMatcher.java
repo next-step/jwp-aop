@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 /**
  * Interface to be implemented by objects that determine whether the given method is proper candidate for advice.
  */
+@FunctionalInterface
 public interface MethodMatcher {
 
     /**

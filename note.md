@@ -57,3 +57,8 @@ ctx.getBean("target");
     
 어제 새벽보단 과제 이해 정도가 나아졌다. 
 
+중간 고민
+
+- JDK Proxy, Cglib Proxy를 따로 구현해야 할 것 같은데..
+    - 구현하다보면 인터페이스를 뽑을 수 있겠지..?
+        - TODO
