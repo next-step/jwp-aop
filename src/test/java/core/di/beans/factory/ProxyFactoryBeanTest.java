@@ -1,5 +1,6 @@
 package core.di.beans.factory;
 
+import core.annotation.Inject;
 import core.di.beans.factory.aop.Advice;
 import core.di.beans.factory.aop.MethodMatcher;
 import core.di.beans.factory.aop.PointCut;
@@ -36,6 +37,8 @@ class ProxyFactoryBeanTest {
         proxyFactoryBean.setAdvice(new UpperCaseAdvice());
         final HelloTarget helloTarget = (HelloTarget) proxyFactoryBean.getObject();
 
+        오브젝트가_존재_해야함(helloTarget);
+
         // when
         final String result = helloTarget.sayHello(name);
 
@@ -53,6 +56,8 @@ class ProxyFactoryBeanTest {
         proxyFactoryBean.setPointCut(new StartWithSayPointCut());
         final HelloTarget helloTarget = (HelloTarget) proxyFactoryBean.getObject();
 
+        오브젝트가_존재_해야함(helloTarget);
+
         // when
         final String result1 = helloTarget.sayHello(name);
         final String result2 = helloTarget.pingpong(name);
@@ -60,6 +65,52 @@ class ProxyFactoryBeanTest {
         // then
         assertThat(result1).isEqualTo("HELLO " + name.toUpperCase());
         assertThat(result2).isEqualTo("Pong " + name);
+    }
+
+    @DisplayName("ProxyFactoryBean에서 생성하려는 객체가 의존성을 가지고 있다.")
+    @Test
+    void injectDependencies() throws Exception {
+
+        // given
+        final ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+        proxyFactoryBean.setTarget(new IAmATarget());
+        proxyFactoryBean.setAdvice(new UpperCaseAdvice());
+        proxyFactoryBean.setPointCut(new StartWithSayPointCut());
+        final IAmATarget target = (IAmATarget) proxyFactoryBean.getObject();
+
+        오브젝트가_존재_해야함(target);
+
+        // when
+        final String say = target.say();
+
+        // then
+        assertThat(say).isEqualTo("Hello World".toUpperCase());
+    }
+
+    public static class IAmATarget {
+        private IAmADep iAmADep;
+
+        public IAmATarget() {
+        }
+
+        @Inject
+        public IAmATarget(IAmADep iAmADep) {
+            this.iAmADep = iAmADep;
+        }
+
+        public String say() {
+            return iAmADep.sayHello();
+        }
+    }
+
+    public static void 오브젝트가_존재_해야함(Object obj) {
+        assertThat(obj).isNotNull();
+    }
+
+    public static class IAmADep {
+        public String sayHello() {
+            return "Hello World";
+        }
     }
 
     // HelloCglibInterceptor
