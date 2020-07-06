@@ -12,7 +12,6 @@ import study.aop.HelloTarget;
 import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * memo: CglibProxyTest에서 하지 못한 내용들 여기서 해결.

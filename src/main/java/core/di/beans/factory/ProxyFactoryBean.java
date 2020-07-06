@@ -3,7 +3,6 @@ package core.di.beans.factory;
 import core.di.beans.factory.aop.Advice;
 import core.di.beans.factory.aop.PointCut;
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
  * todo: 우선 cglib
@@ -18,21 +17,7 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     public Object getObject() throws Exception {
         final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(getObjectType());
-        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
-            if (advice == null) {
-                return proxy.invokeSuper(obj, args);
-            }
-
-            if (pointCut == null) {
-                return advice.invoke(obj, method, args, proxy);
-            }
-
-            if (pointCut.getMethodMatcher().matches(method, getObjectType())) {
-                return advice.invoke(obj, method, args, proxy);
-            }
-
-            return proxy.invokeSuper(obj, args);
-        });
+        enhancer.setCallback(new DefaultMethodInterceptor(advice, pointCut));
         return enhancer.create();
     }
 
