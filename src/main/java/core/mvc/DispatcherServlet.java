@@ -46,6 +46,7 @@ public class DispatcherServlet extends HttpServlet {
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
         } catch (RequiredLoginException e) {
+            // TODO: 2020-07-07 error handling
             resp.sendRedirect("/users/loginForm");
         } catch (Throwable e) {
             logger.error("Exception : {}", e);
