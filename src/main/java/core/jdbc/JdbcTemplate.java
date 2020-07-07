@@ -53,7 +53,6 @@ public class JdbcTemplate {
 
     public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
         Connection conn = ConnectionHolder.getConnection();
-        System.out.println("query before try : " + conn);
         ResultSet rs = null;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pss.setParameters(pstmt);
@@ -74,7 +73,6 @@ public class JdbcTemplate {
             } catch (SQLException e) {
                 throw new DataAccessException(e);
             }
-            System.out.println("query after try : " + conn);
         }
     }
 

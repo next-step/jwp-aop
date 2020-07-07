@@ -22,10 +22,8 @@ public class UserDao {
     }
 
     public void insert(User user) {
-        System.out.println("insert in");
         String sql = "INSERT INTO USERS VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getUserId(), user.getPassword(), user.getName(), user.getEmail());
-        System.out.println("insert out");
     }
 
     public User findByUserId(String userId) {
