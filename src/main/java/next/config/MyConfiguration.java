@@ -8,6 +8,7 @@ import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.support.*;
 import next.security.LoginUserArgumentResolver;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.aspectj.lang.annotation.Pointcut;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -32,7 +33,6 @@ public class MyConfiguration {
         return new JdbcTemplate(dataSource);
     }
 
-
     @Bean
     public HandlerConverter handlerConverter() {
         HandlerConverter handlerConverter = new HandlerConverter();
@@ -47,13 +47,11 @@ public class MyConfiguration {
 
     List<ArgumentResolver> defaultArgumentResolvers() {
         return asList(
-                new HttpRequestArgumentResolver(),
-                new HttpResponseArgumentResolver(),
-                new RequestParamArgumentResolver(),
-                new PathVariableArgumentResolver(),
-                new ModelArgumentResolver()
+            new HttpRequestArgumentResolver(),
+            new HttpResponseArgumentResolver(),
+            new RequestParamArgumentResolver(),
+            new PathVariableArgumentResolver(),
+            new ModelArgumentResolver()
         );
     }
-
-
 }
