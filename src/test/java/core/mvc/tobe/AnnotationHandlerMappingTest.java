@@ -31,6 +31,8 @@ public class AnnotationHandlerMappingTest {
         createUser(user);
         assertThat(userDao.findByUserId(user.getUserId())).isEqualTo(user);
 
+        assertThat(userDao.findByUserId(user.getUserId())).isEqualTo(user);
+
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/users/profile");
         request.setParameter("userId", user.getUserId());
         MockHttpServletResponse response = new MockHttpServletResponse();

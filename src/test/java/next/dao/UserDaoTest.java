@@ -1,12 +1,14 @@
 package next.dao;
 
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.jdbc.ConnectionHolder;
 import next.config.MyConfiguration;
 import next.dto.UserUpdatedDto;
 import next.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

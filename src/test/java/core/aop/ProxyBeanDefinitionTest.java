@@ -7,25 +7,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("프록시 빈 정의 클래스")
 class ProxyBeanDefinitionTest {
-    private ProxyBeanDefinition proxyBeanDefinition;
+    private ConcreteProxyBeanDefinition proxyBeanDefinition;
 
     @BeforeEach
     void setEnv() {
-        proxyBeanDefinition = new ProxyBeanDefinition(Proxy.class);
+        proxyBeanDefinition = new ConcreteProxyBeanDefinition(Proxy.class);
     }
 
     @Test
     @DisplayName("제네릭 타입을 잘 가져올까?")
     void getGenericType() {
-        assertThat(proxyBeanDefinition.getTargetClass()).isEqualTo(SimpleTarget.class);
+        assertThat(proxyBeanDefinition.getBeanClass()).isEqualTo(SimpleTarget.class);
     }
 
     @Test
@@ -41,9 +39,7 @@ class ProxyBeanDefinitionTest {
     @Test
     @DisplayName("타겟 빈 정의 클래스")
     void getTargetBeanDefinition() {
-        BeanDefinition targetBeanDefinition = proxyBeanDefinition.getTargetBeanDefinition();
-
-        assertThat(targetBeanDefinition.getBeanClass()).isEqualTo(SimpleTarget.class);
+        assertThat(proxyBeanDefinition.getBeanClass()).isEqualTo(SimpleTarget.class);
     }
 
     @Test

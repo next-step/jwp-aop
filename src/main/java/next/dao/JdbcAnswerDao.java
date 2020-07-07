@@ -2,10 +2,8 @@ package next.dao;
 
 import core.annotation.Inject;
 import core.annotation.Repository;
-import core.jdbc.JdbcTemplate;
-import core.jdbc.KeyHolder;
-import core.jdbc.PreparedStatementCreator;
-import core.jdbc.RowMapper;
+import core.annotation.Transactional;
+import core.jdbc.*;
 import next.model.Answer;
 
 import java.sql.*;
@@ -21,6 +19,7 @@ public class JdbcAnswerDao implements AnswerDao {
     }
 
     @Override
+    @Transactional
     public Answer insert(Answer answer) {
         String sql = "INSERT INTO ANSWERS (writer, contents, createdDate, questionId) VALUES (?, ?, ?, ?)";
         PreparedStatementCreator psc = new PreparedStatementCreator() {

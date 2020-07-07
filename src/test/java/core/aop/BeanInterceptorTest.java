@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("빈 인터셉터")
+public
 class BeanInterceptorTest {
 
     @Test
@@ -29,7 +30,7 @@ class BeanInterceptorTest {
         assertThat(stringReturn.stringValue()).isEqualTo("string");
     }
 
-    public class UpperStrAdvice implements Advice {
+    public static class UpperStrAdvice implements Advice {
 
         @Override
         public Object doAdvice(Object object, Method method, Object[] arguments, MethodProxy proxy) {
@@ -41,7 +42,7 @@ class BeanInterceptorTest {
         }
     }
 
-    public class GetContainPointCut implements PointCut {
+    public static class GetContainPointCut implements PointCut {
 
         @Override
         public boolean matches(Method method, Class<?> targetClass, Object[] arguments) {

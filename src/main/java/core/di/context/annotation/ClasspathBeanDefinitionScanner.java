@@ -5,10 +5,8 @@ import core.annotation.Component;
 import core.annotation.Repository;
 import core.annotation.Service;
 import core.annotation.web.Controller;
-import core.aop.ProxyBeanDefinition;
-import core.aop.ProxyFactoryBean;
+import core.di.beans.factory.config.BeanDefinitionConverters;
 import core.di.beans.factory.support.BeanDefinitionRegistry;
-import core.di.beans.factory.support.DefaultBeanDefinition;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
@@ -16,9 +14,16 @@ import java.util.Set;
 
 public class ClasspathBeanDefinitionScanner {
     private final BeanDefinitionRegistry beanDefinitionRegistry;
+    private final BeanDefinitionConverters converters;
 
     public ClasspathBeanDefinitionScanner(BeanDefinitionRegistry beanDefinitionRegistry) {
+        this(beanDefinitionRegistry, new BeanDefinitionConverters());
+    }
+
+    public ClasspathBeanDefinitionScanner(BeanDefinitionRegistry beanDefinitionRegistry,
+                                          BeanDefinitionConverters converters) {
         this.beanDefinitionRegistry = beanDefinitionRegistry;
+        this.converters = converters;
     }
 
     @SuppressWarnings("unchecked")
@@ -26,15 +31,12 @@ public class ClasspathBeanDefinitionScanner {
         Reflections reflections = new Reflections(basePackages);
         Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
                 Repository.class, Component.class);
-        for (Class<?> clazz : beanClasses) {
-            if (ProxyFactoryBean.class.isAssignableFrom(clazz)) {
-                System.out.println("ProxyBean register : " + clazz);
-                ProxyBeanDefinition proxyBeanDefinition = new ProxyBeanDefinition(clazz);
-                beanDefinitionRegistry.registerBeanDefinition(proxyBeanDefinition.getTargetClass(), proxyBeanDefinition);
-            } else {
-                beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));
-            }
-        }
+
+        beanClasses.stream()
+                .map(converters::convert)
+                .forEach(beanDefinition ->
+                        beanDefinitionRegistry.registerBeanDefinition(beanDefinition.getBeanClass(), beanDefinition)
+                );
     }
 
     @SuppressWarnings("unchecked")
