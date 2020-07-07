@@ -27,8 +27,7 @@ class TransactionAdviceTest {
         User admin = new User("admin", "password", "자바지기", "admin@slipp.net");
         Dao dao = ac.getBean(Dao.class);
 
-        assertThat(dao.getAdmin())
-                .isEqualTo(admin);
+        assertThat(dao.getAdmin()).isEqualTo(admin);
 
         assertThatExceptionOfType(DataAccessException.class).isThrownBy(dao::multipleQuery); //admin을 수정하는 쿼리 실행
         assertThat(dao.getAdmin()).isEqualTo(admin);
