@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
+import core.di.beans.factory.ProxyFactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
@@ -21,9 +22,9 @@ import java.util.Set;
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
-    private Map<Class<?>, Object> beans = Maps.newHashMap();
+    private final Map<Class<?>, Object> beans = Maps.newHashMap();
 
-    private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private final Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     @Override
     public void preInstantiateSingletons() {
@@ -46,11 +47,19 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
             optionalBean.ifPresent(b -> beans.put(clazz, b));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
+        }
+
+        if (beanDefinition instanceof ProxyBeanDefinition) {
+            final ProxyFactoryBean factoryBean = ((ProxyBeanDefinition) beanDefinition).getProxyFactoryBean();
+            factoryBean.setBeanFactory(this);
+            final Object beanFromFactoryBean = factoryBean.getObject();
+            beans.put(clazz, beanFromFactoryBean);
+            return (T) beanFromFactoryBean;
         }
 
         Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
