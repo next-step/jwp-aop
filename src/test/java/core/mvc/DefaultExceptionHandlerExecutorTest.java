@@ -16,8 +16,8 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("예외와 컨트롤러 어드바이스와 매칭하여 메소드를 실행 시키기 위한 클래스")
-class DefaultExceptionAdaptorTest {
-    private DefaultExceptionAdaptor defaultExceptionAdaptor;
+class DefaultExceptionHandlerExecutorTest {
+    private DefaultExceptionHandlerExecutor exceptionHandler;
 
     @BeforeEach
     void setEnv() {
@@ -29,7 +29,7 @@ class DefaultExceptionAdaptorTest {
                 new ModelArgumentResolver()
         );
 
-        defaultExceptionAdaptor = new DefaultExceptionAdaptor(
+        exceptionHandler = new DefaultExceptionHandlerExecutor(
                 argumentResolvers.getResolvers(),
                 Collections.singletonList(new TestControllerAdvice())
         );
@@ -41,12 +41,12 @@ class DefaultExceptionAdaptorTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        assertThatCode(() -> defaultExceptionAdaptor.handle(new NumberFormatException("hi"), request, response))
+        assertThatCode(() -> exceptionHandler.handle(new NumberFormatException("hi"), request, response))
                 .doesNotThrowAnyException();
-        assertThatCode(() -> defaultExceptionAdaptor.handle(new IllegalArgumentException("hi"), request, response))
+        assertThatCode(() -> exceptionHandler.handle(new IllegalArgumentException("hi"), request, response))
                 .doesNotThrowAnyException();
 
-        ModelAndView mav = defaultExceptionAdaptor.handle(new RequiredLoginException("hi"), request, response);
+        ModelAndView mav = exceptionHandler.handle(new RequiredLoginException("hi"), request, response);
         mav.getView().render(new HashMap<>(), request, response);
 
         assertThat(response.getRedirectedUrl()).isEqualTo("/users/loginForm");
@@ -59,7 +59,7 @@ class DefaultExceptionAdaptorTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         assertThatNullPointerException()
-                .isThrownBy(() -> defaultExceptionAdaptor.handle(new NullPointerException("hi"), request, response))
+                .isThrownBy(() -> exceptionHandler.handle(new NullPointerException("hi"), request, response))
                 .withMessage("hi");
     }
 }

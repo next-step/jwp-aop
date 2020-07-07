@@ -3,15 +3,13 @@ package next.config;
 import core.annotation.web.ControllerAdvice;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
-import core.jdbc.ConnectionHolder;
-import core.mvc.DefaultExceptionAdaptor;
+import core.mvc.DefaultExceptionHandlerExecutor;
 import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
-import core.mvc.tobe.support.ArgumentResolver;
 import core.mvc.tobe.support.ArgumentResolvers;
 import core.web.WebApplicationInitializer;
 import org.slf4j.Logger;
@@ -20,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import javax.sql.DataSource;
 
 public class MyWebApplicationInitializer implements WebApplicationInitializer {
     private static final Logger log = LoggerFactory.getLogger(MyWebApplicationInitializer.class);
@@ -37,8 +34,8 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
-        dispatcherServlet.setExceptionAdaptor(
-                new DefaultExceptionAdaptor(
+        dispatcherServlet.setExceptionHandlerExecutor(
+                new DefaultExceptionHandlerExecutor(
                         ac.getBean(ArgumentResolvers.class).getResolvers(),
                         ac.getBeansAnnotatedWith(ControllerAdvice.class)
                 )

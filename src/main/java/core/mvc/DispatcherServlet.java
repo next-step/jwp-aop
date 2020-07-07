@@ -15,13 +15,13 @@ public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
-    private ExceptionAdaptor exceptionAdaptor;
+    private ExceptionHandlerExecutor exceptionHandlerExecutor = new DummyExceptionHandlerExecutor();
     private HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
     private HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
-    public void setExceptionAdaptor(ExceptionAdaptor exceptionAdaptor) {
-        this.exceptionAdaptor = exceptionAdaptor;
+    public void setExceptionHandlerExecutor(ExceptionHandlerExecutor exceptionHandlerExecutor) {
+        this.exceptionHandlerExecutor = exceptionHandlerExecutor;
     }
 
     public void addHandlerMapping(HandlerMapping handlerMapping) {
@@ -54,7 +54,7 @@ public class DispatcherServlet extends HttpServlet {
 
     private void handleException(Throwable exception, HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
-            ModelAndView mav = exceptionAdaptor.handle(exception, request, response);
+            ModelAndView mav = exceptionHandlerExecutor.handle(exception, request, response);
 
             if (mav != null) {
                 render(mav, request, response);

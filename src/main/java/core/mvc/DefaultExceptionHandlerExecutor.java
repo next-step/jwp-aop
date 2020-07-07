@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class DefaultExceptionAdaptor implements ExceptionAdaptor {
+public class DefaultExceptionHandlerExecutor implements ExceptionHandlerExecutor {
     private static final ParameterNameDiscoverer nameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
     private final Map<Class<? extends Throwable>, HandlerExecution> exceptionHandlers = new HashMap<>();
     private final List<ArgumentResolver> argumentResolvers;
 
-    public DefaultExceptionAdaptor(List<ArgumentResolver> argumentResolvers, Collection<Object> controllerAdvices) {
+    public DefaultExceptionHandlerExecutor(List<ArgumentResolver> argumentResolvers, Collection<Object> controllerAdvices) {
         this.argumentResolvers = argumentResolvers;
 
         controllerAdvices.forEach(this::initControllerAdvice);
