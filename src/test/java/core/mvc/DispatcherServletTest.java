@@ -1,11 +1,13 @@
 package core.mvc;
 
+import core.annotation.web.ControllerAdvice;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.jdbc.ConnectionHolder;
 import core.jdbc.ConnectionManager;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
+import core.mvc.tobe.support.ArgumentResolvers;
 import next.config.MyConfiguration;
 import next.controller.UserSessionUtils;
 import next.model.User;
@@ -30,6 +32,12 @@ class DispatcherServletTest {
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
+        dispatcher.setExceptionAdaptor(
+                new DefaultExceptionAdaptor(
+                        ac.getBean(ArgumentResolvers.class).getResolvers(),
+                        ac.getBeansAnnotatedWith(ControllerAdvice.class)
+                )
+        );
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();

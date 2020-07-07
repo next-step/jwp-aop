@@ -1,14 +1,18 @@
 package next.config;
 
+import core.annotation.web.ControllerAdvice;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.jdbc.ConnectionHolder;
+import core.mvc.DefaultExceptionAdaptor;
 import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
+import core.mvc.tobe.support.ArgumentResolver;
+import core.mvc.tobe.support.ArgumentResolvers;
 import core.web.WebApplicationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +37,12 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
+        dispatcherServlet.setExceptionAdaptor(
+                new DefaultExceptionAdaptor(
+                        ac.getBean(ArgumentResolvers.class).getResolvers(),
+                        ac.getBeansAnnotatedWith(ControllerAdvice.class)
+                )
+        );
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);

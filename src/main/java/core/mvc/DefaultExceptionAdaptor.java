@@ -17,7 +17,7 @@ public class DefaultExceptionAdaptor implements ExceptionAdaptor {
     private final Map<Class<? extends Throwable>, HandlerExecution> exceptionHandlers = new HashMap<>();
     private final List<ArgumentResolver> argumentResolvers;
 
-    public DefaultExceptionAdaptor(List<ArgumentResolver> argumentResolvers, List<Object> controllerAdvices) {
+    public DefaultExceptionAdaptor(List<ArgumentResolver> argumentResolvers, Collection<Object> controllerAdvices) {
         this.argumentResolvers = argumentResolvers;
 
         controllerAdvices.forEach(this::initControllerAdvice);

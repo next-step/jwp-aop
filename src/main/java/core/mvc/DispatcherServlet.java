@@ -1,6 +1,5 @@
 package core.mvc;
 
-import next.security.RequiredLoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,11 +15,14 @@ public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
+    private ExceptionAdaptor exceptionAdaptor;
     private HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
-
     private HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
-
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
+
+    public void setExceptionAdaptor(ExceptionAdaptor exceptionAdaptor) {
+        this.exceptionAdaptor = exceptionAdaptor;
+    }
 
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
@@ -45,9 +47,18 @@ public class DispatcherServlet extends HttpServlet {
 
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
-        } catch (RequiredLoginException e) {
-            // TODO: 2020-07-07 error handling
-            resp.sendRedirect("/users/loginForm");
+        } catch (Throwable e) {
+            handleException(e, req, resp);
+        }
+    }
+
+    private void handleException(Throwable exception, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        try {
+            ModelAndView mav = exceptionAdaptor.handle(exception, request, response);
+
+            if (mav != null) {
+                render(mav, request, response);
+            }
         } catch (Throwable e) {
             logger.error("Exception : {}", e);
             throw new ServletException(e.getMessage());
