@@ -2,6 +2,7 @@ package core.mvc;
 
 import core.mvc.tobe.example.TestControllerAdvice;
 import core.mvc.tobe.support.*;
+import next.security.RequiredLoginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,10 @@ class DefaultExceptionAdaptorTest {
 
         assertThatCode(() -> defaultExceptionAdaptor.handle(new NumberFormatException("hi"), request, response))
                 .doesNotThrowAnyException();
+        assertThatCode(() -> defaultExceptionAdaptor.handle(new IllegalArgumentException("hi"), request, response))
+                .doesNotThrowAnyException();
 
-        ModelAndView mav = defaultExceptionAdaptor.handle(new IllegalArgumentException("hi"), request, response);
+        ModelAndView mav = defaultExceptionAdaptor.handle(new RequiredLoginException("hi"), request, response);
         mav.getView().render(new HashMap<>(), request, response);
 
         assertThat(response.getRedirectedUrl()).isEqualTo("/users/loginForm");
