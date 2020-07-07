@@ -1,9 +1,12 @@
 package core.jdbc;
 
+import core.di.context.support.AnnotationConfigApplicationContext;
+import next.config.MyConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +16,9 @@ class ConnectionHolderTest {
 
     @BeforeEach
     void setEnv() {
-        ConnectionHolder.setDataSource(ConnectionManager.getDataSource());
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
+        DataSource dataSource = ac.getBean(DataSource.class);
+        ConnectionHolder.setDataSource(dataSource);
     }
 
     @Test
