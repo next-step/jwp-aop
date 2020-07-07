@@ -1,7 +1,6 @@
 package core.mvc.tobe;
 
 import core.di.context.support.AnnotationConfigApplicationContext;
-import core.jdbc.ConnectionHolder;
 import next.config.MyConfiguration;
 import next.dao.UserDao;
 import next.model.User;
@@ -9,9 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import support.test.DBInitializer;
-
-import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,8 +23,6 @@ public class AnnotationHandlerMappingTest {
         handlerMapping.initialize();
 
         userDao = ac.getBean(UserDao.class);
-        DataSource dataSource = ac.getBean(DataSource.class);
-        DBInitializer.initialize(dataSource);
     }
 
     @Test
