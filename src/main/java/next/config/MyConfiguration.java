@@ -11,7 +11,6 @@ import next.security.LoginUserArgumentResolver;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -37,24 +36,25 @@ public class MyConfiguration {
 
 
     @Bean
-    public HandlerConverter handlerConverter() {
+    public HandlerConverter handlerConverter(ArgumentResolvers argumentResolvers) {
         HandlerConverter handlerConverter = new HandlerConverter();
-        handlerConverter.setArgumentResolvers(defaultArgumentResolvers());
+        handlerConverter.setArgumentResolvers(argumentResolvers.getResolvers());
         handlerConverter.addArgumentResolver(loginUserArgumentResolver());
         return handlerConverter;
     }
 
-    LoginUserArgumentResolver loginUserArgumentResolver() {
-        return new LoginUserArgumentResolver();
-    }
-
-    List<ArgumentResolver> defaultArgumentResolvers() {
-        return asList(
+    @Bean
+    public ArgumentResolvers argumentResolvers() {
+        return () -> asList(
                 new HttpRequestArgumentResolver(),
                 new HttpResponseArgumentResolver(),
                 new RequestParamArgumentResolver(),
                 new PathVariableArgumentResolver(),
                 new ModelArgumentResolver()
         );
+    }
+
+    LoginUserArgumentResolver loginUserArgumentResolver() {
+        return new LoginUserArgumentResolver();
     }
 }
