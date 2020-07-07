@@ -40,7 +40,7 @@ class DefaultExceptionAdaptorTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        assertThatCode(() -> defaultExceptionAdaptor.handle(new IllegalArgumentException("hi"), request, response))
+        assertThatCode(() -> defaultExceptionAdaptor.handle(new NumberFormatException("hi"), request, response))
                 .doesNotThrowAnyException();
 
         ModelAndView mav = defaultExceptionAdaptor.handle(new IllegalArgumentException("hi"), request, response);

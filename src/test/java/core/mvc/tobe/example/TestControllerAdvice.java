@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class TestControllerAdvice extends AbstractNewController {
 
-    @ExceptionHandler(value = {IllegalArgumentException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class, NumberFormatException.class})
     public ModelAndView test(HttpServletRequest request) {
         return jspView("redirect:/users/loginForm");
     }
