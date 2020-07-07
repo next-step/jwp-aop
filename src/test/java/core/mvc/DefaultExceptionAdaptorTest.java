@@ -14,7 +14,7 @@ import java.util.HashMap;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("예외를 처리해주는 컨트롤러 어드바이스와 매칭하여 메소드를 실행 시키기 위한 클래스")
+@DisplayName("예외와 컨트롤러 어드바이스와 매칭하여 메소드를 실행 시키기 위한 클래스")
 class DefaultExceptionAdaptorTest {
     private DefaultExceptionAdaptor defaultExceptionAdaptor;
 
