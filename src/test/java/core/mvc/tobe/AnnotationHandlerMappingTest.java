@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import support.test.DBInitializer;
 
 import javax.sql.DataSource;
 
@@ -26,6 +27,8 @@ public class AnnotationHandlerMappingTest {
         handlerMapping.initialize();
 
         userDao = ac.getBean(UserDao.class);
+        DataSource dataSource = ac.getBean(DataSource.class);
+        DBInitializer.initialize(dataSource);
     }
 
     @Test
