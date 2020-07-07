@@ -79,9 +79,4 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         Class<?>[] argumentTypes = beanDefinition.getInjectConstructor().getParameterTypes();
         return (T) enhancer.create(argumentTypes, targetArguments); // argument type에 맞는 생성자를 찾아 생성
     }
-
-    @Override
-    public Class<?> getClassType() {
-        return targetClass;
-    }
 }
