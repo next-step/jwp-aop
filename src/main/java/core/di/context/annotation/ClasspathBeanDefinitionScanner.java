@@ -11,7 +11,9 @@ import core.di.beans.factory.support.BeanDefinitionRegistry;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ClasspathBeanDefinitionScanner {
     private final BeanDefinitionRegistry beanDefinitionRegistry;
@@ -30,8 +32,7 @@ public class ClasspathBeanDefinitionScanner {
     @SuppressWarnings("unchecked")
     public void doScan(Object... basePackages) {
         Reflections reflections = new Reflections(basePackages);
-        Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
-                Repository.class, Component.class, ControllerAdvice.class);
+        Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Component.class);
 
         beanClasses.stream()
                 .map(converters::convert)
@@ -43,6 +44,7 @@ public class ClasspathBeanDefinitionScanner {
     @SuppressWarnings("unchecked")
     private Set<Class<?>> getTypesAnnotatedWith(Reflections reflections, Class<? extends Annotation>... annotations) {
         Set<Class<?>> preInstantiatedBeans = Sets.newHashSet();
+        Set<Class<? extends Class>> subTypesOf = reflections.getSubTypesOf(Class.class);
         for (Class<? extends Annotation> annotation : annotations) {
             preInstantiatedBeans.addAll(reflections.getTypesAnnotatedWith(annotation));
         }
