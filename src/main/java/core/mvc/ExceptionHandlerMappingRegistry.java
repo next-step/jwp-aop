@@ -8,7 +8,7 @@ import java.util.Optional;
 public class ExceptionHandlerMappingRegistry {
     private final List<ExceptionHandlerMapping> handlerMappings = new ArrayList<>();
 
-    public void addHandlerMpping(ExceptionHandlerMapping exceptionHandlerMapping) {
+    public void addHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
         exceptionHandlerMapping.initialize();
         handlerMappings.add(exceptionHandlerMapping);
     }

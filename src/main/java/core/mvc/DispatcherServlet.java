@@ -29,7 +29,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     public void addExceptionHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
-        exceptionHandlerMappingRegistry.addHandlerMpping(exceptionHandlerMapping);
+        exceptionHandlerMappingRegistry.addHandlerMapping(exceptionHandlerMapping);
     }
 
     @Override
