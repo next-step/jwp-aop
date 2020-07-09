@@ -19,8 +19,8 @@ public final class ClasspathBeanDefinitionScanner extends AbstractBeanDefinition
     @Override
     @SuppressWarnings("unchecked")
     public void doScan(Object... basePackages) {
-        Reflections reflections = new Reflections(basePackages);
-        Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
+        final Reflections reflections = new Reflections(basePackages);
+        final Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
                 Repository.class, Component.class);
         for (Class<?> clazz : beanClasses) {
             beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));

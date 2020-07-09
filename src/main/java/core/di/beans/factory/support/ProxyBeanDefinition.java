@@ -5,10 +5,16 @@ import org.springframework.beans.BeanUtils;
 
 public class ProxyBeanDefinition extends DefaultBeanDefinition {
 
-    private final ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+    private final ProxyFactoryBean proxyFactoryBean;
+
+    public ProxyBeanDefinition(ProxyFactoryBean proxyFactoryBean) {
+        super(proxyFactoryBean.getObject().getClass());
+        this.proxyFactoryBean = proxyFactoryBean;
+    }
 
     public ProxyBeanDefinition(Class<?> targetClass) {
         super(targetClass);
+        this.proxyFactoryBean = new ProxyFactoryBean();
         final Object targetInstance = BeanUtils.instantiateClass(targetClass);
         proxyFactoryBean.setTarget(targetInstance);
     }

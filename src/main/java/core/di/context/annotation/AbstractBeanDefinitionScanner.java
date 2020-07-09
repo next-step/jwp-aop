@@ -5,6 +5,7 @@ import core.di.beans.factory.support.BeanDefinitionRegistry;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 public abstract class AbstractBeanDefinitionScanner implements BeanDefinitionScanner {
@@ -24,5 +25,11 @@ public abstract class AbstractBeanDefinitionScanner implements BeanDefinitionSca
         return preInstantiatedBeans;
     }
 
-
+    protected Set<Method> getMethodsAnnotatedWith(Reflections reflections, Class<? extends Annotation>... annotations) {
+        final Set<Method> annotatedMethods = Sets.newHashSet();
+        for (Class<? extends Annotation> annotation : annotations) {
+            annotatedMethods.addAll(reflections.getMethodsAnnotatedWith(annotation));
+        }
+        return annotatedMethods;
+    }
 }
