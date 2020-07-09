@@ -55,6 +55,10 @@ public class TransactionalTest {
     @Test
     void transational_rollback() {
 
+        // given
+        final Question insertedQuestion = questionDao.insert(new Question("chwon", "title", "content"));
+        questionId = insertedQuestion.getQuestionId();
+
         // when
         try {
             target.addAnswer(new Answer("hi", "hi", questionId), true);
