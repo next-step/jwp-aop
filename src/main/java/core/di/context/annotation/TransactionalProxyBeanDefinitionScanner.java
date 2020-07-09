@@ -7,6 +7,10 @@ import core.di.beans.factory.support.ProxyBeanDefinition;
 import core.di.context.support.TransactionAdvice;
 import core.di.context.support.TransactionPointCut;
 import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Method;
@@ -21,7 +25,14 @@ public class TransactionalProxyBeanDefinitionScanner extends AbstractBeanDefinit
     @Override
     @SuppressWarnings("unchecked")
     public void doScan(Object... basePackages) {
-        final Reflections reflections = new Reflections(basePackages);
+        final Reflections reflections = new Reflections(ConfigurationBuilder
+                .build(basePackages)
+                .setScanners(
+                        new TypeAnnotationsScanner(),
+                        new SubTypesScanner(),
+                        new MethodAnnotationsScanner()
+                )
+        );
 
         final Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Transactional.class);
         for (Class<?> beanClass : beanClasses) {

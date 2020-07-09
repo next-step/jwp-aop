@@ -8,7 +8,7 @@ public class ProxyBeanDefinition extends DefaultBeanDefinition {
     private final ProxyFactoryBean proxyFactoryBean;
 
     public ProxyBeanDefinition(ProxyFactoryBean proxyFactoryBean) {
-        super(proxyFactoryBean.getObject().getClass());
+        super(proxyFactoryBean.getObjectType());
         this.proxyFactoryBean = proxyFactoryBean;
     }
 
