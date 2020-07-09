@@ -28,12 +28,7 @@ class DispatcherServletTest {
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
-        dispatcher.setExceptionHandlerExecutor(
-                new DefaultExceptionHandlerExecutor(
-                        ac.getBean(ArgumentResolvers.class).getResolvers(),
-                        ac.getBeansAnnotatedWith(ControllerAdvice.class)
-                )
-        );
+        dispatcher.addExceptionHandlerMapping(ahm);
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();

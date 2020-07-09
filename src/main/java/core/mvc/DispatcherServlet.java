@@ -15,14 +15,10 @@ public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
-    private ExceptionHandlerExecutor exceptionHandlerExecutor = new DummyExceptionHandlerExecutor();
+    private ExceptionHandlerMappingRegistry exceptionHandlerMappingRegistry = new ExceptionHandlerMappingRegistry();
     private HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
     private HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
-
-    public void setExceptionHandlerExecutor(ExceptionHandlerExecutor exceptionHandlerExecutor) {
-        this.exceptionHandlerExecutor = exceptionHandlerExecutor;
-    }
 
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
@@ -30,6 +26,10 @@ public class DispatcherServlet extends HttpServlet {
 
     public void addHandlerAdapter(HandlerAdapter handlerAdapter) {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
+    }
+
+    public void addExceptionHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
+        exceptionHandlerMappingRegistry.addHandlerMpping(exceptionHandlerMapping);
     }
 
     @Override
@@ -53,15 +53,21 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void handleException(Throwable exception, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        Optional<Object> handler = exceptionHandlerMappingRegistry.getHandler(exception);
+
         try {
-            ModelAndView mav = exceptionHandlerExecutor.handle(exception, request, response);
+            if (!handler.isPresent()) {
+                throw exception;
+            }
+
+            ModelAndView mav = handlerExecutor.handle(request, response, handler.get());
 
             if (mav != null) {
                 render(mav, request, response);
             }
         } catch (Throwable e) {
             logger.error("Exception : {}", e);
-            throw new ServletException(e.getMessage());
+            throw new ServletException(exception.getMessage());
         }
     }
 
