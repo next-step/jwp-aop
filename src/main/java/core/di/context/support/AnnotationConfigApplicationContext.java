@@ -60,12 +60,4 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         return beanFactory.getBeanClasses();
     }
 
-    @Override
-    public Set<Object> getBeansAnnotatedWith(Class<? extends Annotation> annotation) {
-        return beanFactory.getBeanClasses()
-                .stream()
-                .filter(clazz -> clazz.isAnnotationPresent(ControllerAdvice.class))
-                .map(clazz -> beanFactory.getBean(clazz))
-                .collect(Collectors.toSet());
-    }
 }
