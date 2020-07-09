@@ -31,13 +31,15 @@ public class TransactionalTest {
         target = context.getBean(Target.class);
         questionDao = context.getBean(QuestionDao.class);
         answerDao = context.getBean(AnswerDao.class);
-        final Question insertedQuestion = questionDao.insert(new Question("chwon", "title", "content"));
-        questionId = insertedQuestion.getQuestionId();
     }
 
     @DisplayName("트랜잭션이 제대로 커밋되는지 테스트한다.")
     @Test
     void transational_commit() {
+
+        // given
+        final Question insertedQuestion = questionDao.insert(new Question("chwon", "title", "content"));
+        questionId = insertedQuestion.getQuestionId();
 
         // when
         target.addAnswer(new Answer("hi", "hi", questionId), false);
@@ -54,7 +56,11 @@ public class TransactionalTest {
     void transational_rollback() {
 
         // when
-        target.addAnswer(new Answer("hi", "hi", questionId), true);
+        try {
+            target.addAnswer(new Answer("hi", "hi", questionId), true);
+        } catch (RuntimeException ignore) {
+
+        }
 
         // then
         final List<Answer> allByQuestionId = answerDao.findAllByQuestionId(questionId);

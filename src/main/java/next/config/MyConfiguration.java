@@ -15,8 +15,9 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 @Configuration
-@ComponentScan({ "next", "core" })
+@ComponentScan({"next", "core"})
 public class MyConfiguration {
+
     @Bean
     public DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();
@@ -28,8 +29,8 @@ public class MyConfiguration {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate();
     }
 
 

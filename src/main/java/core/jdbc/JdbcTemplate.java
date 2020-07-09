@@ -1,6 +1,5 @@
 package core.jdbc;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,15 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcTemplate {
-    private DataSource dataSource;
-
-    public JdbcTemplate(DataSource dataSource) {
-        super();
-        this.dataSource = dataSource;
-    }
 
     public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        final Connection conn = TransactionManager.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pss.setParameters(pstmt);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -30,7 +24,8 @@ public class JdbcTemplate {
     }
 
     public void update(PreparedStatementCreator psc, KeyHolder holder) {
-        try (Connection conn = dataSource.getConnection()) {
+        final Connection conn = TransactionManager.getConnection();
+        try {
             PreparedStatement ps = psc.createPreparedStatement(conn);
             ps.executeUpdate();
 
@@ -58,7 +53,8 @@ public class JdbcTemplate {
 
     public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
         ResultSet rs = null;
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        final Connection conn = TransactionManager.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pss.setParameters(pstmt);
             rs = pstmt.executeQuery();
 
@@ -85,12 +81,9 @@ public class JdbcTemplate {
     }
 
     private PreparedStatementSetter createPreparedStatementSetter(Object... parameters) {
-        return new PreparedStatementSetter() {
-            @Override
-            public void setParameters(PreparedStatement pstmt) throws SQLException {
-                for (int i = 0; i < parameters.length; i++) {
-                    pstmt.setObject(i + 1, parameters[i]);
-                }
+        return pstmt -> {
+            for (int i = 0; i < parameters.length; i++) {
+                pstmt.setObject(i + 1, parameters[i]);
             }
         };
     }
