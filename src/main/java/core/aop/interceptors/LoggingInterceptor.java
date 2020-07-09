@@ -9,16 +9,18 @@ public class LoggingInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        log.info("invoke - start: {}/{}",
-                 invocation.getThis().getClass().getSimpleName(),
-                 invocation.getMethod().getName()
+        log.info(
+            "invoke - start: {}/{}",
+            invocation.getThis().getClass().getSimpleName(),
+            invocation.getMethod().getName()
         );
 
         Object proceed = invocation.proceed();
 
-        log.info("invoke - finished: {}/{}",
-                 invocation.getThis().getClass().getSimpleName(),
-                 invocation.getMethod().getName()
+        log.info(
+            "invoke - finished: {}/{}",
+            invocation.getThis().getClass().getSimpleName(),
+            invocation.getMethod().getName()
         );
 
         return proceed;

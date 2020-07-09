@@ -1,3 +1,4 @@
+/*
 package core.aop.interceptors;
 
 import core.annotation.Bean;
@@ -5,7 +6,10 @@ import core.annotation.Configuration;
 import core.annotation.Inject;
 import core.aop.ProxyFactoryBean;
 import core.di.context.ApplicationContext;
-import core.di.factory.example.*;
+import core.di.factory.example.JdbcQuestionRepository;
+import core.di.factory.example.JdbcUserRepository;
+import core.di.factory.example.QuestionRepository;
+import core.di.factory.example.UserRepository;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
@@ -30,18 +34,18 @@ public class AopConfig {
     }
 
     @Bean
-    public MyTestService myQnaService() throws Exception {
+    public AopTestServiceImpl myQnaService() throws Exception {
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
         pointcut.setExpression("core.aop.interceptors.AopConfig.myQnaServiceMethods()");
 
         Advisor advisor = new DefaultPointcutAdvisor(pointcut, new PerformanceInterceptor());
         Advisor advisor2 = new DefaultPointcutAdvisor(pointcut, new LoggingInterceptor());
 
-        ProxyFactoryBean<MyTestService> proxyFactoryBean = new ProxyFactoryBean<>();
-        proxyFactoryBean.setInterface(MyTestService.class);
-        proxyFactoryBean.setTarget(new MyTestServiceImpl());
+        ProxyFactoryBean<AopTestServiceImpl> proxyFactoryBean = new ProxyFactoryBean<>();
+        //proxyFactoryBean.setInterface(MyTestService.class);
+        proxyFactoryBean.setTarget(new AopTestServiceImpl());
         proxyFactoryBean.addAdvisor(advisor);
         proxyFactoryBean.addAdvisor(advisor2);
         return proxyFactoryBean.getObject();
     }
-}
+}*/

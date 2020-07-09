@@ -1,11 +1,14 @@
 package core.di.beans.factory.support;
 
 import com.google.common.collect.Sets;
+import core.aop.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.Set;
 
 public class DefaultBeanDefinition implements BeanDefinition {
@@ -74,12 +77,26 @@ public class DefaultBeanDefinition implements BeanDefinition {
     }
 
     @Override
+    public Method getMethod() {
+        return null;
+    }
+
+    @Override
+    public boolean isFactoryBeanType() {
+        return FactoryBean.class.isAssignableFrom(beanClazz);
+    }
+
+    @Override
     public InjectType getResolvedInjectMode() {
-        if (injectConstructor != null) {
+        if (Objects.nonNull(getMethod())) {
+            return InjectType.INJECT_METHOD;
+        }
+
+        if (Objects.nonNull(injectConstructor)) {
             return InjectType.INJECT_CONSTRUCTOR;
         }
 
-        if (!injectFields.isEmpty()) {
+        if (!CollectionUtils.isEmpty(injectFields)) {
             return InjectType.INJECT_FIELD;
         }
 

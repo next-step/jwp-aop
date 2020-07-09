@@ -10,9 +10,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
 import static org.reflections.ReflectionUtils.*;
 
 public class BeanFactoryUtils {
@@ -71,18 +74,33 @@ public class BeanFactoryUtils {
      * @param preInstanticateBeans
      * @return
      */
-    public static Optional<Class<?>> findConcreteClass(Class<?> injectedClazz, Set<Class<?>> preInstanticateBeans) {
+    public static Class<?> findConcreteClass(Class<?> injectedClazz, Set<Class<?>> preInstanticateBeans) {
         if (!injectedClazz.isInterface()) {
-            return Optional.of(injectedClazz);
+            return injectedClazz;
         }
 
         for (Class<?> clazz : preInstanticateBeans) {
             Set<Class<?>> interfaces = Sets.newHashSet(clazz.getInterfaces());
             if (interfaces.contains(injectedClazz)) {
-                return Optional.of(clazz);
+                return clazz;
             }
         }
 
-        return Optional.empty();
+        return null;
+    }
+
+    public static Object[] getArguments(BeanGettable beanGettable, Class<?>[] parameterTypes) {
+        return Arrays.stream(parameterTypes)
+            .map(parameterType -> {
+                Object bean = beanGettable.getBean(parameterType);
+
+                if (Objects.isNull(bean)) {
+                    throw new NullPointerException(parameterType + "의 Bean이 존재하지 않습니다.");
+                }
+
+                return bean;
+            })
+            .collect(toList())
+            .toArray(new Object[0]);
     }
 }

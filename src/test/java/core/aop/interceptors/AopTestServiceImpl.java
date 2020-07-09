@@ -1,16 +1,21 @@
 package core.aop.interceptors;
 
-import core.annotation.Service;
 import org.springframework.util.StringUtils;
 
-@Service
-public class MyTestServiceImpl implements MyTestService {
-    @Override
+public class AopTestServiceImpl {
     public String getUppercasedName(String name) {
         if (StringUtils.isEmpty(name)) {
             return "";
         }
 
         return name.toUpperCase();
+    }
+
+    public String toLowercasedName(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return "";
+        }
+
+        return name.toLowerCase();
     }
 }

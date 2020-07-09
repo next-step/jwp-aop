@@ -1,43 +1,40 @@
 package core.aop;
 
 import com.google.common.collect.Lists;
+import core.aop.advice.ProxyMethodInvocation;
+import core.aop.advisor.Advisor;
 import lombok.Getter;
-import org.springframework.aop.Advisor;
-import org.springframework.util.CollectionUtils;
+import net.sf.cglib.proxy.Enhancer;
 
 import java.util.List;
 
-public class ProxyFactoryBean<T> implements FactoryBean<T> {
+public class ProxyFactoryBean implements FactoryBean<Object> {
     @Getter
-    private T target;
-
-    @Getter
-    private List<Class<?>> interfaces = Lists.newArrayList();
+    private Object target;
 
     @Getter
     private List<Advisor> advisors = Lists.newArrayList();
 
-    public ProxyFactoryBean<T> setInterface(Class<?> targetInterface) {
-        this.interfaces.add(targetInterface);
-        return this;
-    }
-
-    public ProxyFactoryBean<T> setTarget(T target) {
+    public ProxyFactoryBean setTarget(Object target) {
         this.target = target;
         return this;
     }
 
-    public ProxyFactoryBean<T> addAdvisor(Advisor advisor) {
+    public ProxyFactoryBean addAdvisor(Advisor advisor) {
         advisors.add(advisor);
         return this;
     }
 
     @Override
-    public T getObject() throws Exception {
-        if (CollectionUtils.isEmpty(interfaces)) {
-            new ObjenesisCglibAopProxy(this).getProxy();
-        }
+    public Object getObject() throws Exception {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(getObjectType());
+        enhancer.setCallback(new ProxyMethodInvocation(advisors));
+        return enhancer.create();
+    }
 
-        return (T) new JdkDynamicAopProxy<T>(this).getProxy();
+    @Override
+    public Class<?> getObjectType() {
+        return target.getClass();
     }
 }
