@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class Annotation {
     @Test
-    @DisplayName("어노테이션의 어노테이션")
+    @DisplayName("메타 어노테이션")
     void annotationsAnnotation() {
         assertThat(Controller.class.isAnnotationPresent(Component.class)).isTrue();
     }

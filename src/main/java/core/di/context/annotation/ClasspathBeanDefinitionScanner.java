@@ -2,16 +2,17 @@ package core.di.context.annotation;
 
 import com.google.common.collect.Sets;
 import core.annotation.Component;
-import core.annotation.Repository;
-import core.annotation.Service;
-import core.annotation.web.Controller;
-import core.annotation.web.ControllerAdvice;
+import core.aop.ProxyFactoryBean;
+import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.config.BeanDefinitionConverters;
 import core.di.beans.factory.support.BeanDefinitionRegistry;
+import core.mvc.JsonUtils;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,11 @@ public class ClasspathBeanDefinitionScanner {
 
     @SuppressWarnings("unchecked")
     public void doScan(Object... basePackages) {
-        Reflections reflections = new Reflections(basePackages);
+        Reflections reflections = new Reflections(
+                basePackages,
+                new SubTypesScanner(false),
+                new TypeAnnotationsScanner()
+        );
         Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Component.class);
 
         beanClasses.stream()
@@ -44,10 +49,21 @@ public class ClasspathBeanDefinitionScanner {
     @SuppressWarnings("unchecked")
     private Set<Class<?>> getTypesAnnotatedWith(Reflections reflections, Class<? extends Annotation>... annotations) {
         Set<Class<?>> preInstantiatedBeans = Sets.newHashSet();
-        Set<Class<? extends Class>> subTypesOf = reflections.getSubTypesOf(Class.class);
+        Set<Class<?>> subTypes = reflections.getSubTypesOf(Object.class);
+        subTypes.addAll(reflections.getSubTypesOf(ProxyFactoryBean.class));
+
         for (Class<? extends Annotation> annotation : annotations) {
-            preInstantiatedBeans.addAll(reflections.getTypesAnnotatedWith(annotation));
+            preInstantiatedBeans.addAll(getTypesAnnotatedWith(subTypes, annotation));
         }
         return preInstantiatedBeans;
+    }
+
+    private Set<Class<?>> getTypesAnnotatedWith(Set<Class<?>> classes, Class<? extends Annotation> annotation) {
+        return classes.stream()
+                .filter(clazz ->
+                        clazz.isAnnotationPresent(annotation) ||
+                                Arrays.stream(clazz.getAnnotations())
+                                        .anyMatch(a -> a.annotationType().isAnnotationPresent(annotation))
+                ).collect(Collectors.toSet());
     }
 }
