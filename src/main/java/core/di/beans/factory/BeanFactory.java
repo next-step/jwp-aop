@@ -6,5 +6,6 @@ import java.util.Set;
 
 public interface BeanFactory extends BeanGettable {
     Set<Class<?>> getBeanClasses();
+
     void clear();
 }

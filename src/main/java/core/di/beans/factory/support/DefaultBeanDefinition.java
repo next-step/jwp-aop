@@ -26,22 +26,6 @@ public class DefaultBeanDefinition implements BeanDefinition {
         return BeanFactoryUtils.getInjectedConstructor(clazz);
     }
 
-    private Set<Field> getInjectFields(Class<?> clazz, Constructor<?> constructor) {
-        if (constructor != null) {
-            return Sets.newHashSet();
-        }
-
-        Set<Field> injectFields = Sets.newHashSet();
-        Set<Class<?>> injectProperties = getInjectPropertiesType(clazz);
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
-            if (injectProperties.contains(field.getType())) {
-                injectFields.add(field);
-            }
-        }
-        return injectFields;
-    }
-
     private static Set<Class<?>> getInjectPropertiesType(Class<?> clazz) {
         Set<Class<?>> injectProperties = Sets.newHashSet();
         Set<Method> injectMethod = BeanFactoryUtils.getInjectedMethods(clazz);
@@ -59,6 +43,22 @@ public class DefaultBeanDefinition implements BeanDefinition {
             injectProperties.add(field.getType());
         }
         return injectProperties;
+    }
+
+    private Set<Field> getInjectFields(Class<?> clazz, Constructor<?> constructor) {
+        if (constructor != null) {
+            return Sets.newHashSet();
+        }
+
+        Set<Field> injectFields = Sets.newHashSet();
+        Set<Class<?>> injectProperties = getInjectPropertiesType(clazz);
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            if (injectProperties.contains(field.getType())) {
+                injectFields.add(field);
+            }
+        }
+        return injectFields;
     }
 
     @Override

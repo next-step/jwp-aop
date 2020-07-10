@@ -1,6 +1,5 @@
 package core.di.beans.factory.support;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.aop.FactoryBean;
@@ -12,16 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
-
-    private Map<Class<?>, Object> beans = Maps.newHashMap();
-
-    private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
-
     private static final Map<InjectType, BeanInjector> beanInjectors = initBeanInjectors();
+    private Map<Class<?>, Object> beans = Maps.newHashMap();
+    private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     private static Map<InjectType, BeanInjector> initBeanInjectors() {
         Map<InjectType, BeanInjector> beanInjectors = Maps.newHashMap();
@@ -66,38 +64,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             log.error(e.getMessage());
         }
 
-        return (T)bean;
-    }
-
-    /*
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getBean(Class<T> clazz) {
-        Object bean = beans.get(clazz);
-        if (bean != null) {
-            return (T) bean;
-        }
-
-        BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
-            Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
-            initialize(bean, clazz);
-            return (T) optionalBean.orElse(null);
-        }
-
-        Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
-        if (!concreteClazz.isPresent()) {
-            return null;
-        }
-
-        beanDefinition = beanDefinitions.get(concreteClazz.get());
-        log.debug("BeanDefinition : {}", beanDefinition);
-        bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
-        initialize(bean, concreteClazz.get());
         return (T) bean;
-    }*/
+    }
 
     private <T> T getBeanFromDefinition(Class<T> type) throws Exception {
         BeanDefinition beanDefinition = beanDefinitions.get(type);
@@ -155,18 +123,6 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
     }
 
-    private Object[] populateArguments(Class<?>[] paramTypes) {
-        List<Object> args = Lists.newArrayList();
-        for (Class<?> param : paramTypes) {
-            Object bean = getBean(param);
-            if (bean == null) {
-                throw new NullPointerException(param + "에 해당하는 Bean이 존재하지 않습니다.");
-            }
-            args.add(getBean(param));
-        }
-        return args.toArray();
-    }
-
     private <T> T getFactoryBeanObject(Object injected) throws Exception {
         FactoryBean<T> factoryBean = (FactoryBean<T>) injected;
         injected = factoryBean.getObject();
@@ -186,5 +142,4 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
     }
-
 }

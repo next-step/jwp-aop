@@ -5,5 +5,6 @@ import core.aop.pointcut.Pointcut;
 
 public interface Advisor {
     Advice getAdvice();
+
     Pointcut getPointcut();
 }
