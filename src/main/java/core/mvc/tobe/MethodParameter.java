@@ -1,24 +1,25 @@
 package core.mvc.tobe;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.reflect.Executable;
 
 public class MethodParameter {
 
-    private Method method;
+    private Executable executable;
     private Class<?> type;
     private Annotation[] annotations;
     private String parameterName;
 
-    public MethodParameter(Method method, Class<?> parameterType, Annotation[] parameterAnnotation, String parameterName) {
-        this.method = method;
+    public MethodParameter(Executable executable, Class<?> parameterType, Annotation[] parameterAnnotation, String parameterName) {
+        this.executable = executable;
         this.type = parameterType;
         this.annotations = parameterAnnotation;
         this.parameterName = parameterName;
     }
 
-    public Method getMethod() {
-        return method;
+    public Executable getExecutable() {
+        return executable;
     }
 
     public Class<?> getType() {
@@ -29,8 +30,15 @@ public class MethodParameter {
         return annotations;
     }
 
-    public boolean hasAnnotation() {
-        return getAnnotations().length > 0;
+    @Nullable
+    public <T> T getAnnotation(Class<? extends Annotation> requireType) {
+        for (Annotation annotation : annotations) {
+            if(requireType.equals(annotation.annotationType())) {
+                return (T) annotation;
+            }
+        }
+
+        return null;
     }
 
     public boolean isString() {

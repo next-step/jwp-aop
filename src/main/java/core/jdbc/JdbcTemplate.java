@@ -1,5 +1,8 @@
 package core.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcTemplate {
+    private static final Logger logger = LoggerFactory.getLogger(JdbcTemplate.class);
+
     private DataSource dataSource;
 
     public JdbcTemplate(DataSource dataSource) {
@@ -26,6 +31,7 @@ public class JdbcTemplate {
     }
 
     public void update(String sql, Object... parameters) {
+        logger.info("SQL: {}, parames: {}", sql, parameters);
         update(sql, createPreparedStatementSetter(parameters));
     }
 

@@ -1,10 +1,12 @@
 package core.mvc.tobe.support;
 
+import core.annotation.Component;
 import core.mvc.tobe.MethodParameter;
 import core.util.ReflectionUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.core.annotation.Order;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,15 +18,14 @@ import java.lang.reflect.Method;
 import static core.util.ReflectionUtils.hasFieldMethod;
 import static core.util.StringUtil.upperFirstChar;
 
+@Order(1)
+@Component
 public class ModelArgumentResolver implements ArgumentResolver {
 
     private ParameterNameDiscoverer nameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
     @Override
     public boolean supports(MethodParameter methodParameter) {
-        if (methodParameter.hasAnnotation()) {
-            return false;
-        }
         return !isSimpleType(methodParameter.getType());
     }
 

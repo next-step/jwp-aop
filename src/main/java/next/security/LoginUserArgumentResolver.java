@@ -1,15 +1,19 @@
 package next.security;
 
+import core.annotation.Component;
 import core.mvc.tobe.MethodParameter;
 import core.mvc.tobe.support.AbstractAnnotationArgumentResolver;
 import next.controller.UserSessionUtils;
 import next.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Component
+@Order
 public class LoginUserArgumentResolver extends AbstractAnnotationArgumentResolver {
     private static final Logger logger = LoggerFactory.getLogger(LoginUserArgumentResolver.class);
 
