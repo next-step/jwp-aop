@@ -67,11 +67,11 @@ public class CglibProxyTest {
 
     @Test
     @DisplayName("say로 시작하는 메서드의 한해서만 반환값을 대문자로 변환")
-    public void CGLIBToUppserCaseTestWithMethodName() {
+    public void CGLIBToUpperCaseTestWithMethodName() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
 
-        enhancer.setCallback(new UppercaseMethodInterceptor(method -> method.getName().startsWith("say")));
+        enhancer.setCallback(new UppercaseMethodInterceptor(method -> method.getName().startsWith("say") && String.class.equals(method.getReturnType())));
 
         HelloTarget hello = (HelloTarget) enhancer.create();
         System.out.println(hello.sayHello("kingcjy"));
@@ -97,7 +97,7 @@ public class CglibProxyTest {
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
             Object returnValue = proxy.invokeSuper(obj, args);
 
-            if(returnValue instanceof String && methodMatcher.matches(method)) {
+            if(methodMatcher.matches(method)) {
                 return String.valueOf(returnValue).toUpperCase();
             }
 
