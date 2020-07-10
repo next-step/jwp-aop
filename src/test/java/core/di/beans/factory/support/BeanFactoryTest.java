@@ -1,10 +1,7 @@
 package core.di.beans.factory.support;
 
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
-import core.di.factory.example.MyQnaService;
-import core.di.factory.example.MyUserController;
-import core.di.factory.example.MyUserService;
-import core.di.factory.example.QnaController;
+import core.di.factory.example.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +43,14 @@ public class BeanFactoryTest {
 
         assertThat(userController);
         assertThat(userController.getUserService()).isNotNull();;
+    }
+
+    @Test
+    public void factoryBeanTest() {
+        ExampleService exampleService = beanFactory.getBean(ExampleService.class);
+
+        assertThat(exampleService).isNotNull();
+        assertThat(exampleService.getMessage()).isEqualTo("Hello World");
     }
 
     @AfterEach
