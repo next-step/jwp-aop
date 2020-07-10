@@ -2,7 +2,7 @@ package core.aop;
 
 import core.aop.advice.Advice;
 import core.aop.advisor.DefaultAdvisor;
-import core.aop.example.AopTestServiceImpl;
+import core.aop.example.AopTestService;
 import core.aop.example.advice.AppendPostfixAdvice;
 import core.aop.example.advice.AppendPrefixAdvice;
 import core.aop.example.advice.ConvertToLowerCaseAdvice;
@@ -25,7 +25,7 @@ class ProxyFactoryBeanTest {
     @BeforeEach
     public void setup() {
         proxyFactoryBean = new ProxyFactoryBean();
-        proxyFactoryBean.setTarget(new AopTestServiceImpl());
+        proxyFactoryBean.setTarget(new AopTestService());
     }
 
     @DisplayName("toUpperCaseAdvice 테스트")
@@ -36,7 +36,7 @@ class ProxyFactoryBeanTest {
         Advice advice = new ConvertToUpperCaseAdvice();
 
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, advice));
-        AopTestServiceImpl aopTestService = (AopTestServiceImpl) proxyFactoryBean.getObject();
+        AopTestService aopTestService = (AopTestService) proxyFactoryBean.getObject();
 
         String result = aopTestService.sayHello(name);
 
@@ -51,7 +51,7 @@ class ProxyFactoryBeanTest {
         Advice advice = new ConvertToLowerCaseAdvice();
 
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, advice));
-        AopTestServiceImpl aopTestService = (AopTestServiceImpl) proxyFactoryBean.getObject();
+        AopTestService aopTestService = (AopTestService) proxyFactoryBean.getObject();
 
         String result = aopTestService.sayHello(name);
 
@@ -69,7 +69,7 @@ class ProxyFactoryBeanTest {
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, new AppendPrefixAdvice()));
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, new AppendPostfixAdvice()));
 
-        AopTestServiceImpl aopTestService = (AopTestServiceImpl) proxyFactoryBean.getObject();
+        AopTestService aopTestService = (AopTestService) proxyFactoryBean.getObject();
 
         String result = aopTestService.sayHello(name);
 

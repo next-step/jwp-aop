@@ -1,6 +1,6 @@
 package core.aop;
 
-import core.aop.example.AopTestServiceImpl;
+import core.aop.example.AopTestService;
 import core.aop.pointcut.MethodNamePrefixMatchPointCut;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class MethodNamePrefixMatchPointCutTest {
 
-    private AopTestServiceImpl testService;
+    private AopTestService testService;
 
     @BeforeEach
     void setUp() {
-        testService = new AopTestServiceImpl();
+        testService = new AopTestService();
     }
 
     @ParameterizedTest

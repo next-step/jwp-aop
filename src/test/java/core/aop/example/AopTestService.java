@@ -1,8 +1,34 @@
 package core.aop.example;
 
-public interface AopTestService {
-    String getUppercasedName(String name);
-    String getLowercasedName(String name);
-    String sayHello(String name);
-    String pingpong(String name);
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
+
+@Slf4j
+public class AopTestService {
+    public String getUppercasedName(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return "";
+        }
+
+        return name.toUpperCase();
+    }
+
+    public String getLowercasedName(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return "";
+        }
+
+        return name.toLowerCase();
+    }
+
+    public String sayHello(String name) {
+        log.debug("sayHello - started");
+        String result = "Hello " + name;
+        log.debug("sayHello - finished");
+        return result;
+    }
+
+    public String pingpong(String name) {
+        return "pong " + name;
+    }
 }
