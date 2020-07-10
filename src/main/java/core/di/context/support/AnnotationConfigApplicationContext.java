@@ -7,6 +7,7 @@ import core.di.beans.factory.support.DefaultBeanFactory;
 import core.di.context.ApplicationContext;
 import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
+import core.di.context.annotation.TransactionalProxyBeanDefinitionScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +27,10 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         abdr.loadBeanDefinitions(annotatedClasses);
 
         if (basePackages.length > 0) {
-            ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
+            final ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
+            final TransactionalProxyBeanDefinitionScanner transactionalScanner = new TransactionalProxyBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
+            transactionalScanner.doScan(basePackages);
         }
         beanFactory.preInstantiateSingletons();
     }

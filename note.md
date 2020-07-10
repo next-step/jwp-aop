@@ -1,5 +1,16 @@
 # Aspect OP
 
+## 3단계 - Transaction AOP 구현
+
+별로 어렵진 않을 거 같은데 책임을 어디에 위치시키느냐가 약간 고민.  
+
+BeanFactory를 보면 key: class, value: beandef인 맵을 사용하는데..  
+어떻게 할까 약간 고민됨.  
+
+- ClasspathBeanDefinitionScanner
+    - 인터페이스 추출 후 ProxyBeanDefinitionScanner를 정의해야겠다.   
+
+
 ## 2단계 - Proxy와 Bean 의존관계
 
 문제는 요구사항 조차도 이해가 잘 안된다는 것이다..  

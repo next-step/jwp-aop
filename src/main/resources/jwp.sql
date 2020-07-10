@@ -19,7 +19,7 @@ CREATE TABLE QUESTIONS (
 	title				varchar(50)			NOT NULL,
 	contents			varchar(5000)		NOT NULL,
 	createdDate			timestamp			NOT NULL,
-	countOfAnswer int,
+	countOfAnswer       int                 DEFAULT 0,
 	PRIMARY KEY               (questionId)
 );
 
