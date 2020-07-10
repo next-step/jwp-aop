@@ -41,12 +41,13 @@ public class BeanFactoryUtils {
         return getAllConstructors(clazz, withAnnotation(Inject.class));
     }
 
-    public static Optional<Object> invokeMethod(Method method, Object bean, Object[] args) {
+    public static Object invokeMethod(Method method, Object bean, Object[] args) {
         try {
-            return Optional.ofNullable(method.invoke(bean, args));
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            return method.invoke(bean, args);
+        }
+        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             log.error(e.getMessage());
-            return Optional.empty();
+            return null;
         }
     }
 

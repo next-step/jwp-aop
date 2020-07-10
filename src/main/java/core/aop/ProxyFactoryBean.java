@@ -1,7 +1,7 @@
 package core.aop;
 
 import com.google.common.collect.Lists;
-import core.aop.advice.ProxyMethodInvocation;
+import core.aop.advice.ProxyMethodInterceptor;
 import core.aop.advisor.Advisor;
 import lombok.Getter;
 import net.sf.cglib.proxy.Enhancer;
@@ -29,7 +29,7 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     public Object getObject() throws Exception {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(getObjectType());
-        enhancer.setCallback(new ProxyMethodInvocation(advisors));
+        enhancer.setCallback(new ProxyMethodInterceptor(advisors));
         return enhancer.create();
     }
 

@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory, BeanGettable {
+public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
     private Map<Class<?>, Object> beans = Maps.newHashMap();
@@ -147,8 +147,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
         for (Method initializeMethod : initializeMethods) {
             log.debug("@PostConstruct Initialize Method : {}", initializeMethod);
-            BeanFactoryUtils.invokeMethod(initializeMethod, bean,
-                    populateArguments(initializeMethod.getParameterTypes()));
+            BeanFactoryUtils.invokeMethod(
+                initializeMethod,
+                bean,
+                BeanFactoryUtils.getArguments(this, initializeMethod.getParameterTypes())
+            );
         }
     }
 

@@ -22,7 +22,7 @@ public class AnnotatedBeanDefinitionReaderTest {
         abdr.loadBeanDefinitions(ExampleConfig.class);
         beanFactory.preInstantiateSingletons();
 
-        assertThat(beanFactory.getBean(DataSource.class)).isNotNull();
+        assertThat((DataSource)beanFactory.getBean(DataSource.class)).isNotNull();
     }
 
     @Test

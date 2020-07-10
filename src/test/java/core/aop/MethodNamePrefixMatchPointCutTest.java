@@ -1,6 +1,6 @@
 package core.aop;
 
-import core.aop.interceptors.AopTestServiceImpl;
+import core.aop.example.AopTestServiceImpl;
 import core.aop.pointcut.MethodNamePrefixMatchPointCut;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

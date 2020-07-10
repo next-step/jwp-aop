@@ -48,12 +48,12 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
     }
 
     @Override
-    public <T> T getBean(Class<T> clazz) {
-        return beanFactory.getBean(clazz);
+    public Set<Class<?>> getBeanClasses() {
+        return beanFactory.getBeanClasses();
     }
 
     @Override
-    public Set<Class<?>> getBeanClasses() {
-        return beanFactory.getBeanClasses();
+    public <T> T getBean(Class<?> type) {
+        return beanFactory.getBean(type);
     }
 }

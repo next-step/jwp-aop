@@ -1,16 +1,15 @@
-package core.aop.interceptors;
+package core.aop.example;
 
+import core.aop.advice.Advice;
 import lombok.extern.slf4j.Slf4j;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.StopWatch;
 
 @Slf4j
-public class PerformanceInterceptor implements MethodInterceptor {
+public class PerformanceInterceptor implements Advice {
     private StopWatch stopWatch = new StopWatch();
 
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+    public Object invoke(core.aop.advice.MethodInvocation invocation) throws Throwable {
         stopWatch.start();
         Object proceed = invocation.proceed();
         stopWatch.stop();

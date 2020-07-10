@@ -9,12 +9,12 @@ import org.springframework.util.CollectionUtils;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class ProxyMethodInvocation implements MethodInterceptor {
+public class ProxyMethodInterceptor implements MethodInterceptor {
     private final List<Advisor> advisors = Lists.newArrayList();
 
-    public ProxyMethodInvocation(List<Advisor> advisors) {
+    public ProxyMethodInterceptor(List<Advisor> advisors) {
         if (!CollectionUtils.isEmpty(advisors)) {
-            advisors.addAll(advisors);
+            this.advisors.addAll(advisors);
         }
     }
 

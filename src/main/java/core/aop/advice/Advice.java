@@ -1,5 +1,5 @@
 package core.aop.advice;
 
 public interface Advice {
-    Object invoke(MethodInvocation methodInvocation) throws Throwable;
+    Object invoke(MethodInvocation invocation) throws Throwable;
 }
