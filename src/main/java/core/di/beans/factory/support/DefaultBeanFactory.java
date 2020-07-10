@@ -1,31 +1,21 @@
 package core.di.beans.factory.support;
 
 import com.google.common.collect.Maps;
-import core.di.beans.factory.BeanGenerator;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
-import core.di.beans.factory.generator.AnnotatedBeanGenerator;
-import core.di.beans.factory.generator.ConcreteClassBeanGenerator;
-import core.di.beans.factory.generator.ConcreteProxyBeanGenerator;
-import core.di.beans.factory.generator.ProxyBeanGenerator;
+import core.di.beans.factory.generator.BeanGenerators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
     private final Map<Class<?>, Object> beans = Maps.newHashMap();
     private final Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
-    private final List<BeanGenerator> beanGenerators = new ArrayList<>();
-
-    public DefaultBeanFactory() {
-        beanGenerators.add(new ProxyBeanGenerator(this));
-        beanGenerators.add(new ConcreteProxyBeanGenerator(this));
-        beanGenerators.add(new AnnotatedBeanGenerator(this));
-        beanGenerators.add(new ConcreteClassBeanGenerator(this));
-    }
+    private final BeanGenerators beanGenerators = new BeanGenerators(this);
 
     @Override
     public void preInstantiateSingletons() {
@@ -53,14 +43,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
 
-        Object bean = beanGenerators.stream()
-                .filter(beanGenerator -> beanGenerator.support(beanDefinition))
-                .map(beanGenerator -> beanGenerator.generate(clazz, beanDefinition))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
-
-        return (T) bean;
+        return beanGenerators.generate(clazz, beanDefinition);
     }
 
     @Override

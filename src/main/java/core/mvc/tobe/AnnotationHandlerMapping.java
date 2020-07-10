@@ -2,8 +2,10 @@ package core.mvc.tobe;
 
 import com.google.common.collect.Maps;
 import core.annotation.web.Controller;
+import core.annotation.web.ControllerAdvice;
 import core.annotation.web.RequestMethod;
 import core.di.context.ApplicationContext;
+import core.mvc.ExceptionHandlerMapping;
 import core.mvc.HandlerMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
-public class AnnotationHandlerMapping implements HandlerMapping {
+public class AnnotationHandlerMapping implements HandlerMapping, ExceptionHandlerMapping {
     private static final Logger logger = LoggerFactory.getLogger(AnnotationHandlerMapping.class);
 
     private ApplicationContext applicationContext;
     private HandlerConverter handlerConverter;
 
     private Map<HandlerKey, HandlerExecution> handlerExecutions = new LinkedHashMap<>();
+    private Map<Class<? extends Throwable>, HandlerExecution> exceptionHandlerExecutions = new LinkedHashMap<>();
 
     public AnnotationHandlerMapping(ApplicationContext applicationContext, HandlerConverter handlerConverter) {
         this.applicationContext = applicationContext;
@@ -26,15 +29,23 @@ public class AnnotationHandlerMapping implements HandlerMapping {
     }
 
     public void initialize() {
-        Map<Class<?>, Object> controllers = getControllers(applicationContext);
+        Map<Class<?>, Object> controllers = getBeansAnnotatedWith(applicationContext, Controller.class);
         handlerExecutions.putAll(handlerConverter.convert(controllers));
+        exceptionHandlerExecutions.putAll(
+                handlerConverter.convertAdvices(getBeansAnnotatedWith(applicationContext, ControllerAdvice.class))
+        );
         logger.info("Initialized AnnotationHandlerMapping!");
     }
 
-    private Map<Class<?>, Object> getControllers(ApplicationContext ac) {
+    @Override
+    public Object getHandler(Throwable exception) {
+        return exceptionHandlerExecutions.get(exception.getClass());
+    }
+
+    private Map<Class<?>, Object> getBeansAnnotatedWith(ApplicationContext ac, Class<? extends Annotation> annotationType) {
         Map<Class<?>, Object> controllers = Maps.newHashMap();
         for (Class<?> clazz : ac.getBeanClasses()) {
-            Annotation annotation = clazz.getAnnotation(Controller.class);
+            Annotation annotation = clazz.getAnnotation(annotationType);
             if (annotation != null) {
                 controllers.put(clazz, ac.getBean(clazz));
             }

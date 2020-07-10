@@ -1,6 +1,7 @@
 package core.mvc.tobe;
 
 import com.google.common.collect.Lists;
+import core.annotation.web.ExceptionHandler;
 import core.annotation.web.RequestMapping;
 import core.mvc.tobe.support.ArgumentResolver;
 import org.slf4j.Logger;
@@ -36,6 +37,38 @@ public class HandlerConverter {
         }
 
         return sortHandlers(handlers);
+    }
+
+    public Map<Class<? extends Throwable>, HandlerExecution> convertAdvices(Map<Class<?>, Object> controllerAdvices) {
+        Map<Class<? extends Throwable>, HandlerExecution> handlers = new LinkedHashMap<>();
+
+        for (Class<?> controllerAdvice : controllerAdvices.keySet()) {
+            Object target = controllerAdvices.get(controllerAdvice);
+            addExceptionHandlerExecution(handlers, target, controllerAdvice.getMethods());
+        }
+
+        return handlers;
+    }
+
+    private void addExceptionHandlerExecution(Map<Class<? extends Throwable>, HandlerExecution> handlers, Object target, Method[] methods) {
+        Arrays.stream(methods)
+                .filter(method -> method.isAnnotationPresent(ExceptionHandler.class))
+                .forEach(method -> {
+                    ExceptionHandler exceptionHandler = method.getAnnotation(ExceptionHandler.class);
+                    Class<? extends Throwable>[] exceptions = exceptionHandler.value();
+                    HandlerExecution handlerExecution = new HandlerExecution(nameDiscoverer, argumentResolvers, target, method);
+                    addExceptionHandlerExecution(handlers, exceptions, handlerExecution);
+                });
+    }
+
+    private void addExceptionHandlerExecution(Map<Class<? extends Throwable>, HandlerExecution> handlers,
+                                              Class<? extends Throwable>[] exceptions,
+                                              HandlerExecution handlerExecution) {
+        Arrays.stream(exceptions)
+                .forEach(exception -> {
+                    handlers.put(exception, handlerExecution);
+                    logger.info("Add - exception: {}, HandlerExecution: {}", exception, handlerExecution);
+                });
     }
 
     private void addHandlerExecution(Map<HandlerKey, HandlerExecution> handlers, final Object target, Method[] methods) {

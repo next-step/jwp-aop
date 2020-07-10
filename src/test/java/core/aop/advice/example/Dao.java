@@ -1,6 +1,8 @@
 package core.aop.advice.example;
 
 import core.annotation.Inject;
+import core.annotation.Repository;
+import core.annotation.Transactional;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.RowMapper;
 import next.model.User;
@@ -8,6 +10,8 @@ import next.model.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Repository
+@Transactional
 public class Dao {
     private JdbcTemplate jdbcTemplate;
 

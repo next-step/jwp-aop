@@ -14,8 +14,6 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
     protected BeanDefinition beanDefinition;
     protected Class<?> targetClass;
     protected Object[] targetArguments;
-    protected Advice advice;
-    protected PointCut pointCut;
     protected BeanInterceptor beanInterceptor;
 
     public ProxyFactoryBean(BeanDefinition beanDefinition,
@@ -25,8 +23,6 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         this.beanDefinition = beanDefinition;
         this.targetClass = beanDefinition.getBeanClass();
         this.targetArguments = targetArguments;
-        this.advice = advice;
-        this.pointCut = pointCut;
         this.beanInterceptor = new BeanInterceptor(advice, pointCut);
     }
 
@@ -78,10 +74,5 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
 
         Class<?>[] argumentTypes = beanDefinition.getInjectConstructor().getParameterTypes();
         return (T) enhancer.create(argumentTypes, targetArguments); // argument type에 맞는 생성자를 찾아 생성
-    }
-
-    @Override
-    public Class<?> getClassType() {
-        return targetClass;
     }
 }
