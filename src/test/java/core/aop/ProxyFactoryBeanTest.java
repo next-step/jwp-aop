@@ -35,8 +35,8 @@ public class ProxyFactoryBeanTest {
     public void interceptorTest() throws Exception {
         Counter counter = new Counter();
         ProxyFactoryBean<MyService> proxyFactoryBean = new ProxyFactoryBean<>(MyService.class,
-                new CounterAdvice(counter),
                 method -> true,
+                new CounterAdvice(counter),
                 new DefaultBeanFactory());
 
         proxyFactoryBean.getObject().doProcess();
@@ -49,8 +49,8 @@ public class ProxyFactoryBeanTest {
     public void interceptorTest2() throws Exception {
         Counter counter = new Counter();
         ProxyFactoryBean<MyService2> proxyFactoryBean = new ProxyFactoryBean<>(MyService2.class,
-                new CounterAdvice(counter),
                 method -> "doProcess".equals(method.getName()),
+                new CounterAdvice(counter),
                 beanFactory);
 
         MyService2 myService = proxyFactoryBean.getObject();

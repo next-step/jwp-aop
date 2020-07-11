@@ -15,14 +15,14 @@ import java.lang.reflect.Field;
 public class ProxyFactoryBean<T> implements FactoryBean<T> {
 
     private Class<?> target;
-    private Advice advice;
     private Pointcut pointcut;
+    private Advice advice;
     private BeanFactory beanFactory;
 
-    public ProxyFactoryBean(Class<?> target, Advice advice, Pointcut pointcut, BeanFactory beanFactory) {
+    public ProxyFactoryBean(Class<?> target, Pointcut pointcut, Advice advice, BeanFactory beanFactory) {
         this.target = target;
-        this.advice = advice;
         this.pointcut = pointcut;
+        this.advice = advice;
         this.beanFactory = beanFactory;
     }
 

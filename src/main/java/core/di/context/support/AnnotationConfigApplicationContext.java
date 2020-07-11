@@ -2,9 +2,7 @@ package core.di.context.support;
 
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
-import core.di.beans.factory.ClassBeanScanner;
-import core.di.beans.factory.DefaultBeanFactory;
-import core.di.beans.factory.MethodBeanScanner;
+import core.di.beans.factory.*;
 import core.di.context.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +20,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
 
     public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
         Object[] basePackages = findBasePackages(annotatedClasses);
+
         beanFactory = new DefaultBeanFactory();
 
         new ClassBeanScanner(beanFactory).scan(basePackages);

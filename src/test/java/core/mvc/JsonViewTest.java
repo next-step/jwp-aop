@@ -38,7 +38,7 @@ public class JsonViewTest {
     void render_one_element() throws Exception {
         Map<String, Object> model = new HashMap<>();
         Car expected = new Car("Black", "Sonata");
-        model.put("car", expected);
+        model.put("CarDao", expected);
 
         view.render(model, request, response);
 
@@ -51,7 +51,7 @@ public class JsonViewTest {
     void render_over_two_element() throws Exception {
         Map<String, Object> model = new HashMap<>();
         Car expected = new Car("Black", "Sonata");
-        model.put("car", expected);
+        model.put("CarDao", expected);
         model.put("name", "포비");
 
         view.render(model, request, response);

@@ -21,10 +21,28 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     private Map<String, Object> beans = new LinkedHashMap<>();
     private BeanInitializer beanInitializer;
 
+    private BeanDefinitionPostProcessor beanDefinitionPostProcessor;
+
     public DefaultBeanFactory() {
+        initializeBeanDefinitionInitializer();
+        initializeBeanDefinitionPostProcessor();
+    }
+
+    private void initializeBeanDefinitionInitializer() {
+        ClassBeanDefinitionInitializer classBeanDefinitionInitializer = new ClassBeanDefinitionInitializer();
+        MethodBeanDefinitionInitializer methodBeanDefinitionInitializer = new MethodBeanDefinitionInitializer();
+        FactoryBeanDefinitionInitializer factoryBeanDefinitionInitializer = new FactoryBeanDefinitionInitializer(classBeanDefinitionInitializer, methodBeanDefinitionInitializer);
+
         beanInitializer = new BeanInitializerComposite(
-                new ClassBeanDefinitionInitializer(),
-                new MethodBeanDefinitionInitializer());
+                factoryBeanDefinitionInitializer,
+                classBeanDefinitionInitializer,
+                methodBeanDefinitionInitializer);
+    }
+
+    public void initializeBeanDefinitionPostProcessor() {
+        beanDefinitionPostProcessor = new BeanDefinitionPostProcessorComposite(
+            new FactoryBeanDefinitionPostProcessor()
+        );
     }
 
     public void initialize() {
@@ -133,8 +151,20 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
             throw new BeanInitializationException("bean name '" + beanDefinition.getName() + "' is duplicated");
         }
 
-        this.beanDefinitions.put(beanDefinition.getName(), beanDefinition);
+        BeanDefinition definition = beanDefinition;
+
+        if(beanDefinitionPostProcessor.support(beanDefinition)) {
+            definition = beanDefinitionPostProcessor.process(beanDefinition);
+        }
+
+        this.beanDefinitions.put(definition.getName(), definition);
+
         logger.info("registered {}", beanDefinition);
+    }
+
+    @Override
+    public void removeBeanDefinition(String name) {
+        this.beanDefinitions.remove(name);
     }
 
     @Override

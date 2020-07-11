@@ -1,7 +1,8 @@
 package core.di.beans.factory;
 
 import core.aop.Advice;
-import org.aspectj.lang.reflect.Pointcut;
+import core.aop.Pointcut;
+
 
 /**
  * @author KingCjy
@@ -10,14 +11,14 @@ public class ProxyFactoryBeanDefinition implements BeanDefinition {
 
     private String name;
     private Class<?> type;
-    private Advice advice;
     private Pointcut pointcut;
+    private Advice advice;
 
-    public ProxyFactoryBeanDefinition(String name, Class<?> type, Advice advice, Pointcut pointcut) {
+    public ProxyFactoryBeanDefinition(String name, Class<?> type, Pointcut pointcut, Advice advice) {
         this.name = name;
         this.type = type;
-        this.advice = advice;
         this.pointcut = pointcut;
+        this.advice = advice;
     }
 
     @Override
@@ -30,5 +31,11 @@ public class ProxyFactoryBeanDefinition implements BeanDefinition {
         return name;
     }
 
+    public Advice getAdvice() {
+        return advice;
+    }
 
+    public Pointcut getPointcut() {
+        return pointcut;
+    }
 }
