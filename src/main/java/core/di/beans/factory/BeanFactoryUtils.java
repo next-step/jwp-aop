@@ -2,16 +2,18 @@ package core.di.beans.factory;
 
 import com.google.common.collect.Sets;
 import core.annotation.Inject;
+import core.annotation.PostConstruct;
 import core.annotation.Qualifier;
 import core.mvc.tobe.MethodParameter;
+import core.util.ReflectionUtils;
+import org.springframework.beans.BeanInstantiationException;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.reflections.ReflectionUtils.getAllConstructors;
 import static org.reflections.ReflectionUtils.withAnnotation;
@@ -98,6 +100,55 @@ public class BeanFactoryUtils {
             return nameDiscoverer.getParameterNames((Constructor<?>) executable);
         } else {
             throw new IllegalArgumentException("parameter executable must be a constructor or method");
+        }
+    }
+
+    public static void injectField(BeanFactory beanFactory, Object instance, Field field) {
+        try {
+            String beanName = ReflectionUtils.getFieldBeanName(field);
+            Object value = beanFactory.getBean(beanName, field.getType());
+            field.setAccessible(true);
+            field.set(instance, value);
+        } catch (IllegalAccessException e) {
+            throw new BeanInstantiationException(instance.getClass(), "illegal access '" + field.getName() + "'", e);
+        }
+    }
+
+    public static Set<Field> findInjectFields(Class<?> targetClass) {
+        return Arrays.stream(targetClass.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Inject.class))
+                .collect(Collectors.toSet());
+    }
+
+    public static void invokePostConstructor(BeanFactory beanFactory, Object instance, Method method) {
+        try {
+            Object[] parameters = BeanFactoryUtils.getParameters(beanFactory, method);
+            method.invoke(instance, parameters);
+        } catch (IllegalAccessException e) {
+            throw new BeanInstantiationException(method, "Cannot access method '" + method.getName() + "' is it public?", e);
+        } catch (InvocationTargetException e) {
+            throw new BeanInstantiationException(method, "Method threw exception", e.getTargetException());
+        }
+    }
+
+    public static Set<Method> findPostConstructMethods(Class<?> targetClass) {
+        return Arrays.stream(targetClass.getMethods())
+                .filter(method -> method.isAnnotationPresent(PostConstruct.class))
+                .collect(Collectors.toSet());
+    }
+
+    public static Constructor<?> findInjectController(Class<?> targetClass) {
+        return Arrays.stream(targetClass.getConstructors())
+                .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
+                .findAny()
+                .orElseGet(() -> findPrimaryConstructor(targetClass));
+    }
+
+    private static Constructor<?> findPrimaryConstructor(Class<?> targetClass) {
+        try {
+            return targetClass.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new BeanInstantiationException(targetClass, "Constructor with @Inject not Found");
         }
     }
 }
