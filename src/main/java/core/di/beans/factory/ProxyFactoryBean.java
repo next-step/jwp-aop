@@ -10,7 +10,7 @@ import java.lang.reflect.Constructor;
 /**
  * @author KingCjy
  */
-public class ProxyFactoryBean<T> implements FactoryBean<T> {
+public class ProxyFactoryBean<T> implements FactoryBean<T>, BeanFactoryAware {
 
     private Class<?> target;
     private Pointcut pointcut;
@@ -18,14 +18,9 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
     private BeanFactory beanFactory;
 
     public ProxyFactoryBean(Class<?> target, Pointcut pointcut, Advice advice) {
-        this(target, pointcut, advice, null);
-    }
-
-    public ProxyFactoryBean(Class<?> target, Pointcut pointcut, Advice advice, BeanFactory beanFactory) {
         this.target = target;
         this.pointcut = pointcut;
         this.advice = advice;
-        this.beanFactory = beanFactory;
     }
 
     @Override
@@ -35,7 +30,7 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         enhancer.setCallback(new BeanInterceptor(pointcut, advice));
 
         if(beanFactory != null) {
-            T instance = createInstance(enhancer);
+            T instance = createInstanceFromBeanFactory(enhancer);
             BeanFactoryUtils.findInjectFields(target).forEach(field -> BeanFactoryUtils.injectField(beanFactory, instance, field));
             BeanFactoryUtils.findPostConstructMethods(target).forEach(method -> BeanFactoryUtils.invokePostConstructor(beanFactory, instance, method));
             return instance;
@@ -44,11 +39,16 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         return (T) enhancer.create();
     }
 
-    private T createInstance(Enhancer enhancer) {
+    private T createInstanceFromBeanFactory(Enhancer enhancer) {
         Constructor<?> constructor = BeanFactoryUtils.findInjectController(target);
         Object[] parameters = BeanFactoryUtils.getParameters(beanFactory, constructor);
 
         T instance = (T) enhancer.create(constructor.getParameterTypes(), parameters);
         return instance;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 }

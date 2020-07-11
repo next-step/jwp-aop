@@ -6,6 +6,8 @@ import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.DefaultBeanFactory;
 import core.di.beans.factory.ProxyFactoryBean;
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.di.factory.proxy.example.Counter;
+import core.di.factory.proxy.example.CounterAdvice;
 import net.sf.cglib.proxy.MethodProxy;
 import next.config.MyConfiguration;
 import next.dao.UserDao;
@@ -49,8 +51,9 @@ public class ProxyFactoryBeanTest {
         Counter counter = new Counter();
         ProxyFactoryBean<MyService2> proxyFactoryBean = new ProxyFactoryBean<>(MyService2.class,
                 method -> "doProcess".equals(method.getName()),
-                new CounterAdvice(counter),
-                beanFactory);
+                new CounterAdvice(counter));
+
+        proxyFactoryBean.setBeanFactory(beanFactory);
 
         MyService2 myService = proxyFactoryBean.getObject();
         myService.doProcess();
@@ -61,32 +64,7 @@ public class ProxyFactoryBeanTest {
         assertThat(counter.getCount()).isEqualTo(1);
     }
 
-    static class Counter {
-        private int count = 0;
 
-        public int getCount() {
-            return count;
-        }
-
-        public void addCount() {
-            this.count += 1;
-        }
-    }
-
-    static class CounterAdvice implements Advice {
-
-        private Counter counter;
-
-        public CounterAdvice(Counter counter) {
-            this.counter = counter;
-        }
-
-        @Override
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            counter.addCount();
-            return proxy.invokeSuper(obj, args);
-        }
-    }
 
     public static class MyService {
         public void doProcess() {

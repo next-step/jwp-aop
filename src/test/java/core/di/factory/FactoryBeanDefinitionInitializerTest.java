@@ -1,18 +1,14 @@
 package core.di.factory;
 
-import core.annotation.Inject;
 import core.di.beans.factory.*;
 import core.di.context.support.AnnotationConfigApplicationContext;
-import core.di.factory.example3.CarDao;
-import core.di.factory.example3.TestFactoryBean;
+import core.di.factory.proxy.example.CarDao;
+import core.di.factory.proxy.example.TestFactoryBean;
 import next.config.MyConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.doesNotHave;
 
 /**
  * @author KingCjy
@@ -43,7 +39,7 @@ public class FactoryBeanDefinitionInitializerTest {
 
     @Test
     public void initBeanFromMethodTest() {
-        CarDao carDao = beanFactory.getBean(CarDao.class);
+        CarDao carDao = beanFactory.getBean("myCarDao", CarDao.class);
 
         assertThat(carDao).isNotNull();
         assertThat(carDao).isInstanceOf(CarDao.class);

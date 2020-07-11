@@ -1,8 +1,9 @@
-package core.di.factory.example3;
+package core.di.factory.proxy.example;
 
 import core.annotation.Bean;
 import core.annotation.Configuration;
 import core.annotation.Inject;
+import core.di.beans.factory.ProxyFactoryBean;
 
 import javax.sql.DataSource;
 
@@ -10,7 +11,7 @@ import javax.sql.DataSource;
  * @author KingCjy
  */
 @Configuration
-public class TestService {
+public class TestProxyConfiguration {
 
     @Inject
     private DataSource dataSource;
@@ -18,5 +19,10 @@ public class TestService {
     @Bean
     public TestFactoryBean testFactoryBean() {
         return new TestFactoryBean(dataSource);
+    }
+
+    @Bean
+    public CarDaoProxyFactoryBean myCarDao() {
+        return new CarDaoProxyFactoryBean();
     }
 }

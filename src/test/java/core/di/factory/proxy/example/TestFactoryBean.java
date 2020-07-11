@@ -1,8 +1,7 @@
-package core.di.factory.example3;
+package core.di.factory.proxy.example;
 
 import core.annotation.Inject;
 import core.di.beans.factory.FactoryBean;
-import core.di.factory.FactoryBeanDefinitionInitializerTest;
 
 import javax.sql.DataSource;
 
