@@ -4,10 +4,8 @@ import core.aop.Advice;
 import core.aop.BeanInterceptor;
 import core.aop.Pointcut;
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 
 /**
  * @author KingCjy
@@ -18,6 +16,10 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
     private Pointcut pointcut;
     private Advice advice;
     private BeanFactory beanFactory;
+
+    public ProxyFactoryBean(Class<?> target, Pointcut pointcut, Advice advice) {
+        this(target, pointcut, advice, null);
+    }
 
     public ProxyFactoryBean(Class<?> target, Pointcut pointcut, Advice advice, BeanFactory beanFactory) {
         this.target = target;
@@ -32,11 +34,14 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         enhancer.setSuperclass(target);
         enhancer.setCallback(new BeanInterceptor(pointcut, advice));
 
-        T instance = createInstance(enhancer);
-        BeanFactoryUtils.findInjectFields(target).forEach(field -> BeanFactoryUtils.injectField(beanFactory, instance, field));
-        BeanFactoryUtils.findPostConstructMethods(target).forEach(method -> BeanFactoryUtils.invokePostConstructor(beanFactory, instance, method));
+        if(beanFactory != null) {
+            T instance = createInstance(enhancer);
+            BeanFactoryUtils.findInjectFields(target).forEach(field -> BeanFactoryUtils.injectField(beanFactory, instance, field));
+            BeanFactoryUtils.findPostConstructMethods(target).forEach(method -> BeanFactoryUtils.invokePostConstructor(beanFactory, instance, method));
+            return instance;
+        }
 
-        return instance;
+        return (T) enhancer.create();
     }
 
     private T createInstance(Enhancer enhancer) {

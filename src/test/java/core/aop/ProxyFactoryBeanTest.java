@@ -36,8 +36,7 @@ public class ProxyFactoryBeanTest {
         Counter counter = new Counter();
         ProxyFactoryBean<MyService> proxyFactoryBean = new ProxyFactoryBean<>(MyService.class,
                 method -> true,
-                new CounterAdvice(counter),
-                new DefaultBeanFactory());
+                new CounterAdvice(counter));
 
         proxyFactoryBean.getObject().doProcess();
 
