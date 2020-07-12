@@ -52,7 +52,7 @@ public class DispatcherServlet extends HttpServlet {
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
         } catch (Throwable e) {
-            logger.error("Exception : {}", e.getCause().getClass());
+            logger.error("Exception : {}", e.getCause());
             handleException(e, req, resp);
         }
     }
@@ -63,7 +63,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void handleException(Throwable t, HttpServletRequest req, HttpServletResponse resp) throws ServletException {
-        final ExceptionHandlerExecution handler = exceptionHandlerMapping.getHandler(t.getCause());
+        final ExceptionHandlerExecution handler = exceptionHandlerMapping.getHandler(t);
         if (handler == null) {
             throw new ServletException(t.getMessage());
         }
