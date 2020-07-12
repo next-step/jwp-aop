@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestMapping implements HandlerMapping {
+public class RequestMapping implements HandlerMapping<HttpServletRequest> {
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
     private Map<String, Controller> mappings = new HashMap<>();
 
@@ -20,6 +20,7 @@ public class RequestMapping implements HandlerMapping {
         });
     }
 
+    @Override
     public Controller getHandler(HttpServletRequest request) {
         return mappings.get(request.getRequestURI());
     }
