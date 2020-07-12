@@ -10,6 +10,9 @@ import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import next.config.MyConfiguration;
+import next.model.User;
+import next.security.LoginUser;
+import next.security.RequiredLoginException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,10 +65,7 @@ public class ExceptionHandlerMappingTest {
         }
 
         @RequestMapping(value = "/api/exception", method = RequestMethod.GET)
-        public ModelAndView exception(@PathVariable String test) throws Exception {
-            if (System.currentTimeMillis() > 0) {
-                throw new NoReasonException();
-            }
+        public ModelAndView exception(@LoginUser User loginUser) throws Exception {
             return jspView("redirect:/abc");
         }
     }
@@ -75,16 +75,9 @@ public class ExceptionHandlerMappingTest {
         public DummyControllerAdvice() {
         }
 
-        @ExceptionHandler(NoReasonException.class)
-        public ModelAndView noReasonException() {
+        @ExceptionHandler(RequiredLoginException.class)
+        public ModelAndView requiredLoginExceptionHandler() {
             return new ModelAndView(new JspView("redirect:/"));
         }
     }
-
-    public static class NoReasonException extends Exception {
-        public NoReasonException() {
-            super();
-        }
-    }
-
 }
