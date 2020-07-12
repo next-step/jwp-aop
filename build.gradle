@@ -37,6 +37,7 @@ dependencies {
     // aop
     implementation 'org.aspectj:aspectjweaver:1.9.5'
     implementation 'cglib:cglib:3.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-aop:2.3.1.RELEASE'
 
     // etc
     implementation 'org.reflections:reflections:0.9.12'
@@ -57,6 +58,9 @@ dependencies {
     testImplementation 'org.springframework:spring-test:' + springVersion
     testImplementation 'io.projectreactor.netty:reactor-netty:0.9.7.RELEASE'
     testImplementation 'org.springframework:spring-webflux:' + springVersion
+
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
 }
 
 test {
