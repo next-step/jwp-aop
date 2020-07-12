@@ -8,6 +8,8 @@ import study.proxy.cglib.UppercaseInterceptor;
 import study.proxy.jdk.Hello;
 import study.proxy.jdk.HelloImplTarget;
 import study.proxy.jdk.UppercaseHandler;
+import study.proxy.matcher.MethodMatcher;
+import study.proxy.matcher.SayMethodMatcher;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -20,7 +22,8 @@ public class ProxyTest {
     @Test
     void jdkProxyTest() {
         /* given */
-        InvocationHandler invocationHandler = new UppercaseHandler(new HelloImplTarget());
+        MethodMatcher methodMatcher = new SayMethodMatcher();
+        InvocationHandler invocationHandler = new UppercaseHandler(new HelloImplTarget(), methodMatcher);
 
         /* when */
         Hello proxiedHello = (Hello) Proxy.newProxyInstance(
@@ -32,15 +35,18 @@ public class ProxyTest {
         assertThat(proxiedHello.sayHello("nick")).isEqualTo("HELLO NICK");
         assertThat(proxiedHello.sayHi("nick")).isEqualTo("HI NICK");
         assertThat(proxiedHello.sayThankYou("nick")).isEqualTo("THANK YOU NICK");
+        assertThat(proxiedHello.pingpong("nick")).isEqualTo("Pong nick");
     }
 
     @DisplayName("CGLib Proxy 를 사용해 모든 메소드의 값을 대문자로 변환한다.")
     @Test
     void cglibProxyTest() {
         /* given */
+        MethodMatcher methodMatcher = new SayMethodMatcher();
+
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback(new UppercaseInterceptor());
+        enhancer.setCallback(new UppercaseInterceptor(methodMatcher));
 
         /* when */
         HelloTarget proxiedHelloTarget = (HelloTarget) enhancer.create();
@@ -49,6 +55,7 @@ public class ProxyTest {
         assertThat(proxiedHelloTarget.sayHello("nick")).isEqualTo("HELLO NICK");
         assertThat(proxiedHelloTarget.sayHi("nick")).isEqualTo("HI NICK");
         assertThat(proxiedHelloTarget.sayThankYou("nick")).isEqualTo("THANK YOU NICK");
+        assertThat(proxiedHelloTarget.pingpong("nick")).isEqualTo("Pong nick");
     }
 
 }

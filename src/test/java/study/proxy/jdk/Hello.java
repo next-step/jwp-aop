@@ -8,4 +8,5 @@ public interface Hello {
 
     String sayThankYou(String name);
 
+    String pingpong(String name);
 }

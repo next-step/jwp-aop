@@ -14,4 +14,7 @@ public class HelloTarget {
         return "Thank You " + name;
     }
 
+    public String pingpong(String name) {
+        return "Pong " + name;
+    }
 }
