@@ -4,6 +4,7 @@ import core.annotation.Component;
 import core.annotation.Repository;
 import core.annotation.Service;
 import core.annotation.web.Controller;
+import core.annotation.web.ControllerAdvice;
 import core.di.beans.factory.support.BeanDefinitionRegistry;
 import core.di.beans.factory.support.DefaultBeanDefinition;
 import org.reflections.Reflections;
@@ -21,7 +22,7 @@ public final class ClasspathBeanDefinitionScanner extends AbstractBeanDefinition
     public void doScan(Object... basePackages) {
         final Reflections reflections = new Reflections(basePackages);
         final Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
-                Repository.class, Component.class);
+                Repository.class, Component.class, ControllerAdvice.class);
         for (Class<?> clazz : beanClasses) {
             beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));
         }
