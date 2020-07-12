@@ -1,5 +1,6 @@
 package core.mvc;
 
+import core.mvc.tobe.ExceptionHandlerExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,12 +22,18 @@ public class DispatcherServlet extends HttpServlet {
 
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
+    private ExceptionHandlerMapping exceptionHandlerMapping;
+
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
     }
 
     public void addHandlerAdapter(HandlerAdapter handlerAdapter) {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
+    }
+
+    public void addExceptionHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
+        this.exceptionHandlerMapping = exceptionHandlerMapping;
     }
 
     @Override
@@ -46,12 +53,26 @@ public class DispatcherServlet extends HttpServlet {
             render(mav, req, resp);
         } catch (Throwable e) {
             logger.error("Exception : {}", e.getCause().getClass());
-            throw new ServletException(e.getMessage());
+            handleException(e, req, resp);
         }
     }
 
     private void render(ModelAndView mav, HttpServletRequest req, HttpServletResponse resp) throws Exception {
         View view = mav.getView();
         view.render(mav.getModel(), req, resp);
+    }
+
+    private void handleException(Throwable t, HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+        final ExceptionHandlerExecution handler = exceptionHandlerMapping.getHandler(t.getCause());
+        if (handler == null) {
+            throw new ServletException(t.getMessage());
+        }
+
+        try {
+            final ModelAndView mv = handler.handle();
+            render(mv, req, resp);
+        } catch (Exception e) {
+            throw new ServletException(e.getMessage());
+        }
     }
 }
