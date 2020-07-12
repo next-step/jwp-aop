@@ -1,4 +1,6 @@
-package core.di.beans.factory;
+package core.di.beans.factory.processor;
+
+import core.di.beans.factory.definition.BeanDefinition;
 
 /**
  * @author KingCjy

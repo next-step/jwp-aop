@@ -1,8 +1,8 @@
-package core.di.factory;
+package core.di.factory.scanner;
 
-import core.di.beans.factory.ClassBeanDefinition;
-import core.di.beans.factory.ClassBeanScanner;
 import core.di.beans.factory.DefaultBeanFactory;
+import core.di.beans.factory.definition.ClassBeanDefinition;
+import core.di.beans.factory.scanner.ClassBeanScanner;
 import core.di.factory.example.NameController;
 import core.di.factory.example.QnaController;
 import core.di.factory.example2.TestComponent;

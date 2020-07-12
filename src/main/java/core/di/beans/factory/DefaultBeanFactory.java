@@ -1,5 +1,11 @@
 package core.di.beans.factory;
 
+import core.di.beans.factory.definition.BeanDefinition;
+import core.di.beans.factory.definition.BeanDefinitionRegistry;
+import core.di.beans.factory.initializer.*;
+import core.di.beans.factory.processor.BeanDefinitionPostProcessor;
+import core.di.beans.factory.processor.BeanDefinitionPostProcessorComposite;
+import core.di.beans.factory.processor.FactoryBeanDefinitionPostProcessor;
 import core.util.OrderComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,7 +153,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     @Override
     public void registerDefinition(BeanDefinition beanDefinition) {
         BeanDefinition duplicated = this.beanDefinitions.get(beanDefinition.getName());
-        if(duplicated != null && !beanDefinition.equals(duplicated)) {
+        if(duplicated != null && !beanDefinition.getName().equals(duplicated.getName())) {
             throw new BeanInitializationException("bean name '" + beanDefinition.getName() + "' is duplicated");
         }
 
@@ -160,11 +166,6 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
         this.beanDefinitions.put(definition.getName(), definition);
 
         logger.info("registered {}", beanDefinition);
-    }
-
-    @Override
-    public void removeBeanDefinition(String name) {
-        this.beanDefinitions.remove(name);
     }
 
     @Override

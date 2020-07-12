@@ -1,4 +1,4 @@
-package core.di.beans.factory;
+package core.di.beans.factory.scanner;
 
 /**
  * @author KingCjy

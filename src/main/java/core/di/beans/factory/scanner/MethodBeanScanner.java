@@ -1,7 +1,9 @@
-package core.di.beans.factory;
+package core.di.beans.factory.scanner;
 
 import core.annotation.Bean;
 import core.annotation.Configuration;
+import core.di.beans.factory.definition.BeanDefinitionRegistry;
+import core.di.beans.factory.definition.MethodBeanDefinition;
 import core.util.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;

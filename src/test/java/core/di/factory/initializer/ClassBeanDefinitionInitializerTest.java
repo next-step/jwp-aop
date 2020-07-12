@@ -1,9 +1,9 @@
-package core.di.factory;
+package core.di.factory.initializer;
 
-import core.di.beans.factory.BeanInitializer;
-import core.di.beans.factory.ClassBeanDefinition;
-import core.di.beans.factory.ClassBeanDefinitionInitializer;
 import core.di.beans.factory.DefaultBeanFactory;
+import core.di.beans.factory.definition.ClassBeanDefinition;
+import core.di.beans.factory.initializer.BeanInitializer;
+import core.di.beans.factory.initializer.ClassBeanDefinitionInitializer;
 import core.di.factory.example.JdbcQuestionRepository;
 import core.di.factory.example.JdbcUserRepository;
 import core.di.factory.example.MyQnaService;

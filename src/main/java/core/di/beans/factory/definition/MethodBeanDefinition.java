@@ -1,4 +1,4 @@
-package core.di.beans.factory;
+package core.di.beans.factory.definition;
 
 import java.lang.reflect.Method;
 import java.util.Objects;

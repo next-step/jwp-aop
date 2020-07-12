@@ -1,9 +1,9 @@
 package core.di.factory;
 
 import core.di.beans.factory.BeanFactoryUtils;
-import core.di.beans.factory.ClassBeanScanner;
 import core.di.beans.factory.DefaultBeanFactory;
-import core.di.beans.factory.MethodBeanScanner;
+import core.di.beans.factory.scanner.ClassBeanScanner;
+import core.di.beans.factory.scanner.MethodBeanScanner;
 import core.di.factory.example.MyQnaService;
 import core.di.factory.example.QuestionRepository;
 import core.di.factory.example.UserRepository;

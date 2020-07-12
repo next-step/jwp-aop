@@ -1,4 +1,4 @@
-package core.di.beans.factory;
+package core.di.beans.factory.definition;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -8,7 +8,6 @@ import java.util.Set;
  */
 public interface BeanDefinitionRegistry {
     void registerDefinition(BeanDefinition beanDefinition);
-    void removeBeanDefinition(String name);
 
     @Nullable
     BeanDefinition getBeanDefinition(String name);

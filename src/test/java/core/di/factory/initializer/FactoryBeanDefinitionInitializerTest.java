@@ -1,6 +1,12 @@
-package core.di.factory;
+package core.di.factory.initializer;
 
-import core.di.beans.factory.*;
+import core.di.beans.factory.BeanFactory;
+import core.di.beans.factory.definition.ClassBeanDefinition;
+import core.di.beans.factory.definition.FactoryBeanDefinition;
+import core.di.beans.factory.initializer.BeanInitializer;
+import core.di.beans.factory.initializer.ClassBeanDefinitionInitializer;
+import core.di.beans.factory.initializer.FactoryBeanDefinitionInitializer;
+import core.di.beans.factory.initializer.MethodBeanDefinitionInitializer;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.di.factory.proxy.example.CarDao;
 import core.di.factory.proxy.example.TestFactoryBean;

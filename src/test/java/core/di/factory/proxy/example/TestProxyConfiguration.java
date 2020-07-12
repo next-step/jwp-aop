@@ -3,7 +3,6 @@ package core.di.factory.proxy.example;
 import core.annotation.Bean;
 import core.annotation.Configuration;
 import core.annotation.Inject;
-import core.di.beans.factory.ProxyFactoryBean;
 
 import javax.sql.DataSource;
 

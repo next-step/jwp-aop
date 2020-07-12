@@ -1,9 +1,8 @@
-package core.di.factory;
+package core.di.factory.scanner;
 
-import core.di.beans.factory.BeanDefinitionRegistry;
 import core.di.beans.factory.DefaultBeanFactory;
-import core.di.beans.factory.MethodBeanScanner;
-import core.di.factory.example.MyJdbcTemplate;
+import core.di.beans.factory.definition.BeanDefinitionRegistry;
+import core.di.beans.factory.scanner.MethodBeanScanner;
 import core.di.factory.example2.MyBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

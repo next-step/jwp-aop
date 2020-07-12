@@ -1,14 +1,15 @@
-package core.di.factory;
+package core.di.factory.initializer;
 
-import core.di.beans.factory.*;
-import core.di.factory.example.TestConfiguration;
+import core.di.beans.factory.DefaultBeanFactory;
+import core.di.beans.factory.definition.ClassBeanDefinition;
+import core.di.beans.factory.definition.MethodBeanDefinition;
+import core.di.beans.factory.initializer.BeanInitializer;
+import core.di.beans.factory.initializer.MethodBeanDefinitionInitializer;
 import core.di.factory.example2.MyBean;
 import core.di.factory.example2.TestConfiguration2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

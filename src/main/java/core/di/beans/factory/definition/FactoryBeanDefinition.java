@@ -1,5 +1,8 @@
-package core.di.beans.factory;
+package core.di.beans.factory.definition;
 
+
+import core.aop.FactoryBean;
+import core.aop.ProxyFactoryBean;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -24,7 +27,7 @@ public class FactoryBeanDefinition implements BeanDefinition {
             this.type = Arrays.stream(factoryBeanClass.getGenericInterfaces())
                     .filter(type -> FactoryBean.class.getName().equals(((ParameterizedType)type).getRawType().getTypeName()))
                     .findFirst()
-                    .map(type -> (Class<?>) ((ParameterizedType) factoryBeanClass.getGenericInterfaces()[0]).getActualTypeArguments()[0])
+                    .map(type -> (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0])
                     .get();
         }
     }

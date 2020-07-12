@@ -5,7 +5,6 @@ import core.annotation.Component;
 import core.annotation.web.Controller;
 import core.annotation.web.RequestMethod;
 import core.di.beans.factory.BeanFactory;
-import core.di.beans.factory.DefaultBeanFactory;
 import core.mvc.HandlerMapping;
 import core.mvc.tobe.support.ArgumentResolver;
 import core.mvc.tobe.support.ArgumentResolverComposite;

@@ -2,7 +2,9 @@ package core.di.context.support;
 
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
-import core.di.beans.factory.*;
+import core.di.beans.factory.DefaultBeanFactory;
+import core.di.beans.factory.scanner.ClassBeanScanner;
+import core.di.beans.factory.scanner.MethodBeanScanner;
 import core.di.context.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +13,6 @@ import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class AnnotationConfigApplicationContext implements ApplicationContext {
     private static final Logger log = LoggerFactory.getLogger(AnnotationConfigApplicationContext.class);
