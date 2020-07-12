@@ -1,33 +1,31 @@
-package study.cglib;
+package core.di.beans.factory.support;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
+import core.di.beans.factory.ProxyFactoryBean;
+import core.di.factory.example.MyAdvice;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import core.di.beans.factory.support.MethodMatcher;
 import study.SayMethodMatcher;
+import study.cglib.HelloTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HelloCglibProxyTest {
+public class ProxyFactoryBeanTest {
     private String hello_expected = "HELLO EESEUL";
     private String hi_expected = "HI EESEUL";
     private String thankYou_expected = "THANK YOU EESEUL";
     private String pingPong_expected = "Pong eeseul";
 
-    @Test
-    void cglibTest() {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
-            String result = (String) method.invoke(new HelloTarget(), args);
-            MethodMatcher matcher = new SayMethodMatcher();
-            if (matcher.matches(method, obj.getClass(), args)) {
-                return result.toUpperCase();
-            }
-            return result;
-        });
+    private ProxyFactoryBean proxyFactoryBean;
 
-        HelloTarget helloTarget = (HelloTarget) enhancer.create();
+    @BeforeEach
+    void setUp() {
+        MethodMatcher matcher = new SayMethodMatcher();
+        this.proxyFactoryBean = new ProxyFactoryBean(new HelloTarget(), new MyAdvice(matcher));
+    }
+
+    @Test
+    void getObject() throws Exception {
+        HelloTarget helloTarget = (HelloTarget) proxyFactoryBean.getObject();
 
         String hello_actual = helloTarget.sayHello("eeseul");
         String hi_actual = helloTarget.sayHi("eeseul");

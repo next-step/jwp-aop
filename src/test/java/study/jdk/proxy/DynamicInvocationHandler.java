@@ -1,6 +1,6 @@
 package study.jdk.proxy;
 
-import study.MethodMatcher;
+import core.di.beans.factory.support.MethodMatcher;
 import study.SayMethodMatcher;
 
 import java.lang.reflect.InvocationHandler;
