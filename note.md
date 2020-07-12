@@ -1,5 +1,19 @@
 # Aspect OP
 
+## 4단계 - ControllerAdvice, ExceptionHandler 구현
+
+하.. 또 Hard reset 해버림..  
+생각보다 쉬울거라고 생각했는데 멍청하게 하는 바람에 또 망함 ^ㅅ^  
+
+1. 처음엔 Dispatcher 서블릿에서 처리했다.  
+2. 핸들러에서 익셉션이 발생한다.  
+3. InvocationTargetException이 발생한다.  
+4. 망한 파트 - (읭.. 그럼 HandlerExecution에서 처리해볼까)
+5. hard reset ^ㅅ^
+
+덕분에 InvocationTargetException가 발생했을 땐 getCause해야 root cause가 나온다는 사실을 알게됨.  
+그래도 그나마 나은건 저번처럼 갈아 엎는 수준은 아니고 stash 해둔 것들 쓰면 해결될 듯..
+
 ## 3단계 - Transaction AOP 구현
 
 별로 어렵진 않을 거 같은데 책임을 어디에 위치시키느냐가 약간 고민.  
