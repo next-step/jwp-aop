@@ -4,11 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
-import core.di.beans.factory.FactoryBean;
+import core.di.beans.factory.aop.ProxyBeanDefinition;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
-import core.exception.JwpException;
-import core.exception.JwpExceptionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -52,15 +50,12 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
             optionalBean.ifPresent(b -> beans.put(clazz, b));
-            initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
 
-        if (beanDefinition != null && beanDefinition instanceof FactoryBean) {
-            FactoryBean factory = (FactoryBean) beanDefinition;
-            bean = getFactoryObject(factory);
-            initialize(bean, clazz);
-            return (T) bean;
+        if (beanDefinition != null && beanDefinition instanceof ProxyBeanDefinition) {
+            ProxyBeanDefinition proxyBeanDefinition = (ProxyBeanDefinition) beanDefinition;
+            return (T) proxyBeanDefinition.getObject();
         }
 
         Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
@@ -74,14 +69,6 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         beans.put(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
-    }
-
-    private <T> T getFactoryObject(FactoryBean factory) {
-        try {
-            return (T) factory.getObject();
-        } catch (Exception e) {
-            throw new JwpException(JwpExceptionStatus.GET_FACTORY_OBJECT_ERROR, e);
-        }
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
