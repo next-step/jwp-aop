@@ -1,7 +1,6 @@
 package core.aop;
 
 import net.sf.cglib.proxy.CallbackFilter;
-import net.sf.cglib.proxy.MethodInterceptor;
 
 import java.lang.reflect.Method;
 

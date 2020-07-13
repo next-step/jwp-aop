@@ -25,7 +25,7 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
 
     public TransactionBeanPostProcessor(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
-        this.advice = new TransactionalAdvice(beanFactory.getBean(DataSource.class));
+        this.advice = new TransactionalAdvice(this.beanFactory.getBean(DataSource.class));
     }
 
     @Override

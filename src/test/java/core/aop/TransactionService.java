@@ -4,13 +4,9 @@ import core.annotation.Inject;
 import core.annotation.Service;
 import core.annotation.Transactional;
 import core.jdbc.JdbcTemplate;
-import core.jdbc.RowMapper;
 import next.dao.UserDao;
 import next.dto.UserUpdatedDto;
 import next.model.User;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * @author KingCjy

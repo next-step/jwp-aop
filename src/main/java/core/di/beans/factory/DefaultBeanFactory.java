@@ -11,7 +11,10 @@ import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
@@ -28,10 +31,6 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     public DefaultBeanFactory() {
         initializeBeanDefinitionInitializer();
         initializeBeanDefinitionPostProcessor();
-    }
-
-    public void setBeanPostProcessors(BeanPostProcessor beanPostProcessor) {
-        this.beanPostProcessor = beanPostProcessor;
     }
 
     private void initializeBeanDefinitionInitializer() {
@@ -52,7 +51,15 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     }
 
     public void initialize() {
+        initializeBeanPostProcessor();
         this.beanDefinitions.values().forEach(this::instantiateBeanDefinition);
+    }
+
+//    BeanFactory를 사용하기 때문에 BeanDefinition이 모두 등록된 후 호출해야함.
+    private void initializeBeanPostProcessor() {
+        this.beanPostProcessor = new BeanPostProcessorComposite(
+                new TransactionBeanPostProcessor(this)
+        );
     }
 
     private Object instantiateBeanDefinition(BeanDefinition beanDefinition) {
@@ -60,11 +67,11 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
             return beans.get(beanDefinition.getName());
         }
 
-        Object instantiate = beanInitializer.instantiate(beanDefinition, this);
-        instantiate = applyBeanPostProcessors(beanDefinition, instantiate);
-        beans.put(beanDefinition.getName(), instantiate);
+        Object instance = beanInitializer.instantiate(beanDefinition, this);
+        instance = applyBeanPostProcessors(beanDefinition, instance);
+        beans.put(beanDefinition.getName(), instance);
 
-        return instantiate;
+        return instance;
     }
 
     @Override

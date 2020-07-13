@@ -1,18 +1,12 @@
 package core.aop;
 
-import core.annotation.Inject;
-import core.annotation.PostConstruct;
 import core.di.beans.factory.BeanFactory;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.di.factory.proxy.example.Counter;
 import core.di.factory.proxy.example.CounterAdvice;
 import next.config.MyConfiguration;
-import next.dao.UserDao;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,8 +19,7 @@ public class ProxyFactoryBeanTest {
 
     @BeforeEach
     public void setUp() {
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        this.beanFactory = ac;
+        beanFactory = new AnnotationConfigApplicationContext(MyConfiguration.class);
     }
 
     @Test

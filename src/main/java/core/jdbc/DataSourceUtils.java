@@ -24,7 +24,7 @@ public class DataSourceUtils {
 
     private static Connection doGetConnection(DataSource dataSource) throws SQLException {
         if(!TransactionManager.isTransactionActive()) {
-            logger.info("NO Transaction Connection Connected");
+            logger.info("Start Connection Without Transaction");
             return dataSource.getConnection();
         }
 
@@ -34,6 +34,14 @@ public class DataSourceUtils {
             return connection;
         }
 
+        connection = TransactionManager.getConnection();
+
+        if(connection != null) {
+            TransactionManager.holdConnection(connection);
+            return connection;
+        }
+
+        logger.info("Start Connection");
         connection = dataSource.getConnection();
         TransactionManager.registerConnection(connection);
 
@@ -56,7 +64,7 @@ public class DataSourceUtils {
         Connection holderConnection = TransactionManager.getHoldConnection();
 
         if(holderConnection != null && connection == holderConnection) {
-            TransactionManager.releaseHoldConnection();
+            TransactionManager.releaseConnection();
             return;
         }
 
@@ -64,7 +72,7 @@ public class DataSourceUtils {
     }
 
     private static void doCloseConnection(Connection connection) throws SQLException {
-        logger.info("Close Connection");
         connection.close();
+        logger.info("Close Connection");
     }
 }

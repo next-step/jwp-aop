@@ -57,11 +57,11 @@ public class ProxyFactoryBean<T> implements FactoryBean<T>, BeanFactoryAware {
         }
 
         Object instance = ObjenesisHelper.newInstance(proxyClass);
-        injectFields(instance);
+        injectProxyFields(instance);
         return (T) instance;
     }
 
-    private void injectFields(Object instance) throws IllegalAccessException {
+    private void injectProxyFields(Object instance) throws IllegalAccessException {
         for (Field field : target.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             field.set(instance, field.get(target));

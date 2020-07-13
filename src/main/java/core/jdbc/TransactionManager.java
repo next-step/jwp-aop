@@ -1,16 +1,11 @@
 package core.jdbc;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
 
 /**
  * @author KingCjy
  */
 public class TransactionManager {
-
-    private static final Logger logger = LoggerFactory.getLogger(TransactionManager.class);
 
     private static ThreadLocal<Connection> holdConnections = new ThreadLocal<>();
     private static ThreadLocal<Connection> connections = new ThreadLocal<>();
@@ -29,28 +24,26 @@ public class TransactionManager {
     }
 
     public static void registerConnection(Connection connection) {
-        if(connections.get() == null) {
-            connections.set(connection);
-            return;
-        }
-        holdConnections.set(connection);
-        logger.info("           ConnectionHolding Start");
+        connections.set(connection);
     }
 
     public static Connection getHoldConnection() {
-        if(holdConnections.get() != null) {
-            return holdConnections.get();
-        }
+        return holdConnections.get();
+    }
+
+    public static void holdConnection(Connection connection) {
+        holdConnections.set(connection);
+    }
+
+    public static Connection getConnection() {
         return connections.get();
     }
 
-    public static void releaseHoldConnection() {
+    public static void releaseConnection() {
         holdConnections.set(null);
-        logger.info("           ConnectionHolding END");
     }
 
     public static void finishTransaction() {
-        holdConnections.set(null);
         connections.set(null);
         actives.set(false);
     }

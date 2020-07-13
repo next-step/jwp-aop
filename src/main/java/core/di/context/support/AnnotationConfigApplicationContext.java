@@ -3,8 +3,6 @@ package core.di.context.support;
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
 import core.di.beans.factory.DefaultBeanFactory;
-import core.di.beans.factory.processor.BeanPostProcessorComposite;
-import core.di.beans.factory.processor.TransactionBeanPostProcessor;
 import core.di.beans.factory.scanner.ClassBeanScanner;
 import core.di.beans.factory.scanner.MethodBeanScanner;
 import core.di.context.ApplicationContext;
@@ -29,9 +27,6 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         new ClassBeanScanner(beanFactory).scan(basePackages);
         new MethodBeanScanner(beanFactory).scan(basePackages);
 
-        beanFactory.setBeanPostProcessors(new BeanPostProcessorComposite(
-                new TransactionBeanPostProcessor(beanFactory)
-        ));
         beanFactory.initialize();
     }
 

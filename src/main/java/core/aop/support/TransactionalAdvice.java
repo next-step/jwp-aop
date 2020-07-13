@@ -18,7 +18,7 @@ import java.sql.SQLException;
  */
 public class TransactionalAdvice implements Advice {
 
-    private final Logger logger = LoggerFactory.getLogger(TransactionManager.class);
+    private final Logger logger = LoggerFactory.getLogger(TransactionalAdvice.class);
 
     private DataSource dataSource;
 
@@ -50,8 +50,8 @@ public class TransactionalAdvice implements Advice {
                 logger.error("SQLException", ex);
             }
         } finally {
-            TransactionManager.finishTransaction();
             DataSourceUtils.releaseConnection(connection);
+            TransactionManager.finishTransaction();
             logger.info("Transaction FINISHED");
         }
 
