@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
  */
 public class MethodBeanDefinitionInitializer extends AbstractBeanDefinitionInitializer {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodBeanDefinition.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodBeanDefinitionInitializer.class);
 
     @Override
     public boolean support(BeanDefinition beanDefinition) {
@@ -33,7 +33,7 @@ public class MethodBeanDefinitionInitializer extends AbstractBeanDefinitionIniti
         Object[] parameters = BeanFactoryUtils.getParameters(beanFactory, method);
 
         Object instance = invokeMethod(classInstance, method, parameters);
-        logger.info("bean " + instance.getClass() + " instantiate");
+        logger.info("bean class: {} name: {} instantiate", beanDefinition.getType(), beanDefinition.getName());
 
         return instance;
     }

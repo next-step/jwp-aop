@@ -3,6 +3,7 @@ package core.di.beans.factory.processor;
 import core.annotation.Transactional;
 import core.aop.Advice;
 import core.aop.ProxyFactoryBean;
+import core.aop.support.MethodMatchPointcut;
 import core.aop.support.TransactionalAdvice;
 import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.BeanFactoryAware;
@@ -28,14 +29,17 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
     }
 
     @Override
-    public Object postProcess(BeanDefinition beanDefinition, Object bean) {
+    public Object postProcess(BeanDefinition beanDefinition, Object bean) throws Exception {
         if(!isTransactionBean(beanDefinition.getType())) {
             return bean;
         }
 
-//        ProxyFactoryBean<Object> proxyFactoryBean = new ProxyFactoryBean<>();
+        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean<>();
+        proxyFactoryBean.setTarget(bean);
+        proxyFactoryBean.setPointcut(new MethodMatchPointcut(getTransactionMethods(beanDefinition.getType())));
+        proxyFactoryBean.setAdvice(advice);
 
-        return null;
+        return proxyFactoryBean.getObject();
     }
 
     private boolean isTransactionBean(Class<?> targetClass) {

@@ -3,9 +3,7 @@ package core.di.beans.factory;
 import core.di.beans.factory.definition.BeanDefinition;
 import core.di.beans.factory.definition.BeanDefinitionRegistry;
 import core.di.beans.factory.initializer.*;
-import core.di.beans.factory.processor.BeanDefinitionPostProcessor;
-import core.di.beans.factory.processor.BeanDefinitionPostProcessorComposite;
-import core.di.beans.factory.processor.FactoryBeanDefinitionPostProcessor;
+import core.di.beans.factory.processor.*;
 import core.util.OrderComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +11,7 @@ import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanInitializationException;
 
 import java.lang.annotation.Annotation;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
@@ -28,10 +23,15 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     private BeanInitializer beanInitializer;
 
     private BeanDefinitionPostProcessor beanDefinitionPostProcessor;
+    private BeanPostProcessor beanPostProcessor = new BeanPostProcessorComposite();
 
     public DefaultBeanFactory() {
         initializeBeanDefinitionInitializer();
         initializeBeanDefinitionPostProcessor();
+    }
+
+    public void setBeanPostProcessors(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessor = beanPostProcessor;
     }
 
     private void initializeBeanDefinitionInitializer() {
@@ -52,11 +52,16 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     }
 
     public void initialize() {
-        this.beanDefinitions.values().forEach(beanDefinition -> instantiateBeanDefinition(beanDefinition));
+        this.beanDefinitions.values().forEach(this::instantiateBeanDefinition);
     }
 
     private Object instantiateBeanDefinition(BeanDefinition beanDefinition) {
+        if(beans.get(beanDefinition.getName()) != null) {
+            return beans.get(beanDefinition.getName());
+        }
+
         Object instantiate = beanInitializer.instantiate(beanDefinition, this);
+        instantiate = applyBeanPostProcessors(beanDefinition, instantiate);
         beans.put(beanDefinition.getName(), instantiate);
 
         return instantiate;
@@ -139,6 +144,14 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
                 .map(bean -> (T) bean)
                 .findFirst()
                 .orElse((T) instantiateBeanDefinition(implBeanDefinitions.iterator().next()));
+    }
+
+    private Object applyBeanPostProcessors(BeanDefinition beanDefinition, Object bean) {
+        try {
+            return beanPostProcessor.postProcess(beanDefinition, bean);
+        } catch (Exception e) {
+            throw new BeanInstantiationException(bean.getClass(), "post process exception", e);
+        }
     }
 
     @Override

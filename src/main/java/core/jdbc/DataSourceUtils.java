@@ -11,6 +11,9 @@ import java.sql.SQLException;
  * @author KingCjy
  */
 public class DataSourceUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataSourceUtils.class);
+
     public static Connection getConnection(DataSource dataSource) {
         try {
             return doGetConnection(dataSource);
@@ -21,6 +24,7 @@ public class DataSourceUtils {
 
     private static Connection doGetConnection(DataSource dataSource) throws SQLException {
         if(!TransactionManager.isTransactionActive()) {
+            logger.info("NO Transaction Connection Connected");
             return dataSource.getConnection();
         }
 
@@ -52,7 +56,7 @@ public class DataSourceUtils {
         Connection holderConnection = TransactionManager.getHoldConnection();
 
         if(holderConnection != null && connection == holderConnection) {
-            TransactionManager.releaseHoldConnection();;
+            TransactionManager.releaseHoldConnection();
             return;
         }
 
@@ -60,6 +64,7 @@ public class DataSourceUtils {
     }
 
     private static void doCloseConnection(Connection connection) throws SQLException {
+        logger.info("Close Connection");
         connection.close();
     }
 }

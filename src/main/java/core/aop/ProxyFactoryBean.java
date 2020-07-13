@@ -9,6 +9,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import org.springframework.objenesis.ObjenesisHelper;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
@@ -55,7 +56,16 @@ public class ProxyFactoryBean<T> implements FactoryBean<T>, BeanFactoryAware {
             return instance;
         }
 
-        return (T) ObjenesisHelper.newInstance(proxyClass);
+        Object instance = ObjenesisHelper.newInstance(proxyClass);
+        injectFields(instance);
+        return (T) instance;
+    }
+
+    private void injectFields(Object instance) throws IllegalAccessException {
+        for (Field field : target.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            field.set(instance, field.get(target));
+        }
     }
 
     private void initCallbacks() {

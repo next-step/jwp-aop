@@ -18,7 +18,7 @@ public class BeanPostProcessorComposite implements BeanPostProcessor {
     }
 
     @Override
-    public Object postProcess(BeanDefinition beanDefinition, Object bean) {
+    public Object postProcess(BeanDefinition beanDefinition, Object bean) throws Exception {
         Object result = bean;
 
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
