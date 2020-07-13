@@ -1,5 +1,6 @@
 package core.mvc.tobe.support;
 
+import core.annotation.Component;
 import core.annotation.web.RequestParam;
 import core.mvc.MethodArgumentTypeNotSupportedException;
 import core.mvc.tobe.MethodParameter;
@@ -8,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Component
 public class RequestParamArgumentResolver extends AbstractAnnotationArgumentResolver {
+
     @Override
     public boolean supports(MethodParameter methodParameter) {
         return supportAnnotation(methodParameter, RequestParam.class);

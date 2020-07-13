@@ -1,11 +1,19 @@
 package core.util;
 
+import core.annotation.Component;
+import core.annotation.Qualifier;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class ReflectionUtils {
 
@@ -81,6 +89,26 @@ public class ReflectionUtils {
             }
         }
         return false;
+    }
+
+    public static Set<Class<?>> getAnnotatedClasses(Reflections reflections, Class<? extends Annotation>... annotations) {
+        Set<Class<?>> classes = new LinkedHashSet<>();
+
+        for (Class<? extends Annotation> annotation : annotations) {
+            classes.addAll(reflections.getTypesAnnotatedWith(annotation));
+        }
+
+        return classes;
+    }
+
+    public static String getComponentName(Class<?> targetClass) {
+        Component component = AnnotatedElementUtils.findMergedAnnotation(targetClass, Component.class);
+        return "".equals(component.value()) ? targetClass.getName() : component.value();
+    }
+
+    public static String getFieldBeanName(Field field) {
+        Qualifier qualifier = field.getAnnotation(Qualifier.class);
+        return qualifier == null ? field.getType().getName() : qualifier.value();
     }
 
 }

@@ -1,9 +1,7 @@
 package core.di.context;
 
-import java.util.Set;
+import core.di.beans.factory.BeanFactory;
 
-public interface ApplicationContext {
-    <T> T getBean(Class<T> clazz);
+public interface ApplicationContext extends BeanFactory {
 
-    Set<Class<?>> getBeanClasses();
 }

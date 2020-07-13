@@ -2,17 +2,17 @@ package core.di.context.support;
 
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
-import core.di.beans.factory.support.BeanDefinitionReader;
-import core.di.beans.factory.support.DefaultBeanFactory;
+import core.di.beans.factory.DefaultBeanFactory;
+import core.di.beans.factory.scanner.ClassBeanScanner;
+import core.di.beans.factory.scanner.MethodBeanScanner;
 import core.di.context.ApplicationContext;
-import core.di.context.annotation.AnnotatedBeanDefinitionReader;
-import core.di.context.annotation.ClasspathBeanDefinitionScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class AnnotationConfigApplicationContext implements ApplicationContext {
     private static final Logger log = LoggerFactory.getLogger(AnnotationConfigApplicationContext.class);
@@ -21,15 +21,13 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
 
     public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
         Object[] basePackages = findBasePackages(annotatedClasses);
-        beanFactory = new DefaultBeanFactory();
-        BeanDefinitionReader abdr = new AnnotatedBeanDefinitionReader(beanFactory);
-        abdr.loadBeanDefinitions(annotatedClasses);
 
-        if (basePackages.length > 0) {
-            ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
-            scanner.doScan(basePackages);
-        }
-        beanFactory.preInstantiateSingletons();
+        beanFactory = new DefaultBeanFactory();
+
+        new ClassBeanScanner(beanFactory).scan(basePackages);
+        new MethodBeanScanner(beanFactory).scan(basePackages);
+
+        beanFactory.initialize();
     }
 
     private Object[] findBasePackages(Class<?>[] annotatedClasses) {
@@ -47,13 +45,27 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
         return basePackages.toArray();
     }
 
+    @Nullable
+    @Override
+    public Object getBean(String name) {
+        return beanFactory.getBean(name);
+    }
+
     @Override
     public <T> T getBean(Class<T> clazz) {
         return beanFactory.getBean(clazz);
     }
 
+    @Nullable
     @Override
-    public Set<Class<?>> getBeanClasses() {
-        return beanFactory.getBeanClasses();
+    public <T> T getBean(String name, Class<T> requireType) {
+        return beanFactory.getBean(name, requireType);
     }
+
+    @Nullable
+    @Override
+    public Object[] getAnnotatedBeans(Class<? extends Annotation> annotation) {
+        return beanFactory.getAnnotatedBeans(annotation);
+    }
+
 }
