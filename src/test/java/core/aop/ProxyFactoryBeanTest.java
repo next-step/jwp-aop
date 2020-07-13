@@ -32,9 +32,11 @@ public class ProxyFactoryBeanTest {
     @Test
     public void interceptorTest() throws Exception {
         Counter counter = new Counter();
-        ProxyFactoryBean<MyService> proxyFactoryBean = new ProxyFactoryBean<>(MyService.class,
-                method -> true,
-                new CounterAdvice(counter));
+        ProxyFactoryBean<MyService> proxyFactoryBean = new ProxyFactoryBean<>();
+
+        proxyFactoryBean.setTarget(new MyService());
+        proxyFactoryBean.setPointcut(method -> true);
+        proxyFactoryBean.setAdvice(new CounterAdvice(counter));
 
         proxyFactoryBean.getObject().doProcess();
 
@@ -42,24 +44,14 @@ public class ProxyFactoryBeanTest {
     }
 
     @Test
-    @DisplayName("Inject Method, PostConstructor test")
-    public void interceptorTest2() throws Exception {
-        Counter counter = new Counter();
-        ProxyFactoryBean<MyService2> proxyFactoryBean = new ProxyFactoryBean<>(MyService2.class,
-                method -> "doProcess".equals(method.getName()),
-                new CounterAdvice(counter));
+    public void createProxyFromWithObjenesisTest() throws Exception {
+        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean();
+        proxyFactoryBean.setTarget(new MyService2(new MyService()));
 
-        proxyFactoryBean.setBeanFactory(beanFactory);
+        MyService2 myService2 = (MyService2) proxyFactoryBean.getObject();
 
-        MyService2 myService = proxyFactoryBean.getObject();
-        myService.doProcess();
-
-        assertThat(myService.getDataSource()).isNotNull();
-        assertThat(myService.getUserDao()).isNotNull();
-        assertThat(myService.getMessage()).isNotNull();
-        assertThat(counter.getCount()).isEqualTo(1);
+        assertThat(myService2.getMyService()).isNotNull();
     }
-
 
 
     public static class MyService {
@@ -69,37 +61,14 @@ public class ProxyFactoryBeanTest {
 
     public static class MyService2 {
 
-        @Inject
-        private DataSource dataSource;
+        private MyService myService;
 
-        private UserDao userDao;
-
-        private String message;
-
-        @Inject
-        public MyService2(UserDao userDao) {
-            this.userDao = userDao;
+        public MyService2(MyService myService) {
+            this.myService = myService;
         }
 
-        @PostConstruct
-        public void postConstruct() {
-            this.message = "HelloWorld";
-        }
-
-        public void doProcess() {
-            System.out.println("do");
-        }
-
-        public DataSource getDataSource() {
-            return dataSource;
-        }
-
-        public UserDao getUserDao() {
-            return userDao;
-        }
-
-        public String getMessage() {
-            return message;
+        public MyService getMyService() {
+            return myService;
         }
     }
 }

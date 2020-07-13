@@ -18,6 +18,14 @@ public class BeanInterceptor implements MethodInterceptor {
         this.advice = advice;
     }
 
+    public Pointcut getPointcut() {
+        return pointcut;
+    }
+
+    public Advice getAdvice() {
+        return advice;
+    }
+
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         if(!pointcut.matches(method)) {

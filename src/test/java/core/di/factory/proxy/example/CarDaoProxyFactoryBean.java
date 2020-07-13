@@ -1,13 +1,21 @@
 package core.di.factory.proxy.example;
 
+import core.annotation.Inject;
 import core.aop.ProxyFactoryBean;
+
+import javax.sql.DataSource;
 
 /**
  * @author KingCjy
  */
 public class CarDaoProxyFactoryBean extends ProxyFactoryBean<CarDao> {
 
+    @Inject
+    private DataSource dataSource;
+
     public CarDaoProxyFactoryBean() {
-        super(CarDao.class, method -> true, new CounterAdvice(new Counter()));
+        setTarget(new CarDao(dataSource));
+        setPointcut(method -> true);
+        setAdvice(new CounterAdvice(new Counter()));
     }
 }

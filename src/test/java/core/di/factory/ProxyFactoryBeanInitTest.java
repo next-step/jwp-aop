@@ -28,5 +28,6 @@ public class ProxyFactoryBeanInitTest {
         CarDao carDao = beanFactory.getBean("myCarDao", CarDao.class);
 
         assertThat(carDao).isNotNull();
+        assertThat(carDao.getDataSource()).isNotNull();
     }
 }

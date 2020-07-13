@@ -3,44 +3,80 @@ package core.aop;
 import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.BeanFactoryAware;
 import core.di.beans.factory.BeanFactoryUtils;
+import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import org.springframework.objenesis.ObjenesisHelper;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 
 /**
  * @author KingCjy
  */
 public class ProxyFactoryBean<T> implements FactoryBean<T>, BeanFactoryAware {
 
-    private Class<?> target;
-    private Pointcut pointcut;
-    private Advice advice;
+    private Object target = new Object();
+    private Pointcut pointcut = Pointcut.DEFAULT_POINTCUT;
+    private Advice advice = Advice.DEFAULT_ADVICE;
     private BeanFactory beanFactory;
 
-    public ProxyFactoryBean(Class<?> target, Pointcut pointcut, Advice advice) {
+    private Class<?>[] callbackTypes;
+    private Callback[] callbacks;
+
+    public void setTarget(Object target) {
         this.target = target;
+    }
+
+    public void setPointcut(Pointcut pointcut) {
         this.pointcut = pointcut;
+    }
+
+    public void setAdvice(Advice advice) {
         this.advice = advice;
     }
 
     @Override
     public T getObject() throws Exception {
+        initCallbacks();
+
         Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(target);
-        enhancer.setCallback(new BeanInterceptor(pointcut, advice));
+        enhancer.setSuperclass(target.getClass());
+        enhancer.setCallbackTypes(callbackTypes);
+        enhancer.setCallbackFilter(new ProxyFilter(pointcut));
+
+        Class<?> proxyClass = enhancer.createClass();
+        Enhancer.registerCallbacks(proxyClass, callbacks);
 
         if(beanFactory != null) {
             T instance = createInstanceFromBeanFactory(enhancer);
-            BeanFactoryUtils.findInjectFields(target).forEach(field -> BeanFactoryUtils.injectField(beanFactory, instance, field));
-            BeanFactoryUtils.findPostConstructMethods(target).forEach(method -> BeanFactoryUtils.invokePostConstructor(beanFactory, instance, method));
+            BeanFactoryUtils.findInjectFields(target.getClass()).forEach(field -> BeanFactoryUtils.injectField(beanFactory, instance, field));
+            BeanFactoryUtils.findPostConstructMethods(target.getClass()).forEach(method -> BeanFactoryUtils.invokePostConstructor(beanFactory, instance, method));
             return instance;
         }
 
-        return (T) enhancer.create();
+        return (T) ObjenesisHelper.newInstance(proxyClass);
+    }
+
+    private void initCallbacks() {
+        this.callbacks = getCallbacks();
+        this.callbackTypes = getCallbackTypes();
+    }
+
+    private Class<?>[] getCallbackTypes() {
+        return Arrays.stream(this.callbacks)
+                .map(Callback::getClass)
+                .toArray(Class[]::new);
+    }
+
+    private MethodInterceptor[] getCallbacks() {
+        return new MethodInterceptor[] {
+                new BeanInterceptor(pointcut, advice),
+                new CglibAopProxy.DynamicAdvisedInterceptor(target) };
     }
 
     private T createInstanceFromBeanFactory(Enhancer enhancer) {
-        Constructor<?> constructor = BeanFactoryUtils.findInjectController(target);
+        Constructor<?> constructor = BeanFactoryUtils.findInjectController(target.getClass());
         Object[] parameters = BeanFactoryUtils.getParameters(beanFactory, constructor);
 
         T instance = (T) enhancer.create(constructor.getParameterTypes(), parameters);

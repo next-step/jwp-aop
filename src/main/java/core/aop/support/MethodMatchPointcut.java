@@ -8,11 +8,11 @@ import java.util.Set;
 /**
  * @author KingCjy
  */
-public class MethodPointcut implements Pointcut {
+public class MethodMatchPointcut implements Pointcut {
 
     private Set<Method> methods;
 
-    public MethodPointcut(Set<Method> methods) {
+    public MethodMatchPointcut(Set<Method> methods) {
         this.methods = methods;
     }
 
