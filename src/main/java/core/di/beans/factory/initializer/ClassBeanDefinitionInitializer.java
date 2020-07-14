@@ -39,7 +39,7 @@ public class ClassBeanDefinitionInitializer extends AbstractBeanDefinitionInitia
         Set<Method> postConstructors = BeanFactoryUtils.findPostConstructMethods(beanDefinition.getType());
         postConstructors.forEach(method -> BeanFactoryUtils.invokePostConstructor(beanFactory, instance, method));
 
-        logger.info("bean " + instance.getClass() + " instantiate");
+        logger.info("bean class: {} name: {} instantiate", beanDefinition.getType(), beanDefinition.getName());
 
         return instance;
     }

@@ -3,9 +3,7 @@ package core.di.beans.factory;
 import core.di.beans.factory.definition.BeanDefinition;
 import core.di.beans.factory.definition.BeanDefinitionRegistry;
 import core.di.beans.factory.initializer.*;
-import core.di.beans.factory.processor.BeanDefinitionPostProcessor;
-import core.di.beans.factory.processor.BeanDefinitionPostProcessorComposite;
-import core.di.beans.factory.processor.FactoryBeanDefinitionPostProcessor;
+import core.di.beans.factory.processor.*;
 import core.util.OrderComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +26,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     private BeanInitializer beanInitializer;
 
     private BeanDefinitionPostProcessor beanDefinitionPostProcessor;
+    private BeanPostProcessor beanPostProcessor = new BeanPostProcessorComposite();
 
     public DefaultBeanFactory() {
         initializeBeanDefinitionInitializer();
@@ -52,14 +51,27 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     }
 
     public void initialize() {
-        this.beanDefinitions.values().forEach(beanDefinition -> instantiateBeanDefinition(beanDefinition));
+        initializeBeanPostProcessor();
+        this.beanDefinitions.values().forEach(this::instantiateBeanDefinition);
+    }
+
+//    BeanFactory를 사용하기 때문에 BeanDefinition이 모두 등록된 후 호출해야함.
+    private void initializeBeanPostProcessor() {
+        this.beanPostProcessor = new BeanPostProcessorComposite(
+                new TransactionBeanPostProcessor(this)
+        );
     }
 
     private Object instantiateBeanDefinition(BeanDefinition beanDefinition) {
-        Object instantiate = beanInitializer.instantiate(beanDefinition, this);
-        beans.put(beanDefinition.getName(), instantiate);
+        if(beans.get(beanDefinition.getName()) != null) {
+            return beans.get(beanDefinition.getName());
+        }
 
-        return instantiate;
+        Object instance = beanInitializer.instantiate(beanDefinition, this);
+        instance = applyBeanPostProcessors(beanDefinition, instance);
+        beans.put(beanDefinition.getName(), instance);
+
+        return instance;
     }
 
     @Override
@@ -139,6 +151,14 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
                 .map(bean -> (T) bean)
                 .findFirst()
                 .orElse((T) instantiateBeanDefinition(implBeanDefinitions.iterator().next()));
+    }
+
+    private Object applyBeanPostProcessors(BeanDefinition beanDefinition, Object bean) {
+        try {
+            return beanPostProcessor.postProcess(beanDefinition, bean);
+        } catch (Exception e) {
+            throw new BeanInstantiationException(bean.getClass(), "post process exception", e);
+        }
     }
 
     @Override
