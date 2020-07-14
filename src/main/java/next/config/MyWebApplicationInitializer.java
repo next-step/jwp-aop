@@ -3,6 +3,7 @@ package next.config;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.DispatcherServlet;
+import core.mvc.ExceptionHandlerMapping;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
@@ -26,11 +27,15 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
         ahm.initialize();
 
+        final ExceptionHandlerMapping ehm = new ExceptionHandlerMapping(ac);
+        ehm.initialize();
+
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
+        dispatcherServlet.addExceptionHandlerMapping(ehm);
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
