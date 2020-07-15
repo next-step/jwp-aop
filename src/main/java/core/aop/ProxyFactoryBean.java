@@ -8,14 +8,14 @@ import net.sf.cglib.proxy.Enhancer;
 
 import java.util.List;
 
-public class ProxyFactoryBean implements FactoryBean<Object> {
+public class ProxyFactoryBean<T> implements FactoryBean<T> {
     @Getter
-    private Object target;
+    private T target;
 
     @Getter
     private List<Advisor> advisors = Lists.newArrayList();
 
-    public ProxyFactoryBean setTarget(Object target) {
+    public ProxyFactoryBean setTarget(T target) {
         this.target = target;
         return this;
     }
@@ -26,11 +26,11 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     }
 
     @Override
-    public Object getObject() throws Exception {
+    public T getObject() throws Exception {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(getObjectType());
         enhancer.setCallback(new ProxyMethodInterceptor(advisors));
-        return enhancer.create();
+        return (T) enhancer.create();
     }
 
     @Override

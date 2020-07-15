@@ -20,11 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class ProxyFactoryBeanTest {
-    private ProxyFactoryBean proxyFactoryBean;
+    private ProxyFactoryBean<AopTestService> proxyFactoryBean;
 
     @BeforeEach
     public void setup() {
-        proxyFactoryBean = new ProxyFactoryBean();
+        proxyFactoryBean = new ProxyFactoryBean<>();
         proxyFactoryBean.setTarget(new AopTestService());
     }
 
@@ -36,7 +36,7 @@ class ProxyFactoryBeanTest {
         Advice advice = new ConvertToUpperCaseAdvice();
 
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, advice));
-        AopTestService aopTestService = (AopTestService) proxyFactoryBean.getObject();
+        AopTestService aopTestService = proxyFactoryBean.getObject();
 
         String result = aopTestService.sayHello(name);
 
@@ -51,7 +51,7 @@ class ProxyFactoryBeanTest {
         Advice advice = new ConvertToLowerCaseAdvice();
 
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, advice));
-        AopTestService aopTestService = (AopTestService) proxyFactoryBean.getObject();
+        AopTestService aopTestService = proxyFactoryBean.getObject();
 
         String result = aopTestService.sayHello(name);
 
@@ -69,7 +69,7 @@ class ProxyFactoryBeanTest {
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, new AppendPrefixAdvice()));
         proxyFactoryBean.addAdvisor(new DefaultAdvisor(pointcut, new AppendPostfixAdvice()));
 
-        AopTestService aopTestService = (AopTestService) proxyFactoryBean.getObject();
+        AopTestService aopTestService = proxyFactoryBean.getObject();
 
         String result = aopTestService.sayHello(name);
 
