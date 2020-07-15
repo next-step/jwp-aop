@@ -21,11 +21,12 @@ import java.util.stream.Collectors;
 public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
     private BeanFactory beanFactory;
-    private Advice advice;
+    private ProxyFactoryBean proxyFactoryBean;
 
     public TransactionBeanPostProcessor(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
-        this.advice = new TransactionalAdvice(this.beanFactory.getBean(DataSource.class));
+        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean<>();
+        proxyFactoryBean.setAdvice(new TransactionalAdvice(this.beanFactory.getBean(DataSource.class)););
     }
 
     @Override
@@ -34,10 +35,8 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
             return bean;
         }
 
-        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean<>();
         proxyFactoryBean.setTarget(bean);
         proxyFactoryBean.setPointcut(new MethodMatchPointcut(getTransactionMethods(beanDefinition.getType())));
-        proxyFactoryBean.setAdvice(advice);
 
         return proxyFactoryBean.getObject();
     }
