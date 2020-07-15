@@ -41,7 +41,7 @@ class TransactionalTypeServiceTest {
     }
 
     @Test
-    @DisplayName("@Transactional 이 있는 메소드 테스트")
+    @DisplayName("타입 @Transactional 테스트")
     void doServiceWithTransactional() {
         transactionalService.doServiceWithTransactional();
 
@@ -53,7 +53,7 @@ class TransactionalTypeServiceTest {
     }
 
     @Test()
-    @DisplayName("@Transactional 메소드 도중 RuntimeException 발생 테스트")
+    @DisplayName("타입 @Transactional 메소드 실행 도중 RuntimeException 발생 테스트")
     void doExceptionalServiceWithTransactional() {
         assertThrows(DataAccessException.class, () -> transactionalService.doExceptionalServiceWithTransactional());
 
