@@ -12,8 +12,8 @@ import org.springframework.core.annotation.Order;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Order(1)
 @Component
-@Order
 public class LoginUserArgumentResolver extends AbstractAnnotationArgumentResolver {
     private static final Logger logger = LoggerFactory.getLogger(LoginUserArgumentResolver.class);
 
@@ -33,7 +33,8 @@ public class LoginUserArgumentResolver extends AbstractAnnotationArgumentResolve
         }
 
         if (requiredLogin(methodParameter)) {
-            throw new RequiredLoginException("Login Required!!");
+            throw
+                    new RequiredLoginException("Login Required!!");
         }
 
         return User.GUEST_USER;

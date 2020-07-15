@@ -20,10 +20,6 @@ public class ArgumentResolverComposite implements ArgumentResolver {
         this.argumentResolvers = new LinkedHashSet<>(Arrays.asList(argumentResolvers));
     }
 
-    public void addArgumentResolver(ArgumentResolver... argumentResolvers) {
-        this.argumentResolvers.addAll(Arrays.asList(argumentResolvers));
-    }
-
     @Override
     public boolean supports(MethodParameter methodParameter) {
         return getArgumentResolver(methodParameter).isPresent();

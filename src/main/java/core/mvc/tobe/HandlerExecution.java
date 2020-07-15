@@ -26,12 +26,12 @@ public class HandlerExecution {
         this.method = method;
     }
 
-    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object ...providedArguments) throws Exception {
         MethodParameter[] methodParameters = getMethodParameters();
         Object[] arguments = new Object[methodParameters.length];
 
         for (int i = 0; i < methodParameters.length; i++) {
-            arguments[i] = getArguments(methodParameters[i], request, response);
+            arguments[i] = getArguments(methodParameters[i], request, response, providedArguments);
         }
 
         return (ModelAndView) method.invoke(target, arguments);
@@ -56,13 +56,31 @@ public class HandlerExecution {
         return methodParameters;
     }
 
-    private Object getArguments(MethodParameter methodParameter, HttpServletRequest request, HttpServletResponse response) {
+    private Object getArguments(MethodParameter methodParameter, HttpServletRequest request, HttpServletResponse response, Object[] providedArguments) {
         if(argumentResolver.supports(methodParameter)) {
             return argumentResolver.resolveArgument(methodParameter, request, response);
+        }
+
+        Object argument = findProvidedArgument(methodParameter, providedArguments);
+
+        if(argument != null) {
+            return argument;
         }
 
         throw new IllegalStateException("No suitable resolver for argument: " + methodParameter.getType());
     }
 
+    private Object findProvidedArgument(MethodParameter methodParameter, Object[] providedArguments) {
+        if(providedArguments == null || providedArguments.length == 0) {
+            return null;
+        }
 
+        for (Object providedArg : providedArguments) {
+            if(methodParameter.getType().isInstance(providedArg)) {
+                return providedArg;
+            }
+        }
+
+        return null;
+    }
 }

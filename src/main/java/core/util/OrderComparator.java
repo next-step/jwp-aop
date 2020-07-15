@@ -31,6 +31,6 @@ public class OrderComparator implements Comparator<Object> {
             return 1;
         }
 
-        return Ordered.LOWEST_PRECEDENCE;
+        return order.value();
     }
 }

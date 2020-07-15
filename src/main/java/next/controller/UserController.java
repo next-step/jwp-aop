@@ -59,21 +59,6 @@ public class UserController extends AbstractNewController {
         return mav;
     }
 
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST)
-    public ModelAndView update(@LoginUser User loginUser,
-                               @PathVariable String userId,
-                               UserUpdatedDto updateUser) throws Exception {
-        User user = userDao.findByUserId(updateUser.getUserId());
-        if (!loginUser.isSameUser(user)) {
-            throw new IllegalStateException("다른 사용자의 정보를 수정할 수 없습니다.");
-        }
-
-        log.debug("Update User : {}", updateUser);
-        user.update(updateUser);
-        userDao.update(user);
-        return jspView("redirect:/");
-    }
-
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     public ModelAndView create(UserCreatedDto userCreatedDto) throws Exception {
         log.debug("User : {}", userCreatedDto);
@@ -113,6 +98,21 @@ public class UserController extends AbstractNewController {
     public ModelAndView logout(HttpServletRequest request) throws Exception {
         HttpSession session = request.getSession();
         session.removeAttribute("user");
+        return jspView("redirect:/");
+    }
+
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST)
+    public ModelAndView update(@LoginUser User loginUser,
+                               @PathVariable String userId,
+                               UserUpdatedDto updateUser) throws Exception {
+        User user = userDao.findByUserId(updateUser.getUserId());
+        if (!loginUser.isSameUser(user)) {
+            throw new IllegalStateException("다른 사용자의 정보를 수정할 수 없습니다.");
+        }
+
+        log.debug("Update User : {}", updateUser);
+        user.update(updateUser);
+        userDao.update(user);
         return jspView("redirect:/");
     }
 }
