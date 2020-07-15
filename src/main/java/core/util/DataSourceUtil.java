@@ -11,14 +11,14 @@ import java.util.Objects;
 
 @Slf4j
 public class DataSourceUtil {
-    public static Connection getConnection(DataSource dataSource) throws CannotGetJdbcConnectionException {
-        ConnectionHolder conHolder = new ConnectionHolder();
+    private static final ConnectionHolder CONNECTION_HOLDER = new ConnectionHolder();
 
-        if (!conHolder.hasConnection()) {
-            conHolder.setConnection(fetchConnection(dataSource));
+    public static Connection getConnection(DataSource dataSource) throws CannotGetJdbcConnectionException {
+        if (!CONNECTION_HOLDER.hasConnection()) {
+            CONNECTION_HOLDER.setConnection(fetchConnection(dataSource));
         }
 
-        return conHolder.getConnection();
+        return CONNECTION_HOLDER.getConnection();
     }
 
     private static Connection fetchConnection(DataSource dataSource) {
@@ -34,5 +34,9 @@ public class DataSourceUtil {
         }
 
         return null;
+    }
+
+    public static void removeConnection() {
+        CONNECTION_HOLDER.removeConnection();
     }
 }

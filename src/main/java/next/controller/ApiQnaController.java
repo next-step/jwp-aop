@@ -24,19 +24,15 @@ public class ApiQnaController extends AbstractNewController {
     private static final Logger logger = LoggerFactory.getLogger( ApiQnaController.class );
 
     private QnaService qnaService;
-    private QuestionDao questionDao;
-    private AnswerDao answerDao;
 
     @Inject
-    public ApiQnaController(QnaService qnaService, QuestionDao questionDao, AnswerDao answerDao) {
+    public ApiQnaController(QnaService qnaService) {
         this.qnaService = qnaService;
-        this.questionDao = questionDao;
-        this.answerDao = answerDao;
     }
 
     @RequestMapping(value = "/api/qna/list", method = RequestMethod.GET)
     public ModelAndView questions(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        return jsonView().addObject("questions", questionDao.findAll());
+        return jsonView().addObject("questions", qnaService.findAllQuestions());
     }
 
     @RequestMapping(value = "/api/qna/addAnswer", method = RequestMethod.POST)
@@ -50,9 +46,7 @@ public class ApiQnaController extends AbstractNewController {
                 Long.parseLong(req.getParameter("questionId")));
         logger.debug("answer : {}", answer);
 
-        Answer savedAnswer = answerDao.insert(answer);
-        questionDao.updateCountOfAnswer(savedAnswer.getQuestionId());
-
+        Answer savedAnswer = qnaService.addAnswer(answer);
         return jsonView().addObject("answer", savedAnswer).addObject("result", Result.ok());
     }
 
@@ -62,7 +56,7 @@ public class ApiQnaController extends AbstractNewController {
 
         ModelAndView mav = jsonView();
         try {
-            answerDao.delete(answerId);
+            qnaService.deleteAnswer(answerId);
             mav.addObject("result", Result.ok());
         } catch (DataAccessException e) {
             mav.addObject("result", Result.fail(e.getMessage()));

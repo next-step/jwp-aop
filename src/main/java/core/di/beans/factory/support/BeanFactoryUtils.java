@@ -2,6 +2,8 @@ package core.di.beans.factory.support;
 
 import com.google.common.collect.Sets;
 import core.annotation.Inject;
+import org.apache.commons.lang3.ArrayUtils;
+import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,5 +104,22 @@ public class BeanFactoryUtils {
             })
             .collect(toList())
             .toArray(new Object[0]);
+    }
+
+    public static boolean isAnnotatedBean(Class<?> clazz, Class<? extends Annotation> annotation) {
+        if (Objects.isNull(clazz) || Objects.isNull(annotation)) {
+            return false;
+        }
+
+        return clazz.isAnnotationPresent(annotation) || hasAnnotatedMethod(clazz, annotation);
+    }
+
+    private static boolean hasAnnotatedMethod(Class<?> clazz, Class<? extends Annotation> annotation) {
+        if (ArrayUtils.isEmpty(clazz.getDeclaredMethods())) {
+            return false;
+        }
+
+        return Arrays.stream(clazz.getDeclaredMethods())
+            .anyMatch(method -> method.isAnnotationPresent(annotation));
     }
 }
