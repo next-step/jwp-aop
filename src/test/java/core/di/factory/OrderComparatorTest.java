@@ -1,7 +1,6 @@
 package core.di.factory;
 
 import core.mvc.tobe.support.ArgumentResolver;
-import core.mvc.tobe.support.HttpRequestArgumentResolver;
 import core.mvc.tobe.support.ModelArgumentResolver;
 import core.util.OrderComparator;
 import next.security.LoginUserArgumentResolver;

@@ -2,9 +2,6 @@ package core.mvc.tobe;
 
 import core.annotation.web.RequestMethod;
 import core.util.PathPatternUtil;
-import org.springframework.web.util.pattern.PathPatternParser;
-
-import java.nio.file.Path;
 
 import static core.util.PathPatternUtil.isUrlMatch;
 

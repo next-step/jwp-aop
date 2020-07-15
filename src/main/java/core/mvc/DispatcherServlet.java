@@ -1,6 +1,5 @@
 package core.mvc;
 
-import core.annotation.web.ExceptionHandler;
 import core.mvc.tobe.ExceptionHandlerMapping;
 import core.mvc.tobe.HandlerExecution;
 import org.slf4j.Logger;
