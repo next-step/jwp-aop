@@ -1,6 +1,7 @@
 package core.util;
 
 import org.springframework.http.server.PathContainer;
+import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPattern.PathMatchInfo;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -18,7 +19,7 @@ public class PathPatternUtil {
     }
 
     public static Map<String, String> getUriVariables(String pattern, String path) {
-        PathMatchInfo pathMatchInfo = parser.parse(pattern).matchAndExtract(PathContainer.parsePath(path));
+        PathMatchInfo pathMatchInfo = toPathPattern(pattern).matchAndExtract(PathContainer.parsePath(path));
 
         if (pathMatchInfo == null) {
             return emptyMap();
@@ -28,7 +29,11 @@ public class PathPatternUtil {
     }
 
     public static boolean isUrlMatch(String pattern, String path) {
-        return parser.parse(pattern).matches(PathContainer.parsePath(path));
+        return toPathPattern(pattern).matches(PathContainer.parsePath(path));
+    }
+
+    public static PathPattern toPathPattern(String pattern) {
+        return parser.parse(pattern);
     }
 
 

@@ -26,6 +26,7 @@ class DispatcherServletTest {
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
+        dispatcher.addExceptionHandlerMapping(new ExceptionHandlerMapping(ac));
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
