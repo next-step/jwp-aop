@@ -25,8 +25,6 @@ public class TransactionalAdvice implements Advice {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        TransactionSynchronizationManager.initSynchronization();
-
         log.debug(TRANSACTION_START_MESSAGE);
         Connection connection = DataSourceUtil.getConnection(dataSource);
 
@@ -46,9 +44,6 @@ public class TransactionalAdvice implements Advice {
         finally {
             connection.close();
             DataSourceUtil.removeConnection();
-
-            TransactionSynchronizationManager.unbindResource(this.dataSource);
-            TransactionSynchronizationManager.clearSynchronization();
             log.debug(TRANSACTION_END_MESSAGE);
         }
     }
