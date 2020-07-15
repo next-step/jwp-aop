@@ -25,8 +25,8 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
 
     public TransactionBeanPostProcessor(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
-        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean<>();
-        proxyFactoryBean.setAdvice(new TransactionalAdvice(this.beanFactory.getBean(DataSource.class)););
+        this.proxyFactoryBean = new ProxyFactoryBean<>();
+        proxyFactoryBean.setAdvice(new TransactionalAdvice(this.beanFactory.getBean(DataSource.class)));
     }
 
     @Override
