@@ -10,20 +10,21 @@ import core.jdbc.DataAccessException;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import next.config.MyConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static core.aop.transactional.TransactionalAdvice.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TransactionalTypeServiceTest {
+class TransactionalTypeServiceTest extends BaseTransactionalServiceTest {
     private TransactionalTypeService transactionalService;
-    private ListAppender<ILoggingEvent> listAppender;
 
     @BeforeEach
     void setUp() {
@@ -32,9 +33,6 @@ class TransactionalTypeServiceTest {
         handlerMapping.initialize();
 
         transactionalService = ac.getBean(TransactionalTypeService.class);
-
-        listAppender = new ListAppender<>();
-        listAppender.start();
 
         Logger serviceLogger = (Logger)LoggerFactory.getLogger(TransactionalAdvice.class);
         serviceLogger.addAppender(listAppender);
@@ -45,11 +43,7 @@ class TransactionalTypeServiceTest {
     void doServiceWithTransactional() {
         transactionalService.doServiceWithTransactional();
 
-        List<ILoggingEvent> logs = listAppender.list;
-
-        assertThat(logs.get(0).getMessage()).isEqualTo(TRANSACTION_START_MESSAGE);
-        assertThat(logs.get(1).getMessage()).isEqualTo(TRANSACTION_COMMIT_MESSAGE);
-        assertThat(logs.get(2).getMessage()).isEqualTo(TRANSACTION_END_MESSAGE);
+        assertLogMessages(listAppender.list, TRANSACTION_START_MESSAGE, TRANSACTION_COMMIT_MESSAGE, TRANSACTION_END_MESSAGE);
     }
 
     @Test()
@@ -57,10 +51,6 @@ class TransactionalTypeServiceTest {
     void doExceptionalServiceWithTransactional() {
         assertThrows(DataAccessException.class, () -> transactionalService.doExceptionalServiceWithTransactional());
 
-        List<ILoggingEvent> logs = listAppender.list;
-
-        assertThat(logs.get(0).getMessage()).isEqualTo(TRANSACTION_START_MESSAGE);
-        assertThat(logs.get(1).getMessage()).isEqualTo(TRANSACTION_ROLLBACK_MESSAGE);
-        assertThat(logs.get(3).getMessage()).isEqualTo(TRANSACTION_END_MESSAGE);
+        assertLogMessages(listAppender.list, TRANSACTION_START_MESSAGE, TRANSACTION_ROLLBACK_MESSAGE, TRANSACTION_END_MESSAGE);
     }
 }

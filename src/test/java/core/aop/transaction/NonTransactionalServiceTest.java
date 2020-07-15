@@ -22,9 +22,8 @@ import static core.aop.transactional.TransactionalAdvice.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class NonTransactionalServiceTest {
+class NonTransactionalServiceTest extends BaseTransactionalServiceTest {
     private NonTransactionalService service;
-    private ListAppender<ILoggingEvent> listAppender;
 
     @BeforeEach
     void setUp() {
@@ -33,9 +32,6 @@ class NonTransactionalServiceTest {
         handlerMapping.initialize();
 
         service = ac.getBean(NonTransactionalService.class);
-
-        listAppender = new ListAppender<>();
-        listAppender.start();
 
         Logger serviceLogger = (Logger)LoggerFactory.getLogger(TransactionalAdvice.class);
         serviceLogger.addAppender(listAppender);
@@ -46,9 +42,7 @@ class NonTransactionalServiceTest {
     void doServiceWithTransactional() {
         service.doService();
 
-        List<ILoggingEvent> logs = listAppender.list;
-
-        assertThat(logs).isEmpty();
+        isLogEmpty(listAppender.list);
     }
 
     @Test()
@@ -56,8 +50,6 @@ class NonTransactionalServiceTest {
     void doExceptionalServiceWithTransactional() {
         assertThrows(RuntimeException.class, () -> service.doExceptionalService());
 
-        List<ILoggingEvent> logs = listAppender.list;
-
-        assertThat(logs).isEmpty();
+        isLogEmpty(listAppender.list);
     }
 }

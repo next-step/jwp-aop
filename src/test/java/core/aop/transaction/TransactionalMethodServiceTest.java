@@ -21,9 +21,8 @@ import static core.aop.transactional.TransactionalAdvice.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TransactionalMethodServiceTest {
+class TransactionalMethodServiceTest extends BaseTransactionalServiceTest {
     private TransactionalMethodService transactionalService;
-    private ListAppender<ILoggingEvent> listAppender;
 
     @BeforeEach
     void setUp() {
@@ -32,9 +31,6 @@ class TransactionalMethodServiceTest {
         handlerMapping.initialize();
 
         transactionalService = ac.getBean(TransactionalMethodService.class);
-
-        listAppender = new ListAppender<>();
-        listAppender.start();
 
         Logger serviceLogger = (Logger)LoggerFactory.getLogger(TransactionalAdvice.class);
         serviceLogger.addAppender(listAppender);
@@ -45,11 +41,7 @@ class TransactionalMethodServiceTest {
     void doServiceWithTransactional() {
         transactionalService.doServiceWithTransactional();
 
-        List<ILoggingEvent> logs = listAppender.list;
-
-        assertThat(logs.get(0).getMessage()).isEqualTo(TRANSACTION_START_MESSAGE);
-        assertThat(logs.get(1).getMessage()).isEqualTo(TRANSACTION_COMMIT_MESSAGE);
-        assertThat(logs.get(2).getMessage()).isEqualTo(TRANSACTION_END_MESSAGE);
+        assertLogMessages(listAppender.list, TRANSACTION_START_MESSAGE, TRANSACTION_COMMIT_MESSAGE, TRANSACTION_END_MESSAGE);
     }
 
     @Test
@@ -57,9 +49,7 @@ class TransactionalMethodServiceTest {
     void doServiceWithoutTransactional() {
         transactionalService.doServiceWithoutTransactional();
 
-        List<ILoggingEvent> logs = listAppender.list;
-
-        assertThat(logs).isEmpty();
+        isLogEmpty(listAppender.list);
     }
 
     @Test()
@@ -67,10 +57,6 @@ class TransactionalMethodServiceTest {
     void doExceptionalServiceWithTransactional() {
         assertThrows(DataAccessException.class, () -> transactionalService.doExceptionalServiceWithTransactional());
 
-        List<ILoggingEvent> logs = listAppender.list;
-
-        assertThat(logs.get(0).getMessage()).isEqualTo(TRANSACTION_START_MESSAGE);
-        assertThat(logs.get(1).getMessage()).isEqualTo(TRANSACTION_ROLLBACK_MESSAGE);
-        assertThat(logs.get(3).getMessage()).isEqualTo(TRANSACTION_END_MESSAGE);
+        assertLogMessages(listAppender.list, TRANSACTION_START_MESSAGE, TRANSACTION_ROLLBACK_MESSAGE, TRANSACTION_END_MESSAGE);
     }
 }
