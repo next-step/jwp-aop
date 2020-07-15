@@ -5,6 +5,7 @@ import core.aop.advice.MethodInvocation;
 import core.jdbc.DataAccessException;
 import core.util.DataSourceUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -24,6 +25,8 @@ public class TransactionalAdvice implements Advice {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
+        TransactionSynchronizationManager.initSynchronization();
+
         log.debug(TRANSACTION_START_MESSAGE);
         Connection connection = DataSourceUtil.getConnection(dataSource);
 
@@ -34,7 +37,7 @@ public class TransactionalAdvice implements Advice {
             log.debug(TRANSACTION_COMMIT_MESSAGE);
             return proceed;
         }
-        catch (RuntimeException e) {
+        catch (Throwable e) {
             connection.rollback();
             log.debug(TRANSACTION_ROLLBACK_MESSAGE);
             log.error(e.getMessage());
@@ -43,6 +46,9 @@ public class TransactionalAdvice implements Advice {
         finally {
             connection.close();
             DataSourceUtil.removeConnection();
+
+            TransactionSynchronizationManager.unbindResource(this.dataSource);
+            TransactionSynchronizationManager.clearSynchronization();
             log.debug(TRANSACTION_END_MESSAGE);
         }
     }
