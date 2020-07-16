@@ -2,14 +2,23 @@ package core.di.beans.factory.support;
 
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.annotation.Transactional;
 import core.aop.FactoryBean;
+import core.aop.ProxyFactoryBean;
+import core.aop.advice.Advice;
+import core.aop.advisor.DefaultAdvisor;
+import core.aop.pointcut.Pointcut;
+import core.aop.transactional.TransactionalAdvice;
+import core.aop.transactional.TransactionalPointcut;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.beans.factory.support.injector.*;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
@@ -98,14 +107,41 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         log.debug("beanInjector: {}", beanInjector.getClass().getSimpleName());
 
         Object injected = beanInjector.inject(this, beanDefinition);
+        return getBeanObject(beanDefinition, injected);
+    }
 
+    private <T> T getBeanObject(BeanDefinition beanDefinition, Object injected) throws Exception {
         if (beanDefinition.isFactoryBeanType()) {
-            return getFactoryBeanObject(injected);
+            return (T) getFactoryBeanObject(injected);
+        }
+        else if (BeanFactoryUtils.isAnnotatedBean(beanDefinition.getBeanClass(), Transactional.class)) {
+            return (T) getTransactionalBeanObject(injected);
         }
 
         initialize(injected, beanDefinition.getBeanClass());
         return (T) injected;
+    }
 
+    private <T> T getFactoryBeanObject(T injected) throws Exception {
+        FactoryBean<T> factoryBean = (FactoryBean<T>) injected;
+        injected = factoryBean.getObject();
+        beans.put(factoryBean.getObjectType(), injected);
+        initialize(injected, factoryBean.getObjectType());
+        return (T) injected;
+    }
+
+    private <T> T getTransactionalBeanObject(T injected) throws Exception {
+        ProxyFactoryBean<T> transactionalBean = new ProxyFactoryBean<>(this);
+        transactionalBean.setTarget(injected);
+
+        Pointcut pointcut = new TransactionalPointcut();
+        Advice advice = new TransactionalAdvice(getBean(DataSource.class));
+        transactionalBean.addAdvisor(new DefaultAdvisor(pointcut, advice));
+
+        injected = transactionalBean.getObject();
+        beans.put(transactionalBean.getObjectType(), injected);
+        initialize(injected, transactionalBean.getObjectType());
+        return injected;
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -121,14 +157,6 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
                 BeanFactoryUtils.getArguments(this, initializeMethod.getParameterTypes())
             );
         }
-    }
-
-    private <T> T getFactoryBeanObject(Object injected) throws Exception {
-        FactoryBean<T> factoryBean = (FactoryBean<T>) injected;
-        injected = factoryBean.getObject();
-        beans.put(factoryBean.getObjectType(), injected);
-        initialize(injected, factoryBean.getObjectType());
-        return (T) injected;
     }
 
     @Override
