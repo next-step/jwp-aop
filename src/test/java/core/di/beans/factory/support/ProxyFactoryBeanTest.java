@@ -1,8 +1,11 @@
-package core.aop;
+package core.di.beans.factory.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import core.aop.support.Echo;
+import core.aop.Advice;
+import core.aop.Advisor;
+import core.aop.Pointcut;
+import core.di.beans.factory.ProxyFactoryBean;
 import org.junit.jupiter.api.Test;
 
 class ProxyFactoryBeanTest {
