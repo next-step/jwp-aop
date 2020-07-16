@@ -11,6 +11,6 @@ public class MyControllerAdvice {
 
     @ExceptionHandler(RequiredLoginException.class)
     public ModelAndView loginRequired() {
-        return new ModelAndView(new JspView("redirect:/users/loginForm"));
+        return new ModelAndView(new JspView("redirect:/users/login"));
     }
 }

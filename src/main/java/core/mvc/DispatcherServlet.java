@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 public class DispatcherServlet extends HttpServlet {
@@ -51,7 +52,7 @@ public class DispatcherServlet extends HttpServlet {
             }
         }
         catch (Throwable e) {
-            handleThrowable(e);
+            handleThrowable(req, resp, e);
         }
     }
 
@@ -72,8 +73,12 @@ public class DispatcherServlet extends HttpServlet {
         view.render(mav.getModel(), req, resp);
     }
 
-    private void handleThrowable(Throwable e) throws ServletException {
+    private void handleThrowable(HttpServletRequest req, HttpServletResponse resp, Throwable e) throws ServletException {
         logger.error("Throwable : {}", e);
+
+        if (e instanceof InvocationTargetException) {
+            e = ((InvocationTargetException)e).getTargetException();
+        }
 
         Optional<Object> maybeHandler = exceptionHandlerMappingRegistry.getHandler(e.getClass());
 
@@ -82,7 +87,9 @@ public class DispatcherServlet extends HttpServlet {
         }
 
         try {
-            exceptionHandlerExecutor.handle(e, maybeHandler.get());
+            ModelAndView mav = exceptionHandlerExecutor.handle(e, maybeHandler.get());
+            render(mav, req, resp);
+            return;
         }
         catch (Exception ex) {
             logger.error("Throwable : {}", ex);

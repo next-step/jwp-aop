@@ -30,7 +30,7 @@ public class AnnotationExceptionHandlerMapping implements ExceptionHandlerMappin
     public void initialize() {
         Map<Class<?>, Object> controllerAdvices = getControllerAdvices(applicationContext);
         handlerExecutions.putAll(handlerConverter.convert(controllerAdvices));
-        log.info("Initialized AnnotationHandlerMapping!");
+        log.info("Initialized AnnotationExceptionHandlerMapping!");
     }
 
     private Map<Class<?>, Object> getControllerAdvices(ApplicationContext ac) {

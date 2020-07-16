@@ -1,5 +1,6 @@
 package core.mvc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +15,7 @@ public class ExceptionHandlerMappingRegistry {
     }
 
     public Optional<Object> getHandler(Class<? extends Throwable> throwable) {
+
         return handlerMappings.stream()
                 .map(hm -> hm.getHandler(throwable))
                 .filter(Objects::nonNull)

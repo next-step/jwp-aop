@@ -10,12 +10,9 @@ import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.*;
 import lombok.extern.slf4j.Slf4j;
 import next.config.MyConfiguration;
-import next.controller.UserSessionUtils;
-import next.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -26,7 +23,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class DispatcherServletTest {
+public class ControllerAdviceTest {
     private static DispatcherServlet dispatcher;
     private static MockHttpServletRequest request;
     private static MockHttpServletResponse response;
@@ -58,48 +55,40 @@ class DispatcherServletTest {
     }
 
     @Test
-    void annotation_user_list() throws Exception {
-        request.setRequestURI("/users");
+    void singleExceptionHandler() throws Exception {
+        String requestURI = "/test/controllerAdvice/firstSampleException";
+        Class<? extends Throwable> targetThrowable = FirstSampleException.class;
+
+        assertExceptionHandler(requestURI, targetThrowable);
+    }
+
+    @Test
+    void multipleExceptionHandlers() throws Exception {
+        String requestURI = "/test/controllerAdvice/secondSampleException";
+        Class<? extends Throwable> targetThrowable = SecondSampleException.class;
+
+        assertExceptionHandler(requestURI, targetThrowable);
+    }
+
+    @Test
+    void multipleExceptionHandlers2() throws Exception {
+        String requestURI = "/test/controllerAdvice/thirdSampleException";
+        Class<? extends Throwable> targetThrowable = ThirdSampleException.class;
+
+        assertExceptionHandler(requestURI, targetThrowable);
+    }
+
+    private void assertExceptionHandler(String requestURI, Class<? extends Throwable> targetThrowable) throws ServletException, IOException {
+        request.setRequestURI(requestURI);
         request.setMethod("GET");
+        response = new MockHttpServletResponse();
 
         dispatcher.service(request, response);
 
-        assertThat(response.getRedirectedUrl()).isNotNull();
-    }
+        String responseBody = response.getContentAsString();
+        log.debug("response body : {}", responseBody);
 
-    @Test
-    void annotation_user_create() throws Exception {
-        User user = new User("pobi", "password", "포비", "pobi@nextstep.camp");
-        createUser(user);
-        assertThat(response.getRedirectedUrl()).isEqualTo("/");
-    }
-
-    private void createUser(User user) throws Exception {
-        request.setRequestURI("/users");
-        request.setMethod("POST");
-        request.setParameter("userId", user.getUserId());
-        request.setParameter("password", user.getPassword());
-        request.setParameter("name", user.getName());
-        request.setParameter("email", user.getEmail());
-
-        dispatcher.service(request, response);
-    }
-
-    @Test
-    void login_success() throws Exception {
-        User user = new User("pobi", "password", "포비", "pobi@nextstep.camp");
-        createUser(user);
-
-        MockHttpServletRequest secondRequest = new MockHttpServletRequest();
-        secondRequest.setRequestURI("/users/login");
-        secondRequest.setMethod("POST");
-        secondRequest.setParameter("userId", user.getUserId());
-        secondRequest.setParameter("password", user.getPassword());
-        MockHttpServletResponse secondResponse = new MockHttpServletResponse();
-
-        dispatcher.service(secondRequest, secondResponse);
-
-        assertThat(secondResponse.getRedirectedUrl()).isEqualTo("/");
-        assertThat(UserSessionUtils.getUserFromSession(secondRequest.getSession())).isNotNull();
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(responseBody).isEqualTo("\"" + targetThrowable.getSimpleName() + "\"");
     }
 }
