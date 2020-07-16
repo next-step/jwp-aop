@@ -131,8 +131,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     private <T> T getTransactionalBeanObject(T injected) throws Exception {
-        ProxyFactoryBean<T> transactionalBean = new ProxyFactoryBean<>(this);
-        transactionalBean.setTarget(injected);
+        ProxyFactoryBean<T> transactionalBean = new ProxyFactoryBean<>(injected, this);
 
         Pointcut pointcut = new TransactionalPointcut();
         Advice advice = new TransactionalAdvice(getBean(DataSource.class));
