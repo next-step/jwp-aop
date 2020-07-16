@@ -5,6 +5,7 @@ import core.aop.advice.ProxyMethodInterceptor;
 import core.aop.advisor.Advisor;
 import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.support.BeanFactoryUtils;
+import core.di.beans.factory.support.DefaultBeanFactory;
 import lombok.Getter;
 import net.sf.cglib.proxy.Enhancer;
 
@@ -17,22 +18,19 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
     private final BeanFactory beanFactory;
 
     @Getter
-    private T target;
+    private final T target;
 
     @Getter
     private List<Advisor> advisors = Lists.newArrayList();
 
-    public ProxyFactoryBean() {
+    public ProxyFactoryBean(T target) {
+        this.target = target;
         this.beanFactory = null;
     }
 
-    public ProxyFactoryBean(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-    }
-
-    public ProxyFactoryBean<T> setTarget(T target) {
+    public ProxyFactoryBean(T target, BeanFactory beanFactory) {
         this.target = target;
-        return this;
+        this.beanFactory = beanFactory;
     }
 
     public ProxyFactoryBean<T> addAdvisor(Advisor advisor) {

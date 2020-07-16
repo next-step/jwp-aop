@@ -2,6 +2,7 @@ package core.aop.transaction;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import core.di.context.support.AnnotationConfigApplicationContext;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.CollectionUtils;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Ignore
 class BaseTransactionalServiceTest {
+    protected static AnnotationConfigApplicationContext ac;
     protected ListAppender<ILoggingEvent> listAppender = initLogAppenderList();
 
     private ListAppender<ILoggingEvent> initLogAppenderList() {

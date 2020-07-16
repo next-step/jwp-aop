@@ -24,8 +24,7 @@ class ProxyFactoryBeanTest {
 
     @BeforeEach
     public void setup() {
-        proxyFactoryBean = new ProxyFactoryBean<>();
-        proxyFactoryBean.setTarget(new AopTestService());
+        proxyFactoryBean = new ProxyFactoryBean<>(new AopTestService());
     }
 
     @DisplayName("toUpperCaseAdvice 테스트")
