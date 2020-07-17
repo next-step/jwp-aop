@@ -8,7 +8,6 @@ import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.support.*;
 import next.security.LoginUserArgumentResolver;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.aspectj.lang.annotation.Pointcut;
 
 import javax.sql.DataSource;
 import java.util.List;

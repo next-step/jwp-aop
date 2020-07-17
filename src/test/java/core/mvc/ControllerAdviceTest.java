@@ -7,18 +7,21 @@ import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.*;
 import lombok.extern.slf4j.Slf4j;
 import next.config.MyConfiguration;
-import next.controller.UserSessionUtils;
-import next.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class DispatcherServletTest {
+public class ControllerAdviceTest {
     private static DispatcherServlet dispatcher;
     private static MockHttpServletRequest request;
     private static MockHttpServletResponse response;
@@ -49,49 +52,30 @@ class DispatcherServletTest {
         response = new MockHttpServletResponse();
     }
 
-    @Test
-    void annotation_user_list() throws Exception {
-        request.setRequestURI("/users");
+    @DisplayName("@ControllerAdvice 기능 테스트")
+    @ParameterizedTest(name = "{index} - requestURI={0}, targetClassName={1}")
+    @CsvSource({
+        "'/test/controllerAdvice/firstSampleException', 'core.di.factory.example.FirstSampleException'",
+        "'/test/controllerAdvice/secondSampleException', 'core.di.factory.example.SecondSampleException'",
+        "'/test/controllerAdvice/thirdSampleException', 'core.di.factory.example.ThirdSampleException'",
+    })
+    void exceptionHandlers(String requestURI, String targetClassName) throws Exception {
+        Class<?> targetClass = Class.forName(targetClassName);
+        assertExceptionHandler(requestURI, targetClass);
+    }
+
+
+    private void assertExceptionHandler(String requestURI, Class<?> targetClass) throws IOException {
+        request.setRequestURI(requestURI);
         request.setMethod("GET");
+        response = new MockHttpServletResponse();
 
         dispatcher.service(request, response);
 
-        assertThat(response.getRedirectedUrl()).isNotNull();
-    }
+        String responseBody = response.getContentAsString();
+        log.debug("response body : {}", responseBody);
 
-    @Test
-    void annotation_user_create() throws Exception {
-        User user = new User("pobi", "password", "포비", "pobi@nextstep.camp");
-        createUser(user);
-        assertThat(response.getRedirectedUrl()).isEqualTo("/");
-    }
-
-    private void createUser(User user) throws Exception {
-        request.setRequestURI("/users");
-        request.setMethod("POST");
-        request.setParameter("userId", user.getUserId());
-        request.setParameter("password", user.getPassword());
-        request.setParameter("name", user.getName());
-        request.setParameter("email", user.getEmail());
-
-        dispatcher.service(request, response);
-    }
-
-    @Test
-    void login_success() throws Exception {
-        User user = new User("pobi", "password", "포비", "pobi@nextstep.camp");
-        createUser(user);
-
-        MockHttpServletRequest secondRequest = new MockHttpServletRequest();
-        secondRequest.setRequestURI("/users/login");
-        secondRequest.setMethod("POST");
-        secondRequest.setParameter("userId", user.getUserId());
-        secondRequest.setParameter("password", user.getPassword());
-        MockHttpServletResponse secondResponse = new MockHttpServletResponse();
-
-        dispatcher.service(secondRequest, secondResponse);
-
-        assertThat(secondResponse.getRedirectedUrl()).isEqualTo("/");
-        assertThat(UserSessionUtils.getUserFromSession(secondRequest.getSession())).isNotNull();
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(responseBody).isEqualTo("\"" + targetClass.getSimpleName() + "\"");
     }
 }

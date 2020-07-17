@@ -5,9 +5,7 @@ import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
-import core.mvc.tobe.AnnotationHandlerMapping;
-import core.mvc.tobe.HandlerConverter;
-import core.mvc.tobe.HandlerExecutionHandlerAdapter;
+import core.mvc.tobe.*;
 import core.web.WebApplicationInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +24,17 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
         ahm.initialize();
 
+        AnnotationExceptionHandlerMapping aehm = new AnnotationExceptionHandlerMapping(ac, ac.getBean(ExceptionHandlerExtractor.class));
+        aehm.initialize();
+
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
+
+        dispatcherServlet.addExceptionHandlerMapping(aehm);
+        dispatcherServlet.addExceptionHandlerAdapter(new ExceptionHandlerExecutionHandlerAdapter());
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);

@@ -11,6 +11,7 @@ import core.jdbc.DataAccessException;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import next.config.MyConfiguration;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,16 +24,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class NonTransactionalServiceTest extends BaseTransactionalServiceTest {
-    private NonTransactionalService service;
+    private static NonTransactionalService service;
 
-    @BeforeEach
-    void setUp() {
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
+    @BeforeAll
+    static void beforeAll() {
+        ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         AnnotationHandlerMapping handlerMapping = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
         handlerMapping.initialize();
 
         service = ac.getBean(NonTransactionalService.class);
+    }
 
+    @BeforeEach
+    void setUp() {
         Logger serviceLogger = (Logger)LoggerFactory.getLogger(TransactionalAdvice.class);
         serviceLogger.addAppender(listAppender);
     }
