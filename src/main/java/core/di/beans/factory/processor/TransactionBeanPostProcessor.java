@@ -18,15 +18,13 @@ import java.util.stream.Collectors;
 /**
  * @author KingCjy
  */
-public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class TransactionBeanPostProcessor implements BeanPostProcessor {
 
-    private BeanFactory beanFactory;
-    private ProxyFactoryBean proxyFactoryBean;
+    private TransactionalAdvice advice;
 
     public TransactionBeanPostProcessor(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-        this.proxyFactoryBean = new ProxyFactoryBean<>();
-        proxyFactoryBean.setAdvice(new TransactionalAdvice(this.beanFactory.getBean(DataSource.class)));
+        DataSource dataSource = beanFactory.getBean(DataSource.class);
+        this.advice = new TransactionalAdvice(dataSource);
     }
 
     @Override
@@ -35,8 +33,8 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
             return bean;
         }
 
-        proxyFactoryBean.setTarget(bean);
-        proxyFactoryBean.setPointcut(new MethodMatchPointcut(getTransactionMethods(beanDefinition.getType())));
+        MethodMatchPointcut pointcut = new MethodMatchPointcut(getTransactionMethods(beanDefinition.getType()));
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean<>(bean, pointcut, advice);
 
         return proxyFactoryBean.getObject();
     }
@@ -49,10 +47,5 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
         return Arrays.stream(targetClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(Transactional.class))
                 .collect(Collectors.toSet());
-    }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
     }
 }

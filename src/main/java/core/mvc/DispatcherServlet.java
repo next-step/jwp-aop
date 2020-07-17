@@ -1,7 +1,12 @@
 package core.mvc;
 
+import core.di.context.ApplicationContext;
+import core.mvc.asis.ControllerHandlerAdapter;
+import core.mvc.asis.RequestMapping;
+import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.ExceptionHandlerMapping;
 import core.mvc.tobe.HandlerExecution;
+import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,15 +30,26 @@ public class DispatcherServlet extends HttpServlet {
 
     private ExceptionHandlerMapping exceptionHandlerMapping;
 
-    public void addHandlerMapping(HandlerMapping handlerMapping) {
+    public DispatcherServlet(ApplicationContext ac) {
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac);
+        ExceptionHandlerMapping ehm = new ExceptionHandlerMapping(ac);
+
+        this.addHandlerMapping(ahm);
+        this.addHandlerMapping(new RequestMapping());
+        this.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
+        this.addHandlerAdapter(new ControllerHandlerAdapter());
+        this.addExceptionHandlerMapping(ehm);
+    }
+
+    private void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
     }
 
-    public void addHandlerAdapter(HandlerAdapter handlerAdapter) {
+    private void addHandlerAdapter(HandlerAdapter handlerAdapter) {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
     }
 
-    public void addExceptionHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
+    private void addExceptionHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
         this.exceptionHandlerMapping = exceptionHandlerMapping;
     }
 

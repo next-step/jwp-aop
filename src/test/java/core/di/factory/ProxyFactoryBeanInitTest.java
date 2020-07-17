@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ProxyFactoryBeanInitTest {
 
-    private BeanInitializer beanInitializer;
     private BeanFactory beanFactory;
 
     @BeforeEach

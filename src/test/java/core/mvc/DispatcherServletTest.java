@@ -23,10 +23,7 @@ class DispatcherServletTest {
     void setUp() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac);
-        dispatcher = new DispatcherServlet();
-        dispatcher.addHandlerMapping(ahm);
-        dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
-        dispatcher.addExceptionHandlerMapping(new ExceptionHandlerMapping(ac));
+        dispatcher = new DispatcherServlet(ac);
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
