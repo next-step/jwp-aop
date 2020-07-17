@@ -1,6 +1,7 @@
 package core.aop;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import core.aop.transaction.TransactionBeanPostProcessor;
 import core.di.context.ApplicationContext;
@@ -27,10 +28,7 @@ public class TransactionTest {
 
         User user = new User("javajigi", "password", "홍길동", "a@a.com");
 
-        try{
-            transactionService.addUserThenThrowException(user);
-        }catch (Exception e){
-            assertThat(ac.getBean(UserDao.class).findByUserId("javagivi")).isNull();
-        }
+        assertThatThrownBy(()->transactionService.addUserThenThrowException(user)).isInstanceOf(Exception.class);
+        assertThat(ac.getBean(UserDao.class).findByUserId("javagivi")).isNull();
     }
 }
