@@ -10,13 +10,16 @@ import core.aop.MethodInvocation;
 import core.aop.Pointcut;
 import core.aop.ProxyFactoryBean;
 import core.di.beans.factory.BeanFactory;
+import core.di.beans.factory.BeanPostProcessor;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import core.jdbc.ConnectionHolder;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,6 +38,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     @Override
     public void preInstantiateSingletons() {
@@ -72,7 +77,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
 
-        bean = updateBean(bean);
+        bean = postProcess(bean);
 
         beans.put(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
@@ -88,34 +93,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         return (T) bean;
     }
 
-    private Object updateBean(Object bean) {
-
-        Pointcut pointcut = (method, targetClass, args) -> method.isAnnotationPresent(Transactional.class);
-
-        Advice advice = invocation -> {
-            Connection connection = null;
-            try {
-                Object retVal = invocation.proceed();
-
-                connection = ConnectionHolder.getConnection();
-                if(connection != null){
-                    connection.commit();
-                }
-                return retVal;
-            } catch (Exception e){
-                ConnectionHolder.getConnection().rollback();
-                throw new RuntimeException(e.getMessage(), e);
-            }finally {
-                ConnectionHolder.getConnection().close();
-            }
-        };
-
-        try {
-            return new ProxyFactoryBean(bean, Arrays.asList(new Advisor(pointcut, advice))).getObject();
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage() ,e);
+    private Object postProcess(Object bean) {
+        for(BeanPostProcessor beanPostProcessor : this.beanPostProcessors){
+            bean = beanPostProcessor.postProcess(bean);
         }
-
+        return bean;
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -188,6 +170,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     public void clear() {
         beanDefinitions.clear();
         beans.clear();
+    }
+
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+
     }
 
     @Override

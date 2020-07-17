@@ -2,11 +2,14 @@ package core.di.context.support;
 
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
+import core.di.beans.factory.BeanPostProcessor;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.DefaultBeanFactory;
 import core.di.context.ApplicationContext;
 import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
+import java.util.Collections;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +22,11 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
 
     private DefaultBeanFactory beanFactory;
 
-    public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
+    public AnnotationConfigApplicationContext(List<BeanPostProcessor> postProcessors, Class<?>... annotatedClasses) {
         Object[] basePackages = findBasePackages(annotatedClasses);
         beanFactory = new DefaultBeanFactory();
+        postProcessors.forEach(beanPostProcessor -> beanFactory.addBeanPostProcessor(beanPostProcessor));
+
         BeanDefinitionReader abdr = new AnnotatedBeanDefinitionReader(beanFactory);
         abdr.loadBeanDefinitions(annotatedClasses);
 
@@ -30,6 +35,10 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             scanner.doScan(basePackages);
         }
         beanFactory.preInstantiateSingletons();
+    }
+
+    public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
+        this(Collections.EMPTY_LIST, annotatedClasses);
     }
 
     private Object[] findBasePackages(Class<?>[] annotatedClasses) {

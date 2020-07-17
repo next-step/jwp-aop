@@ -2,8 +2,10 @@ package core.aop;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import core.aop.transaction.TransactionBeanPostProcessor;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
+import java.util.Arrays;
 import next.config.MyConfiguration;
 import next.dao.UserDao;
 import next.model.User;
@@ -16,7 +18,7 @@ public class TransactionTest {
 
     @BeforeEach
     public void setUp() {
-         ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
+         ac = new AnnotationConfigApplicationContext(Arrays.asList(new TransactionBeanPostProcessor()),MyConfiguration.class);
     }
 
     @Test

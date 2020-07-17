@@ -8,4 +8,6 @@ public interface BeanFactory {
     <T> T getBean(Class<T> clazz);
 
     void clear();
+
+    void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 }
