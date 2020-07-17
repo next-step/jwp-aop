@@ -2,7 +2,7 @@ package core.mvc.exception;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class AbstractHandlerExecutionException extends RuntimeException implements TargetThrowableGettable {
+public abstract class AbstractHandlerExecutionException extends RuntimeException implements TargetThrowableGettable {
     protected Throwable throwable;
 
     public AbstractHandlerExecutionException(Throwable throwable) {
