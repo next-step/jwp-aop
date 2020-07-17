@@ -1,21 +1,20 @@
 package core.mvc;
 
+import core.mvc.exception.ExceptionHandlerExecutionException;
+import core.mvc.exception.TargetThrowableGettable;
+import core.mvc.exception.ViewRenderException;
 import core.mvc.tobe.AnnotationExceptionHandlerMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
 
 public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(DispatcherServlet.class);
 
     private HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
     private HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
@@ -42,58 +41,52 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) {
         String requestUri = req.getRequestURI();
-        logger.debug("Method : {}, Request URI : {}", req.getMethod(), requestUri);
+        log.debug("Method : {}, Request URI : {}", req.getMethod(), requestUri);
 
         try {
-            if (!handleRequest(req, resp)) {
-                return;
-            }
+            handleRequest(req, resp);
         }
-        catch (Throwable e) {
-            handleThrowable(req, resp, e);
+        catch (Throwable throwable) {
+            log.error("", throwable);
+            handleThrowable(req, resp, throwable);
         }
     }
 
-    private boolean handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        Optional<Object> maybeHandler = handlerMappingRegistry.getHandler(req);
-        if (!maybeHandler.isPresent()) {
-            resp.setStatus(HttpStatus.NOT_FOUND.value());
-            return false;
-        }
-
-        ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
-        render(mav, req, resp);
-        return true;
+    private boolean handleRequest(HttpServletRequest req, HttpServletResponse resp) {
+        return handlerMappingRegistry.getHandler(req)
+            .map(handler -> {
+                ModelAndView mav = handlerExecutor.handle(req, resp, handler);
+                render(mav, req, resp);
+                return true;
+            })
+            .orElseGet(() -> {
+                resp.setStatus(HttpStatus.NOT_FOUND.value());
+                return false;
+            });
     }
 
-    private void render(ModelAndView mav, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    private void render(ModelAndView mav, HttpServletRequest req, HttpServletResponse resp) throws ViewRenderException {
         View view = mav.getView();
         view.render(mav.getModel(), req, resp);
     }
 
-    private void handleThrowable(HttpServletRequest req, HttpServletResponse resp, Throwable e) throws ServletException {
-        logger.error("Throwable : {}", e);
-
-        if (e instanceof InvocationTargetException) {
-            e = ((InvocationTargetException)e).getTargetException();
+    private void handleThrowable(HttpServletRequest req, HttpServletResponse resp, Throwable throwable) {
+        if (throwable instanceof TargetThrowableGettable) {
+            throwable = ((TargetThrowableGettable)throwable).getTargetThrowable();
         }
 
-        Optional<Object> maybeHandler = exceptionHandlerMappingRegistry.getHandler(e.getClass());
+        Throwable finalThrowable = throwable;
 
-        if (!maybeHandler.isPresent()) {
-            throw new ServletException(e.getMessage());
-        }
-
-        try {
-            ModelAndView mav = exceptionHandlerExecutor.handle(e, maybeHandler.get());
-            render(mav, req, resp);
-            return;
-        }
-        catch (Exception ex) {
-            logger.error("Throwable : {}", ex);
-            throw new ServletException(ex.getMessage());
-        }
+        exceptionHandlerMappingRegistry.getHandler(throwable.getClass())
+            .map(handler -> {
+                ModelAndView mav = exceptionHandlerExecutor.handle(finalThrowable, handler);
+                render(mav, req, resp);
+                return true;
+            })
+            .orElseGet(() -> {
+                throw new ExceptionHandlerExecutionException(finalThrowable);
+            });
     }
 }

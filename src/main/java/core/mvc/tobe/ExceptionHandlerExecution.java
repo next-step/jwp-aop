@@ -1,17 +1,13 @@
 package core.mvc.tobe;
 
 import core.mvc.ModelAndView;
-import core.mvc.tobe.support.ArgumentResolver;
-import org.springframework.core.ParameterNameDiscoverer;
+import core.mvc.exception.ExceptionHandlerExecutionException;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 public class ExceptionHandlerExecution {
     private Object target;
     private Method method;
@@ -21,7 +17,12 @@ public class ExceptionHandlerExecution {
         this.method = method;
     }
 
-    public ModelAndView handle(Throwable throwable) throws Exception {
-        return (ModelAndView) method.invoke(target, throwable);
+    public ModelAndView handle(Throwable throwable) throws ExceptionHandlerExecutionException {
+        try {
+            return (ModelAndView) method.invoke(target, throwable);
+        }
+        catch (IllegalAccessException | InvocationTargetException e) {
+            throw new ExceptionHandlerExecutionException(throwable);
+        }
     }
 }

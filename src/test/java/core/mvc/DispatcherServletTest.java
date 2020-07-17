@@ -2,9 +2,6 @@ package core.mvc;
 
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
-import core.di.factory.example.FirstSampleException;
-import core.di.factory.example.SecondSampleException;
-import core.di.factory.example.ThirdSampleException;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.*;
@@ -15,13 +12,8 @@ import next.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import javax.servlet.ServletException;
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +30,7 @@ class DispatcherServletTest {
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
         ahm.initialize();
 
-        AnnotationExceptionHandlerMapping aehm = new AnnotationExceptionHandlerMapping(ac, ac.getBean(ExceptionHandlerConverter.class));
+        AnnotationExceptionHandlerMapping aehm = new AnnotationExceptionHandlerMapping(ac, ac.getBean(ExceptionHandlerExtractor.class));
         aehm.initialize();
 
         dispatcher = new DispatcherServlet();

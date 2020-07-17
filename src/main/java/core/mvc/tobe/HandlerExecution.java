@@ -1,7 +1,9 @@
 package core.mvc.tobe;
 
 import core.mvc.ModelAndView;
+import core.mvc.exception.HandlerExecutionException;
 import core.mvc.tobe.support.ArgumentResolver;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterNameDiscoverer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 public class HandlerExecution {
 
     private static final Map<Method, MethodParameter[]> methodParameterCache = new ConcurrentHashMap<>();
@@ -27,7 +30,7 @@ public class HandlerExecution {
         this.method = method;
     }
 
-    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response) throws HandlerExecutionException {
         MethodParameter[] methodParameters = getMethodParameters();
         Object[] arguments = new Object[methodParameters.length];
 
@@ -35,7 +38,12 @@ public class HandlerExecution {
             arguments[i] = getArguments(methodParameters[i], request, response);
         }
 
-        return (ModelAndView) method.invoke(target, arguments);
+        try {
+            return (ModelAndView) method.invoke(target, arguments);
+        }
+        catch (Exception e) {
+            throw new HandlerExecutionException(e, method.getName());
+        }
     }
 
     private MethodParameter[] getMethodParameters() {

@@ -18,6 +18,7 @@ public class HandlerMappingRegistry {
         return handlerMappings.stream()
                 .map(hm -> hm.getHandler(request))
                 .filter(Objects::nonNull)
-                .findFirst();
+                .findFirst()
+            ;
     }
 }

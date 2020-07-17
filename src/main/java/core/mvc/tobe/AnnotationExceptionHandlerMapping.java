@@ -2,34 +2,28 @@ package core.mvc.tobe;
 
 import com.google.common.collect.Maps;
 import core.annotation.ControllerAdvice;
-import core.annotation.web.Controller;
-import core.annotation.web.RequestMethod;
 import core.di.context.ApplicationContext;
 import core.mvc.ExceptionHandlerMapping;
-import core.mvc.HandlerMapping;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
 @Slf4j
 public class AnnotationExceptionHandlerMapping implements ExceptionHandlerMapping {
     private ApplicationContext applicationContext;
-    private ExceptionHandlerConverter handlerConverter;
+    private ExceptionHandlerExtractor exceptionHandlerExtractor;
 
     private Map<Class<? extends Throwable>, ExceptionHandlerExecution> handlerExecutions = Maps.newHashMap();
 
-    public AnnotationExceptionHandlerMapping(ApplicationContext applicationContext, ExceptionHandlerConverter handlerConverter) {
+    public AnnotationExceptionHandlerMapping(ApplicationContext applicationContext, ExceptionHandlerExtractor exceptionHandlerExtractor) {
         this.applicationContext = applicationContext;
-        this.handlerConverter = handlerConverter;
+        this.exceptionHandlerExtractor = exceptionHandlerExtractor;
     }
 
     public void initialize() {
         Map<Class<?>, Object> controllerAdvices = getControllerAdvices(applicationContext);
-        handlerExecutions.putAll(handlerConverter.convert(controllerAdvices));
+        handlerExecutions.putAll(exceptionHandlerExtractor.extract(controllerAdvices));
         log.info("Initialized AnnotationExceptionHandlerMapping!");
     }
 

@@ -1,11 +1,8 @@
 package core.mvc.tobe;
 
 import core.mvc.ExceptionHandlerAdapter;
-import core.mvc.HandlerAdapter;
 import core.mvc.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import core.mvc.exception.ExceptionHandlerExecutionException;
 
 public class ExceptionHandlerExecutionHandlerAdapter implements ExceptionHandlerAdapter {
     @Override
@@ -14,7 +11,7 @@ public class ExceptionHandlerExecutionHandlerAdapter implements ExceptionHandler
     }
 
     @Override
-    public ModelAndView handle(Throwable throwable, Object handler) throws Exception {
+    public ModelAndView handle(Throwable throwable, Object handler) throws ExceptionHandlerExecutionException {
         return ((ExceptionHandlerExecution) handler).handle(throwable);
     }
 }

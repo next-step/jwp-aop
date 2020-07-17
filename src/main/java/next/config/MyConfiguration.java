@@ -3,14 +3,11 @@ package next.config;
 import core.annotation.Bean;
 import core.annotation.ComponentScan;
 import core.annotation.Configuration;
-import core.annotation.ExceptionHandler;
 import core.jdbc.JdbcTemplate;
-import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.support.*;
 import next.security.LoginUserArgumentResolver;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.aspectj.lang.annotation.Pointcut;
 
 import javax.sql.DataSource;
 import java.util.List;

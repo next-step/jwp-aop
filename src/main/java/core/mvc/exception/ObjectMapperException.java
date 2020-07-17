@@ -1,4 +1,4 @@
-package core.mvc;
+package core.mvc.exception;
 
 public class ObjectMapperException extends RuntimeException {
     public ObjectMapperException() {

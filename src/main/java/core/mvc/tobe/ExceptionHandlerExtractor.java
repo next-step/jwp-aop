@@ -16,8 +16,8 @@ import java.util.function.Predicate;
 
 @Slf4j
 @Component
-public class ExceptionHandlerConverter {
-    public Map<Class<? extends Throwable>, ExceptionHandlerExecution> convert(Map<Class<?>, Object> controllerAdvices) {
+public class ExceptionHandlerExtractor {
+    public Map<Class<? extends Throwable>, ExceptionHandlerExecution> extract(Map<Class<?>, Object> controllerAdvices) {
         Map<Class<? extends Throwable>, ExceptionHandlerExecution> handlers = new HashMap<>();
 
         Set<Class<?>> controllerAdviceClasses = controllerAdvices.keySet();
