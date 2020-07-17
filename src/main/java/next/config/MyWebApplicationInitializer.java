@@ -24,7 +24,6 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         ApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac);
         ExceptionHandlerMapping ehm = new ExceptionHandlerMapping(ac);
-        ahm.initialize();
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
         dispatcherServlet.addHandlerMapping(ahm);

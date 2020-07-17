@@ -15,25 +15,19 @@ import java.util.Map;
 public class ExceptionHandlerMapping {
 
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerMapping.class);
-    private Map<Class<? extends Throwable>, HandlerExecution> handlerExecutions = new LinkedHashMap<>();
 
-    private BeanFactory beanFactory;
+    private Map<Class<? extends Throwable>, HandlerExecution> handlerExecutions;
 
     public ExceptionHandlerMapping(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-        initialize();
-    }
-
-    public void initialize() {
         logger.info("## Initialized Annotation Handler Mapping");
 
-        Object[] adviceInstances = getControllerAdvices();
+        Object[] adviceInstances = getControllerAdvices(beanFactory);
 
         Advices advices = new Advices(adviceInstances, new ArgumentResolverComposite());
         this.handlerExecutions = advices.getHandlerExecutions();
     }
 
-    private Object[] getControllerAdvices() {
+    private Object[] getControllerAdvices(BeanFactory beanFactory) {
         return beanFactory.getAnnotatedBeans(ControllerAdvice.class);
     }
 
