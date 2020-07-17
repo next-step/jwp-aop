@@ -1,11 +1,7 @@
-package core.di.beans.factory.support;
+package core.aop;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import core.aop.Advice;
-import core.aop.Advisor;
-import core.aop.Pointcut;
-import core.aop.ProxyFactoryBean;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 

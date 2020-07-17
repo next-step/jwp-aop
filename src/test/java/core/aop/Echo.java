@@ -1,4 +1,4 @@
-package core.di.beans.factory.support;
+package core.aop;
 
 public class Echo {
 

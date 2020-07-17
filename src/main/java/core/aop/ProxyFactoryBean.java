@@ -19,6 +19,8 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(this.target.getClass());
         enhancer.setCallback(new ProxyMethodInterceptor(this.target, this.advisors));
-        return (T) enhancer.create();
+
+        Class[] types = this.target.getClass().getDeclaredConstructors()[0].getParameterTypes();
+        return (T) enhancer.create(types, new Object[types.length]);
     }
 }

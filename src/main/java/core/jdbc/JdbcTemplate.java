@@ -17,7 +17,9 @@ public class JdbcTemplate {
     }
 
     public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
-        try (Connection conn = DataSourceUtils.getConnection(dataSource); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try {
+            Connection conn = DataSourceUtils.getConnection(dataSource);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pss.setParameters(pstmt);
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -30,7 +32,8 @@ public class JdbcTemplate {
     }
 
     public void update(PreparedStatementCreator psc, KeyHolder holder) {
-        try (Connection conn = DataSourceUtils.getConnection(dataSource)) {
+        try {
+            Connection conn = DataSourceUtils.getConnection(dataSource);
             PreparedStatement ps = psc.createPreparedStatement(conn);
             ps.executeUpdate();
 
@@ -58,7 +61,9 @@ public class JdbcTemplate {
 
     public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
         ResultSet rs = null;
-        try (Connection conn = DataSourceUtils.getConnection(dataSource); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try {
+            Connection conn = DataSourceUtils.getConnection(dataSource);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pss.setParameters(pstmt);
             rs = pstmt.executeQuery();
 
