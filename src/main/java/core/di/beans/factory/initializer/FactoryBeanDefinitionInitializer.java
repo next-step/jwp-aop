@@ -2,7 +2,6 @@ package core.di.beans.factory.initializer;
 
 import core.aop.FactoryBean;
 import core.di.beans.factory.BeanFactory;
-import core.di.beans.factory.BeanFactoryAware;
 import core.di.beans.factory.definition.BeanDefinition;
 import core.di.beans.factory.definition.ClassBeanDefinition;
 import core.di.beans.factory.definition.FactoryBeanDefinition;

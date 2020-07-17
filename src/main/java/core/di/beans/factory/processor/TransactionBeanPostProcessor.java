@@ -1,12 +1,10 @@
 package core.di.beans.factory.processor;
 
 import core.annotation.Transactional;
-import core.aop.Advice;
 import core.aop.ProxyFactoryBean;
 import core.aop.support.MethodMatchPointcut;
 import core.aop.support.TransactionalAdvice;
 import core.di.beans.factory.BeanFactory;
-import core.di.beans.factory.BeanFactoryAware;
 import core.di.beans.factory.definition.BeanDefinition;
 
 import javax.sql.DataSource;

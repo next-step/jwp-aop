@@ -1,7 +1,6 @@
 package core.di.factory;
 
 import core.di.beans.factory.BeanFactory;
-import core.di.beans.factory.initializer.BeanInitializer;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.di.factory.proxy.example.CarDao;
 import next.config.MyConfiguration;
