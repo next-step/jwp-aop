@@ -33,6 +33,18 @@ public class Controllers {
             Class<?> controller = target.getClass();
             addHandlerExecution(target, controller.getMethods());
         }
+
+        sortHandlerExecutions();
+    }
+
+    private void sortHandlerExecutions() {
+        Map<HandlerKey, HandlerExecution> sortedMap = new LinkedHashMap<>();
+
+        this.handlerExecutions.keySet().stream()
+                .sorted()
+                .forEach(key -> sortedMap.put(key, handlerExecutions.get(key)));
+
+        this.handlerExecutions = sortedMap;
     }
 
     private void addHandlerExecution(Object target, Method[] methods) {

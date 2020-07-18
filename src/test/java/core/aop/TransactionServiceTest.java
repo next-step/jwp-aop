@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author KingCjy
  */
-public class TransactionTest {
+public class TransactionServiceTest {
 
     BeanFactory beanFactory;
 

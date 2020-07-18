@@ -1,6 +1,5 @@
 package core.util;
 
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import java.util.Comparator;
@@ -31,6 +30,6 @@ public class OrderComparator implements Comparator<Object> {
             return 1;
         }
 
-        return Ordered.LOWEST_PRECEDENCE;
+        return order.value();
     }
 }

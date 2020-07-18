@@ -18,8 +18,8 @@ import java.lang.reflect.Method;
 import static core.util.ReflectionUtils.hasFieldMethod;
 import static core.util.StringUtil.upperFirstChar;
 
-@Order(1)
 @Component
+@Order
 public class ModelArgumentResolver implements ArgumentResolver {
 
     private ParameterNameDiscoverer nameDiscoverer = new LocalVariableTableParameterNameDiscoverer();

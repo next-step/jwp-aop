@@ -1,11 +1,16 @@
 package core.di.factory;
 
+import core.mvc.tobe.support.ArgumentResolver;
+import core.mvc.tobe.support.ModelArgumentResolver;
 import core.util.OrderComparator;
+import next.security.LoginUserArgumentResolver;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.annotation.Order;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,4 +51,23 @@ public class OrderComparatorTest {
         assertThat(classes[1]).isEqualTo(Order1.class);
         assertThat(classes[2]).isEqualTo(Order3.class);
     }
+
+    @Test
+    public void orderTest() {
+        Set<ArgumentResolver> argumentResolvers = getArgumentResolvers()
+                .stream()
+                .sorted(OrderComparator.INSTANCE)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        argumentResolvers.forEach(resolver -> System.out.println(resolver.getClass()));
+    }
+
+    private Set<ArgumentResolver> getArgumentResolvers() {
+        return new HashSet<>(Arrays.asList(
+                new ModelArgumentResolver(),
+                new LoginUserArgumentResolver()
+        )
+        );
+    }
+
 }

@@ -1,12 +1,10 @@
 package core.di.beans.factory.processor;
 
 import core.annotation.Transactional;
-import core.aop.Advice;
 import core.aop.ProxyFactoryBean;
 import core.aop.support.MethodMatchPointcut;
 import core.aop.support.TransactionalAdvice;
 import core.di.beans.factory.BeanFactory;
-import core.di.beans.factory.BeanFactoryAware;
 import core.di.beans.factory.definition.BeanDefinition;
 
 import javax.sql.DataSource;
@@ -18,14 +16,13 @@ import java.util.stream.Collectors;
 /**
  * @author KingCjy
  */
-public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+public class TransactionBeanPostProcessor implements BeanPostProcessor {
 
-    private BeanFactory beanFactory;
-    private Advice advice;
+    private TransactionalAdvice advice;
 
     public TransactionBeanPostProcessor(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-        this.advice = new TransactionalAdvice(this.beanFactory.getBean(DataSource.class));
+        DataSource dataSource = beanFactory.getBean(DataSource.class);
+        this.advice = new TransactionalAdvice(dataSource);
     }
 
     @Override
@@ -34,10 +31,8 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
             return bean;
         }
 
-        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean<>();
-        proxyFactoryBean.setTarget(bean);
-        proxyFactoryBean.setPointcut(new MethodMatchPointcut(getTransactionMethods(beanDefinition.getType())));
-        proxyFactoryBean.setAdvice(advice);
+        MethodMatchPointcut pointcut = new MethodMatchPointcut(getTransactionMethods(beanDefinition.getType()));
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean<>(bean, pointcut, advice);
 
         return proxyFactoryBean.getObject();
     }
@@ -50,10 +45,5 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor, BeanFact
         return Arrays.stream(targetClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(Transactional.class))
                 .collect(Collectors.toSet());
-    }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
     }
 }

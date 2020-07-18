@@ -22,6 +22,6 @@ public class TestProxyConfiguration {
 
     @Bean
     public CarDaoProxyFactoryBean myCarDao() {
-        return new CarDaoProxyFactoryBean();
+        return new CarDaoProxyFactoryBean(dataSource);
     }
 }

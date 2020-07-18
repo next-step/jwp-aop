@@ -25,11 +25,7 @@ public class ProxyFactoryBeanTest {
     @Test
     public void interceptorTest() throws Exception {
         Counter counter = new Counter();
-        ProxyFactoryBean<MyService> proxyFactoryBean = new ProxyFactoryBean<>();
-
-        proxyFactoryBean.setTarget(new MyService());
-        proxyFactoryBean.setPointcut(method -> true);
-        proxyFactoryBean.setAdvice(new CounterAdvice(counter));
+        ProxyFactoryBean<MyService> proxyFactoryBean = new ProxyFactoryBean<>(new MyService(), method -> true, new CounterAdvice(counter));
 
         proxyFactoryBean.getObject().doProcess();
 
@@ -38,8 +34,7 @@ public class ProxyFactoryBeanTest {
 
     @Test
     public void createProxyFromWithObjenesisTest() throws Exception {
-        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean();
-        proxyFactoryBean.setTarget(new MyService2(new MyService()));
+        ProxyFactoryBean<?> proxyFactoryBean = new ProxyFactoryBean(new MyService2(new MyService()), Pointcut.DEFAULT_POINTCUT, Advice.DEFAULT_ADVICE);
 
         MyService2 myService2 = (MyService2) proxyFactoryBean.getObject();
 

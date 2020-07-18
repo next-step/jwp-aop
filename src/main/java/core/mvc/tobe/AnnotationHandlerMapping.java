@@ -1,6 +1,5 @@
 package core.mvc.tobe;
 
-import com.google.common.collect.Maps;
 import core.annotation.Component;
 import core.annotation.web.Controller;
 import core.annotation.web.RequestMethod;
@@ -8,11 +7,13 @@ import core.di.beans.factory.BeanFactory;
 import core.mvc.HandlerMapping;
 import core.mvc.tobe.support.ArgumentResolver;
 import core.mvc.tobe.support.ArgumentResolverComposite;
+import core.util.OrderComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class AnnotationHandlerMapping implements HandlerMapping {
     private static final Logger logger = LoggerFactory.getLogger(AnnotationHandlerMapping.class);
 
-    private Map<HandlerKey, HandlerExecution> handlerExecutions = Maps.newHashMap();
+    private Map<HandlerKey, HandlerExecution> handlerExecutions = new LinkedHashMap<>();
     private Controllers controllers;
     private BeanFactory beanFactory;
 
@@ -46,6 +47,7 @@ public class AnnotationHandlerMapping implements HandlerMapping {
         return Arrays.stream(beanFactory.getAnnotatedBeans(Component.class))
                 .filter(object -> ArgumentResolver.class.isAssignableFrom(object.getClass()))
                 .map(object -> (ArgumentResolver) object)
+                .sorted(OrderComparator.INSTANCE)
                 .collect(Collectors.toCollection(LinkedHashSet::new))
                 .toArray(new ArgumentResolver[]{});
     }
@@ -59,12 +61,10 @@ public class AnnotationHandlerMapping implements HandlerMapping {
     }
 
     private HandlerExecution getHandlerInternal(HandlerKey requestHandlerKey) {
-        for (HandlerKey handlerKey : handlerExecutions.keySet()) {
-            if (handlerKey.isMatch(requestHandlerKey)) {
-                return handlerExecutions.get(handlerKey);
-            }
-        }
-
-        return null;
+        return handlerExecutions.keySet().stream()
+                .filter(handlerKey -> handlerKey.isMatch(requestHandlerKey))
+                .map(handlerKey -> handlerExecutions.get(handlerKey))
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -1,6 +1,5 @@
 package core.di.factory.proxy.example;
 
-import core.annotation.Inject;
 import core.aop.ProxyFactoryBean;
 
 import javax.sql.DataSource;
@@ -10,12 +9,7 @@ import javax.sql.DataSource;
  */
 public class CarDaoProxyFactoryBean extends ProxyFactoryBean<CarDao> {
 
-    @Inject
-    private DataSource dataSource;
-
-    public CarDaoProxyFactoryBean() {
-        setTarget(new CarDao(dataSource));
-        setPointcut(method -> true);
-        setAdvice(new CounterAdvice(new Counter()));
+    public CarDaoProxyFactoryBean(DataSource dataSource) {
+        super(new CarDao(dataSource), method -> true, new CounterAdvice(new Counter()));
     }
 }
