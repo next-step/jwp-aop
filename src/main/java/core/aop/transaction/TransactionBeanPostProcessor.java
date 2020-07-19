@@ -9,7 +9,7 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcess(Object bean) {
         try {
-            return new ProxyFactoryBean(bean, Arrays.asList(new TransactionAdvice())).getObject();
+            return new ProxyFactoryBean(bean, Arrays.asList(new TransactionAdvisor())).getObject();
         } catch (Exception e) {
             return bean;
         }

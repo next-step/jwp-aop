@@ -19,7 +19,7 @@ public class TransactionTest {
 
     @BeforeEach
     public void setUp() {
-         ac = new AnnotationConfigApplicationContext(Arrays.asList(new TransactionBeanPostProcessor()),MyConfiguration.class);
+        ac = new AnnotationConfigApplicationContext(Arrays.asList(new TransactionBeanPostProcessor()), MyConfiguration.class);
     }
 
     @Test
