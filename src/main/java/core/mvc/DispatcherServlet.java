@@ -1,16 +1,15 @@
 package core.mvc;
 
 import core.mvc.tobe.HandlerExecution;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-
+import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -50,33 +49,32 @@ public class DispatcherServlet extends HttpServlet {
                 return;
             }
 
-
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
         } catch (Throwable e) {
-            if(exceptionHandlerMapping == null){
-                logger.error("Exception : {}", e);
-                throw new ServletException(e.getMessage());
-            }
-
-            HandlerExecution handler = exceptionHandlerMapping.getHandler(e);
-            if(handler == null){
-                logger.error("Exception : {}", e);
-                throw new ServletException(e.getMessage());
-            }
-
-            try {
-                ModelAndView mav = exceptionHandlerExecutor.handle(req, resp, e, handler);
-                render(mav, req, resp);
-            } catch (Exception ex) {
-                logger.error("Exception : {}", e);
-                throw new ServletException(e.getMessage());
-            }
+            handlerException(req, resp, e);
         }
     }
 
     private void render(ModelAndView mav, HttpServletRequest req, HttpServletResponse resp) throws Exception {
         View view = mav.getView();
         view.render(mav.getModel(), req, resp);
+    }
+
+    private void handlerException(HttpServletRequest req, HttpServletResponse resp, Throwable e) throws ServletException {
+        HandlerExecution handler = Optional.ofNullable(this.exceptionHandlerMapping)
+            .map(exceptionHandlerMapping -> exceptionHandlerMapping.getHandler(e))
+            .orElseThrow(() -> {
+                logger.error("Exception : {}", e);
+                return new ServletException(e.getMessage());
+            });
+
+        try {
+            ModelAndView mav = exceptionHandlerExecutor.handle(req, resp, e, handler);
+            render(mav, req, resp);
+        } catch (Exception ex) {
+            logger.error("Exception : {}", e);
+            throw new ServletException(e.getMessage());
+        }
     }
 }

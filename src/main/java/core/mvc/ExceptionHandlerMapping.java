@@ -29,6 +29,9 @@ public class ExceptionHandlerMapping {
         this.exceptionHandlers.putAll(exceptionHandlerConverter.convert(exceptionAdviceBean));
     }
 
+    public HandlerExecution getHandler(Throwable e) {
+        return exceptionHandlers.get(e.getClass());
+    }
 
     private Object findExceptionAdviceBean() {
         for (Class<?> clazz : ac.getBeanClasses()) {
@@ -38,9 +41,5 @@ public class ExceptionHandlerMapping {
             }
         }
         return null;
-    }
-
-    public HandlerExecution getHandler(Throwable e) {
-        return exceptionHandlers.get(e.getClass());
     }
 }
