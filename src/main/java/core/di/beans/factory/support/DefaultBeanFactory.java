@@ -3,23 +3,12 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
-import core.annotation.Transactional;
-import core.aop.Advice;
-import core.aop.Advisor;
-import core.aop.MethodInvocation;
-import core.aop.Pointcut;
-import core.aop.ProxyFactoryBean;
-import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.BeanPostProcessor;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
-import core.jdbc.ConnectionHolder;
-import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -174,7 +163,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     @Override
     public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
-
+        this.beanPostProcessors.add(beanPostProcessor);
     }
 
     @Override
