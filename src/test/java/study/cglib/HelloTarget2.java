@@ -1,6 +1,6 @@
 package study.cglib;
 
-class HelloTarget implements Hello {
+class HelloTarget2 {
     public String sayHello(String name) {
         return "Hello " + name;
     }
@@ -11,5 +11,9 @@ class HelloTarget implements Hello {
 
     public String sayThankYou(String name) {
         return "Thank You " + name;
+    }
+
+    public String pingpong(String name) {
+        return "Pong " + name;
     }
 }

@@ -1,4 +1,4 @@
-package study.cglib;
+package study.dynamic;
 
 public interface Hello {
     String sayHello(String name);
@@ -6,4 +6,6 @@ public interface Hello {
     String sayHi(String name);
 
     String sayThankYou(String name);
+
+    String pingpong(String name);
 }
