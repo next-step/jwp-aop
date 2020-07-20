@@ -1,4 +1,4 @@
-package study.jdkproxy;
+package study.aop.jdkproxy;
 
 /**
  * Created by iltaek on 2020/07/20 Blog : http://blog.iltaek.me Github : http://github.com/iltaek
@@ -18,5 +18,10 @@ public class HelloTarget implements Hello {
     @Override
     public String sayThankYou(String name) {
         return "Thank You " + name;
+    }
+
+    @Override
+    public String pingpong(String name) {
+        return "Pong " + name;
     }
 }

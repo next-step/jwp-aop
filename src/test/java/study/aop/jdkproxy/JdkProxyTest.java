@@ -1,4 +1,4 @@
-package study.jdkproxy;
+package study.aop.jdkproxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,12 +18,16 @@ class JdkProxyTest {
     void toUpperCase() {
         Hello helloProxyInstance = (Hello) Proxy.newProxyInstance(getClass().getClassLoader(),
                                                                   new Class[]{Hello.class},
-                                                                  new UpperCaseDynamicInvocationHandler(new HelloTarget()));
+                                                                  new UpperCaseDynamicInvocationHandler(new HelloTarget(),
+                                                                                                        (m, targetClass, args) -> m.getName()
+                                                                                                                                   .startsWith(
+                                                                                                                                       "say")));
 
         logger.debug("Proxy is created");
 
         assertThat(helloProxyInstance.sayHi("schulz")).isEqualTo("HI SCHULZ");
         assertThat(helloProxyInstance.sayHello("schulz")).isEqualTo("HELLO SCHULZ");
         assertThat(helloProxyInstance.sayThankYou("schulz")).isEqualTo("THANK YOU SCHULZ");
+        assertThat(helloProxyInstance.pingpong("schulz")).isEqualTo("Pong schulz");
     }
 }

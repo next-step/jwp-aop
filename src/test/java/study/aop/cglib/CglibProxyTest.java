@@ -1,4 +1,4 @@
-package study.cglib;
+package study.aop.cglib;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.FixedValue;

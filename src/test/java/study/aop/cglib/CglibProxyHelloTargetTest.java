@@ -1,9 +1,8 @@
-package study.cglib;
+package study.aop.cglib;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,15 +21,13 @@ class CglibProxyHelloTargetTest {
 
     @Test
     void toUpperCase() {
-        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
-            String returnValue = (String) proxy.invokeSuper(obj, args);
-            return returnValue.toUpperCase();
-        });
+        enhancer.setCallback(new UpperCaseMethodInterceptor((m, targetClass, args) -> m.getName().startsWith("say")));
 
         HelloTarget target = (HelloTarget) enhancer.create();
 
         assertThat(target.sayHi("schulz")).isEqualTo("HI SCHULZ");
         assertThat(target.sayHello("schulz")).isEqualTo("HELLO SCHULZ");
         assertThat(target.sayThankYou("schulz")).isEqualTo("THANK YOU SCHULZ");
+        assertThat(target.pingpong("schulz")).isEqualTo("Pong schulz");
     }
 }
