@@ -3,11 +3,11 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Constructor;
@@ -18,11 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
-    private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
     private Map<Class<?>, Object> beans = Maps.newHashMap();
-
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     @Override
@@ -46,9 +45,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(beanInstance -> registerBean(clazz, beanInstance));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
@@ -61,9 +60,22 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
+
+        registerBean(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void registerBean(Class<?> clazz, Object beanInstance) {
+        if (beanInstance instanceof FactoryBean) {
+            FactoryBean factoryBean = (FactoryBean) beanInstance;
+
+            clazz = factoryBean.getObjectType();
+            beanInstance = factoryBean.getObject();
+        }
+
+        beans.put(clazz, beanInstance);
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
