@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by iltaek on 2020/07/20 Blog : http://blog.iltaek.me Github : http://github.com/iltaek
  */
-public class JdkProxyTest {
+class JdkProxyTest {
 
     Logger logger = LoggerFactory.getLogger(JdkProxyTest.class);
 
