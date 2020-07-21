@@ -1,4 +1,4 @@
-package study.cglib;
+package study.aop.cglib;
 
 public class PersonService {
     public String sayHello(String name) {
