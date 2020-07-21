@@ -1,7 +1,7 @@
 package study.proxy.jdk;
 
 import lombok.RequiredArgsConstructor;
-import study.proxy.matcher.MethodMatcher;
+import core.aop.MethodMatcher;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

@@ -3,7 +3,7 @@ package study.proxy.cglib;
 import lombok.RequiredArgsConstructor;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import study.proxy.matcher.MethodMatcher;
+import core.aop.MethodMatcher;
 
 import java.lang.reflect.Method;
 

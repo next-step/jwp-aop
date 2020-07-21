@@ -1,5 +1,7 @@
 package study.proxy.matcher;
 
+import core.aop.MethodMatcher;
+
 import java.lang.reflect.Method;
 
 public class SayMethodMatcher implements MethodMatcher {
