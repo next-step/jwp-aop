@@ -23,6 +23,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     private Map<Class<?>, Object> beans = Maps.newHashMap();
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private PostBeanProcessorRegistry postBeanProcessorRegistry = new PostBeanProcessorRegistry();
 
     @Override
     public void preInstantiateSingletons() {
@@ -70,11 +71,17 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private void registerBean(Class<?> clazz, Object beanInstance) {
         if (beanInstance instanceof FactoryBean) {
             FactoryBean factoryBean = (FactoryBean) beanInstance;
-            beans.put(factoryBean.getObjectType(), factoryBean.getObject());
+            registerBeanWithPostProcessing(factoryBean.getObjectType(), factoryBean.getObject());
             return;
         }
 
-        beans.put(clazz, beanInstance);
+        registerBeanWithPostProcessing(clazz, beanInstance);
+    }
+
+    private void registerBeanWithPostProcessing(Class<?> clazz, Object beanInstance) {
+        Object processedBean = postBeanProcessorRegistry.process(clazz, beanInstance);
+
+        beans.put(clazz, processedBean);
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
