@@ -26,7 +26,7 @@ public class ConnectionHolder {
         CONNECTION_THREAD_LOCAL.remove();
     }
 
-    public Connection getConnection() {
+    public static Connection getConnection() {
         return CONNECTION_THREAD_LOCAL.get();
     }
 
