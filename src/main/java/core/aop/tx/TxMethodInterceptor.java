@@ -30,7 +30,7 @@ public class TxMethodInterceptor implements MethodInterceptor {
 
     private Object applyTransactionProcess(Object obj, Object[] args, MethodProxy proxy) throws Throwable {
         DataSource dataSource = applicationContext.getBean(DataSource.class);
-        Connection connection = DataSourceUtils.getConnection(dataSource);
+        Connection connection = DataSourceUtils.getConnection(dataSource, true);
 
         try {
             Object result = proxy.invokeSuper(obj, args);
@@ -41,7 +41,7 @@ public class TxMethodInterceptor implements MethodInterceptor {
             connection.rollback();
             throw new IllegalStateException("Transaction is rollback.", e);
         } finally {
-            DataSourceUtils.closeConnection(connection);
+            DataSourceUtils.closeConnectionCompletely();
         }
     }
 

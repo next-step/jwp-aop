@@ -12,26 +12,46 @@ public class ConnectionHolder {
     private static ThreadLocal<ThreadConnection> connectionThreadLocal = new ThreadLocal<>();
 
     public static boolean hasConnection() {
-        return getConnection() != null;
+        return getThreadConnection() != null;
     }
 
     public static void setConnection(Connection connection, boolean maintained) {
-        if (getThreadConnection() == null) {
-
+        ThreadConnection threadConnection = getThreadConnection();
+        if (threadConnection == null) {
+            ThreadConnection newThreadConnection = new ThreadConnection(connection, maintained);
+            connectionThreadLocal.set(newThreadConnection);
+            return;
         }
 
-        ThreadConnection threadConnection = getThreadConnection();
         threadConnection.setConnection(connection);
     }
 
     public static void clear() throws SQLException {
-        Connection connection = getConnection();
-        connection.close();
+        ThreadConnection threadConnection = getThreadConnection();
+        if (threadConnection == null || threadConnection.isMaintained()) {
+            return;
+        }
+
+        clearCompletely();
+    }
+
+    public static void clearCompletely() throws SQLException {
+        ThreadConnection threadConnection = getThreadConnection();
+        if (threadConnection == null) {
+            return;
+        }
+
+        threadConnection.close();
         connectionThreadLocal.remove();
     }
 
     public static Connection getConnection() {
-        return getThreadConnection().getConnection();
+        ThreadConnection threadConnection = getThreadConnection();
+        if (threadConnection == null) {
+            throw new IllegalStateException("Connection does not exist.");
+        }
+
+        return threadConnection.getConnection();
     }
 
     private static ThreadConnection getThreadConnection() {

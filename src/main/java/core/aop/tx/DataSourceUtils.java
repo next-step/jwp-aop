@@ -11,9 +11,14 @@ import java.sql.SQLException;
 public abstract class DataSourceUtils {
 
     public static Connection getConnection(DataSource dataSource) {
+        return getConnection(dataSource, false);
+    }
+
+    public static Connection getConnection(DataSource dataSource, boolean maintained) {
         try {
             if (!ConnectionHolder.hasConnection()) {
-                ConnectionHolder.setConnection(fetchConnection(dataSource), true);
+                Connection connection = fetchConnection(dataSource);
+                ConnectionHolder.setConnection(connection, maintained);
             }
 
             return ConnectionHolder.getConnection();
@@ -22,9 +27,7 @@ public abstract class DataSourceUtils {
         }
     }
 
-    public static void closeConnection(Connection connection) {
-        Connection conn = ConnectionHolder.getConnection();
-
+    public static void closeConnection() {
         try {
             ConnectionHolder.clear();
         } catch (SQLException e) {
@@ -32,11 +35,16 @@ public abstract class DataSourceUtils {
         }
     }
 
-    private static Connection fetchConnection(DataSource dataSource) throws SQLException {
-        Connection connection = dataSource.getConnection();
+    public static void closeConnectionCompletely() {
+        try {
+            ConnectionHolder.clearCompletely();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
-        connection.setAutoCommit(false);
-        return connection;
+    private static Connection fetchConnection(DataSource dataSource) throws SQLException {
+        return dataSource.getConnection();
     }
 
 }

@@ -22,7 +22,6 @@ public class JdbcAnswerDao implements AnswerDao {
     }
 
     @Override
-    @Transactional
     public Answer insert(Answer answer) {
         String sql = "INSERT INTO ANSWERS (writer, contents, createdDate, questionId) VALUES (?, ?, ?, ?)";
         PreparedStatementCreator psc = new PreparedStatementCreator() {
