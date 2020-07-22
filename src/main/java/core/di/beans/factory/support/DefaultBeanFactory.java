@@ -3,13 +3,10 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,12 +14,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
+
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
-    private Map<Class<?>, Object> beans = Maps.newHashMap();
+    private static final String FAIL_FACTORY = "Getting Object from FactoryBean Failed";
 
+    private Map<Class<?>, Object> beans = Maps.newHashMap();
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     @Override
@@ -48,7 +50,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(b -> putBean(clazz, b));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
@@ -61,9 +63,32 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
+        putBean(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
+    }
+
+    @Override
+    public void clear() {
+        beanDefinitions.clear();
+        beans.clear();
+    }
+
+    private void putBean(Class<?> clazz, Object bean) {
+        if (bean instanceof FactoryBean) {
+            FactoryBean factoryBean = (FactoryBean) bean;
+            beans.put(factoryBean.getObjectType(), getFactoryBean(factoryBean));
+            return;
+        }
+        beans.put(clazz, bean);
+    }
+
+    private Object getFactoryBean(FactoryBean factoryBean) {
+        try {
+            return factoryBean.getObject();
+        } catch (Exception e) {
+            throw new IllegalStateException(FAIL_FACTORY, e);
+        }
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -74,7 +99,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         for (Method initializeMethod : initializeMethods) {
             log.debug("@PostConstruct Initialize Method : {}", initializeMethod);
             BeanFactoryUtils.invokeMethod(initializeMethod, bean,
-                    populateArguments(initializeMethod.getParameterTypes()));
+                                          populateArguments(initializeMethod.getParameterTypes()));
         }
     }
 
@@ -130,12 +155,6 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         } catch (IllegalAccessException | IllegalArgumentException e) {
             log.error(e.getMessage());
         }
-    }
-
-    @Override
-    public void clear() {
-        beanDefinitions.clear();
-        beans.clear();
     }
 
     @Override
