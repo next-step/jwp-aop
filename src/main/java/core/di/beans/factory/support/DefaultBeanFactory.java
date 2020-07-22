@@ -3,7 +3,7 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
-import core.aop.FactoryBean;
+import core.aop.factorybean.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
@@ -23,6 +23,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     private Map<Class<?>, Object> beans = Maps.newHashMap();
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private PostBeanProcessorRegistry postBeanProcessorRegistry = new PostBeanProcessorRegistry();
 
     @Override
     public void preInstantiateSingletons() {
@@ -57,25 +58,35 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             return null;
         }
 
-        beanDefinition = beanDefinitions.get(concreteClazz.get());
+        Class<?> beanClass = concreteClazz.get();
+        beanDefinition = beanDefinitions.get(beanClass);
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
 
-        registerBean(concreteClazz.get(), bean);
-        initialize(bean, concreteClazz.get());
-        return (T) bean;
+        registerBean(beanClass, bean);
+        initialize(bean, beanClass);
+        return (T) beans.get(beanClass);
+    }
+
+    public void addPostBeanProcessor(PostBeanProcessor postBeanProcessor) {
+        this.postBeanProcessorRegistry.addProcessor(postBeanProcessor);
     }
 
     @SuppressWarnings("rawtypes")
-    private void registerBean(Class<?> clazz, Object beanInstance) {
+    private <T> void registerBean(Class<T> clazz, Object beanInstance) {
         if (beanInstance instanceof FactoryBean) {
             FactoryBean factoryBean = (FactoryBean) beanInstance;
-
-            clazz = factoryBean.getObjectType();
-            beanInstance = factoryBean.getObject();
+            registerBeanWithPostProcessing(factoryBean.getObjectType(), factoryBean.getObject());
+            return;
         }
 
-        beans.put(clazz, beanInstance);
+        registerBeanWithPostProcessing(clazz, beanInstance);
+    }
+
+    private void registerBeanWithPostProcessing(Class<?> clazz, Object beanInstance) {
+        Object processedBean = postBeanProcessorRegistry.process(clazz, beanInstance);
+
+        beans.put(clazz, processedBean);
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -155,4 +166,5 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
     }
+
 }

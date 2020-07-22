@@ -2,6 +2,7 @@ package next.dao;
 
 import core.annotation.Inject;
 import core.annotation.Repository;
+import core.annotation.Transactional;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.KeyHolder;
 import core.jdbc.PreparedStatementCreator;
@@ -41,6 +42,7 @@ public class JdbcAnswerDao implements AnswerDao {
     }
 
     @Override
+    @Transactional
     public Answer findById(long answerId) {
         String sql = "SELECT answerId, writer, contents, createdDate, questionId FROM ANSWERS WHERE answerId = ?";
 
@@ -56,6 +58,7 @@ public class JdbcAnswerDao implements AnswerDao {
     }
 
     @Override
+    @Transactional
     public List<Answer> findAllByQuestionId(long questionId) {
         String sql = "SELECT answerId, writer, contents, createdDate FROM ANSWERS WHERE questionId = ? "
                 + "order by answerId desc";
@@ -72,6 +75,7 @@ public class JdbcAnswerDao implements AnswerDao {
     }
 
     @Override
+    @Transactional
     public void delete(Long answerId) {
         String sql = "DELETE FROM ANSWERS WHERE answerId = ?";
         jdbcTemplate.update(sql, answerId);

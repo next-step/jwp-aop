@@ -53,7 +53,7 @@ dependencies {
 
     implementation 'org.projectlombok:lombok:1.18.12'
 
-    runtimeOnly 'com.h2database:h2:1.4.200'
+    runtimeOnly 'com.h2database:h2:1.4.199'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.6.2'
     testImplementation 'org.assertj:assertj-core:3.16.1'
     testImplementation 'org.springframework:spring-test:' + springVersion
