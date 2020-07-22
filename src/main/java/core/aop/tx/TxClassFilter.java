@@ -1,7 +1,7 @@
 package core.aop.tx;
 
 import core.annotation.Transactional;
-import core.aop.ClassFilter;
+import core.aop.pointcut.ClassFilter;
 
 public class TxClassFilter implements ClassFilter {
 

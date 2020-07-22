@@ -10,17 +10,25 @@ import java.sql.SQLException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class DataSourceUtils {
 
-    private static final ConnectionHolder CONNECTION_HOLDER = ConnectionHolder.create();
-
     public static Connection getConnection(DataSource dataSource) {
         try {
-            if (!CONNECTION_HOLDER.hasConnection()) {
-                CONNECTION_HOLDER.setConnection(fetchConnection(dataSource));
+            if (!ConnectionHolder.hasConnection()) {
+                ConnectionHolder.setConnection(fetchConnection(dataSource), true);
             }
 
             return ConnectionHolder.getConnection();
         } catch (SQLException e) {
             throw new IllegalStateException("fetch connection failed.", e);
+        }
+    }
+
+    public static void closeConnection(Connection connection) {
+        Connection conn = ConnectionHolder.getConnection();
+
+        try {
+            ConnectionHolder.clear();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
         }
     }
 

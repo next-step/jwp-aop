@@ -58,17 +58,22 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             return null;
         }
 
-        beanDefinition = beanDefinitions.get(concreteClazz.get());
+        Class<?> beanClass = concreteClazz.get();
+        beanDefinition = beanDefinitions.get(beanClass);
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
 
-        registerBean(concreteClazz.get(), bean);
-        initialize(bean, concreteClazz.get());
-        return (T) bean;
+        registerBean(beanClass, bean);
+        initialize(bean, beanClass);
+        return (T) beans.get(beanClass);
+    }
+
+    public void addPostBeanProcessor(PostBeanProcessor postBeanProcessor) {
+        this.postBeanProcessorRegistry.addProcessor(postBeanProcessor);
     }
 
     @SuppressWarnings("rawtypes")
-    private void registerBean(Class<?> clazz, Object beanInstance) {
+    private <T> void registerBean(Class<T> clazz, Object beanInstance) {
         if (beanInstance instanceof FactoryBean) {
             FactoryBean factoryBean = (FactoryBean) beanInstance;
             registerBeanWithPostProcessing(factoryBean.getObjectType(), factoryBean.getObject());
@@ -161,4 +166,5 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
     }
+
 }

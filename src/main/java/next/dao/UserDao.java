@@ -2,6 +2,7 @@ package next.dao;
 
 import core.annotation.Inject;
 import core.annotation.Repository;
+import core.annotation.Transactional;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.RowMapper;
 import next.model.User;
@@ -19,11 +20,13 @@ public class UserDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Transactional
     public void insert(User user) {
         String sql = "INSERT INTO USERS VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getUserId(), user.getPassword(), user.getName(), user.getEmail());
     }
 
+    @Transactional
     public User findByUserId(String userId) {
         String sql = "SELECT userId, password, name, email FROM USERS WHERE userid=?";
 
@@ -40,6 +43,7 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, rm, userId);
     }
 
+    @Transactional
     public List<User> findAll() throws SQLException {
         String sql = "SELECT userId, password, name, email FROM USERS";
 
@@ -56,6 +60,7 @@ public class UserDao {
         return jdbcTemplate.query(sql, rm);
     }
 
+    @Transactional
     public void update(User user) {
         String sql = "UPDATE USERS set password = ?, name = ?, email = ? WHERE userId = ?";
         jdbcTemplate.update(sql, user.getPassword(), user.getName(), user.getEmail(), user.getUserId());

@@ -3,7 +3,7 @@ package core.di.factory.example.proxy;
 import core.aop.factorybean.FactoryBean;
 import net.sf.cglib.proxy.Enhancer;
 import study.proxy.cglib.UppercaseInterceptor;
-import core.aop.MethodMatcher;
+import core.aop.pointcut.MethodMatcher;
 import study.proxy.matcher.SayMethodMatcher;
 
 public class ProxyTargetBeanFactory implements FactoryBean<ProxyTargetBean> {

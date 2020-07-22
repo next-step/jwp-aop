@@ -1,17 +1,14 @@
 package core.di.beans.factory.support;
 
-import core.aop.factorybean.TxProxyFactoryBean;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor
 public class PostBeanProcessorRegistry {
 
     private List<PostBeanProcessor> processors = new ArrayList<>();
-
-    public PostBeanProcessorRegistry() {
-        processors.add((clazz, bean) -> new TxProxyFactoryBean(bean, clazz).getObject());
-    }
 
     public void addProcessor(PostBeanProcessor postBeanProcessor) {
         this.processors.add(postBeanProcessor);
@@ -20,7 +17,9 @@ public class PostBeanProcessorRegistry {
     public Object process(Class<?> clazz, Object bean) {
         Object processedBean = bean;
         for (PostBeanProcessor processor : processors) {
-            processedBean = processor.process(clazz, processedBean);
+            if (processor.supports(clazz, bean)) {
+                processedBean = processor.process(clazz, processedBean);
+            }
         }
 
         return processedBean;

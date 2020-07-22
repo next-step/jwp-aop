@@ -1,6 +1,6 @@
 package study.proxy.matcher;
 
-import core.aop.MethodMatcher;
+import core.aop.pointcut.MethodMatcher;
 
 import java.lang.reflect.Method;
 

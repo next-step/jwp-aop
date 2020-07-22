@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.DefaultBeanFactory;
+import core.di.beans.factory.support.TxPostBeanProcessor;
 import core.di.context.ApplicationContext;
 import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
@@ -29,6 +30,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
         }
+        beanFactory.addPostBeanProcessor(new TxPostBeanProcessor(this));
         beanFactory.preInstantiateSingletons();
     }
 

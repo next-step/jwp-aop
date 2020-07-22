@@ -19,14 +19,17 @@ public class JdbcTemplate {
     }
 
     public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
+        Connection conn = null;
         try {
-            Connection conn = DataSourceUtils.getConnection(dataSource);
+            conn = DataSourceUtils.getConnection(dataSource);
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             pss.setParameters(pstmt);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            DataSourceUtils.closeConnection(conn);
         }
     }
 
@@ -35,8 +38,9 @@ public class JdbcTemplate {
     }
 
     public void update(PreparedStatementCreator psc, KeyHolder holder) {
+        Connection conn = null;
         try {
-            Connection conn = DataSourceUtils.getConnection(dataSource);
+            conn = DataSourceUtils.getConnection(dataSource);
             PreparedStatement ps = psc.createPreparedStatement(conn);
             ps.executeUpdate();
 
@@ -47,6 +51,8 @@ public class JdbcTemplate {
             rs.close();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            DataSourceUtils.closeConnection(conn);
         }
     }
 
@@ -63,10 +69,12 @@ public class JdbcTemplate {
     }
 
     public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            Connection conn = DataSourceUtils.getConnection(dataSource);
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+            conn = DataSourceUtils.getConnection(dataSource);
+            pstmt = conn.prepareStatement(sql);
             pss.setParameters(pstmt);
             rs = pstmt.executeQuery();
 
@@ -79,9 +87,9 @@ public class JdbcTemplate {
             throw new DataAccessException(e);
         } finally {
             try {
-                if (rs != null) {
-                    rs.close();
-                }
+                rs.close();
+                pstmt.close();
+                DataSourceUtils.closeConnection(conn);
             } catch (SQLException e) {
                 throw new DataAccessException(e);
             }

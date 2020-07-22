@@ -4,30 +4,38 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConnectionHolder {
 
-    private static ThreadLocal<Connection> CONNECTION_THREAD_LOCAL = new ThreadLocal<>();
+    private static ThreadLocal<ThreadConnection> connectionThreadLocal = new ThreadLocal<>();
 
-    public static ConnectionHolder create() {
-        return new ConnectionHolder();
+    public static boolean hasConnection() {
+        return getConnection() != null;
     }
 
-    public boolean hasConnection() {
-        return CONNECTION_THREAD_LOCAL.get() != null;
+    public static void setConnection(Connection connection, boolean maintained) {
+        if (getThreadConnection() == null) {
+
+        }
+
+        ThreadConnection threadConnection = getThreadConnection();
+        threadConnection.setConnection(connection);
     }
 
-    public void setConnection(Connection connection) {
-        CONNECTION_THREAD_LOCAL.set(connection);
-    }
-
-    public void clear() {
-        CONNECTION_THREAD_LOCAL.remove();
+    public static void clear() throws SQLException {
+        Connection connection = getConnection();
+        connection.close();
+        connectionThreadLocal.remove();
     }
 
     public static Connection getConnection() {
-        return CONNECTION_THREAD_LOCAL.get();
+        return getThreadConnection().getConnection();
+    }
+
+    private static ThreadConnection getThreadConnection() {
+        return connectionThreadLocal.get();
     }
 
 }

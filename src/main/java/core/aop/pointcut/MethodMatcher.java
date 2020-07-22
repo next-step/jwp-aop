@@ -1,4 +1,4 @@
-package core.aop;
+package core.aop.pointcut;
 
 import java.lang.reflect.Method;
 
