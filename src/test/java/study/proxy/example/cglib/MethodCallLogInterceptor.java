@@ -12,7 +12,7 @@ public class MethodCallLogInterceptor implements MethodInterceptor {
         Object returnValue = proxy.invokeSuper(obj, args);
 
         TextUpperCaseMethodMatcher matcher = new TextUpperCaseMethodMatcher("say", "talk");
-        if (matcher.matches(method, obj.getClass(), args)) {
+        if (matcher.matches(method, method.getDeclaringClass(), args)) {
             returnValue = ((String) returnValue).toUpperCase();
         }
 
