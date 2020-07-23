@@ -16,12 +16,12 @@ public class DynamicInvocationHandler implements InvocationHandler {
         }
     }
 
-
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
         Object result = methods.get(method.getName()).invoke(target, args);
-        result = ((String) result).toUpperCase();
+        if (method.getName().startsWith("say")) {
+            result = ((String) result).toUpperCase();
+        }
         return result;
     }
 }
