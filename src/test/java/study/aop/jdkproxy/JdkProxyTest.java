@@ -16,12 +16,10 @@ class JdkProxyTest {
 
     @Test
     void toUpperCase() {
-        Hello helloProxyInstance = (Hello) Proxy.newProxyInstance(getClass().getClassLoader(),
-                                                                  new Class[]{Hello.class},
-                                                                  new UpperCaseDynamicInvocationHandler(new HelloTarget(),
-                                                                                                        (m, targetClass, args) -> m.getName()
-                                                                                                                                   .startsWith(
-                                                                                                                                       "say")));
+        Hello helloProxyInstance = (Hello) Proxy
+            .newProxyInstance(getClass().getClassLoader(), new Class[]{Hello.class},
+                new UpperCaseDynamicInvocationHandler(new HelloTarget(),
+                    (m, targetClass, args) -> m.getName().startsWith("say")));
 
         logger.debug("Proxy is created");
 
