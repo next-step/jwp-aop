@@ -22,7 +22,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object result = methods.get(method.getName()).invoke(target, args);
 
-        TextUpperCaseMethodMatcher matcher = new TextUpperCaseMethodMatcher("say");
+        TextUpperCaseMethodMatcher matcher = new TextUpperCaseMethodMatcher("say", "talk");
         if (matcher.matches(method, proxy.getClass(), args)) {
             result = ((String) result).toUpperCase();
         }
