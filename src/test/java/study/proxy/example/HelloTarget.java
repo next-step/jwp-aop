@@ -21,4 +21,9 @@ public class HelloTarget implements Hello {
     public String pingpong(String name) {
         return name;
     }
+
+    @Override
+    public String talk(String name) {
+        return "Talk " + name;
+    }
 }

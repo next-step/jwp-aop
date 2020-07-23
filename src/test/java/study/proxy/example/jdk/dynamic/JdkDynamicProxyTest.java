@@ -1,14 +1,12 @@
 package study.proxy.example.jdk.dynamic;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import study.proxy.example.Hello;
 import study.proxy.example.HelloTarget;
-import study.proxy.example.normal.HelloTargetTest;
 
 import java.lang.reflect.Proxy;
 
@@ -54,5 +52,12 @@ public class JdkDynamicProxyTest {
         String pingpong = proxyInstance.pingpong("spring");
         logger.debug(pingpong);
         assertThat(pingpong).isEqualTo("spring");
+    }
+
+    @Test
+    public void talk() {
+        String talk = proxyInstance.talk("spring");
+        logger.debug(talk);
+        assertThat(talk).isEqualTo("TALK SPRING");
     }
 }

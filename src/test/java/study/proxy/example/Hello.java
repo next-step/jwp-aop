@@ -5,4 +5,6 @@ public interface Hello {
     String sayHi(String name);
     String sayThankYou(String name);
     String pingpong(String name);
+
+    String talk(String name);
 }

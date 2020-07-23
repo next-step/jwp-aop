@@ -54,4 +54,11 @@ public class CglibProxyTest {
         logger.debug(pingpong);
         assertThat(pingpong).isEqualTo("spring");
     }
+
+    @Test
+    public void talk() {
+        String talk = helloTarget.talk("spring");
+        logger.debug(talk);
+        assertThat(talk).isEqualTo("TALK SPRING");
+    }
 }
