@@ -9,7 +9,11 @@ public class MethodCallLogInterceptor implements MethodInterceptor {
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         Object returnValue = proxy.invokeSuper(obj, args);
-        returnValue = ((String) returnValue).toUpperCase();
+
+        if (method.getName().startsWith("say")) {
+            returnValue = ((String) returnValue).toUpperCase();
+        }
+
         return returnValue;
     }
 }
