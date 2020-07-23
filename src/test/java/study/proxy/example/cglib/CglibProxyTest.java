@@ -1,7 +1,6 @@
 package study.proxy.example.cglib;
 
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.NoOp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -47,5 +46,12 @@ public class CglibProxyTest {
         String thankYou = helloTarget.sayThankYou("spring");
         logger.debug(thankYou);
         assertThat(thankYou).isEqualTo("THANK YOU SPRING");
+    }
+
+    @Test
+    public void pingpong() {
+        String pingpong = helloTarget.pingpong("spring");
+        logger.debug(pingpong);
+        assertThat(pingpong).isEqualTo("spring");
     }
 }
