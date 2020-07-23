@@ -1,5 +1,7 @@
 package study.proxy.example.jdk.dynamic;
 
+import study.proxy.example.TextUpperCaseMethodMatcher;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -19,7 +21,9 @@ public class DynamicInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object result = methods.get(method.getName()).invoke(target, args);
-        if (method.getName().startsWith("say")) {
+
+        TextUpperCaseMethodMatcher matcher = new TextUpperCaseMethodMatcher("say");
+        if (matcher.matches(method, proxy.getClass(), args)) {
             result = ((String) result).toUpperCase();
         }
         return result;
