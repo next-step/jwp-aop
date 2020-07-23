@@ -1,7 +1,9 @@
 package study.proxy.example.jdk.dynamic;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import study.proxy.example.Hello;
@@ -12,13 +14,14 @@ import java.lang.reflect.Proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JdkDynamicProxyTest {
 
     private static final Logger logger = LoggerFactory.getLogger(JdkDynamicProxyTest.class);
 
     Hello proxyInstance;
 
-    @BeforeEach
+    @BeforeAll
     public void init(){
         proxyInstance = (Hello) Proxy.newProxyInstance(JdkDynamicProxyTest.class.getClassLoader(), new Class[] { Hello.class }, new DynamicInvocationHandler(new HelloTarget()));
         System.out.println("created proxy");
