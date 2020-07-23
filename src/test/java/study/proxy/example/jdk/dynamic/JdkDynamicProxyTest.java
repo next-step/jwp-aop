@@ -48,4 +48,11 @@ public class JdkDynamicProxyTest {
         logger.debug(thankYou);
         assertThat(thankYou).isEqualTo("THANK YOU SPRING");
     }
+
+    @Test
+    public void pingpong(){
+        String pingpong = proxyInstance.pingpong("spring");
+        logger.debug(pingpong);
+        assertThat(pingpong).isEqualTo("spring");
+    }
 }
