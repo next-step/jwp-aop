@@ -23,7 +23,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
         Object result = methods.get(method.getName()).invoke(target, args);
 
         TextUpperCaseMethodMatcher matcher = new TextUpperCaseMethodMatcher("say", "talk");
-        if (matcher.matches(method, proxy.getClass(), args)) {
+        if (matcher.matches(method, method.getDeclaringClass(), args)) {
             result = ((String) result).toUpperCase();
         }
         return result;
