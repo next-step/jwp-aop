@@ -7,6 +7,7 @@ import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ArgumentMatcher;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
@@ -32,7 +33,9 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
-        dispatcherServlet.addExceptionMapping(new ControllerAdviceExceptionMapping("next"));
+
+        ArgumentMatcher argumentMatcher = ac.getBean(ArgumentMatcher.class);
+        dispatcherServlet.addExceptionMapping(new ControllerAdviceExceptionMapping(argumentMatcher, "next"));
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);

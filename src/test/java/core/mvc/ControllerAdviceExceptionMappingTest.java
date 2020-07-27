@@ -1,5 +1,6 @@
 package core.mvc;
 
+import core.mvc.tobe.ArgumentMatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -13,7 +14,7 @@ class ControllerAdviceExceptionMappingTest {
     @Test
     void controllerAdvice() throws ReflectiveOperationException {
         /* given */
-        ControllerAdviceExceptionMapping exceptionMapping = new ControllerAdviceExceptionMapping("core.mvc.advice");
+        ControllerAdviceExceptionMapping exceptionMapping = new ControllerAdviceExceptionMapping(new ArgumentMatcher(), "core.mvc.advice");
 
         /* when */
         exceptionMapping.initialize();
