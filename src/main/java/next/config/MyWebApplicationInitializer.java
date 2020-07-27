@@ -2,6 +2,7 @@ package next.config;
 
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.mvc.ControllerAdviceExceptionMapping;
 import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
@@ -31,6 +32,7 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
+        dispatcherServlet.addExceptionMapping(new ControllerAdviceExceptionMapping());
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
