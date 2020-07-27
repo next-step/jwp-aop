@@ -2,7 +2,6 @@ package next.dao;
 
 import core.annotation.Inject;
 import core.annotation.Repository;
-import core.annotation.Transactional;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.KeyHolder;
 import core.jdbc.PreparedStatementCreator;
@@ -10,7 +9,11 @@ import core.jdbc.RowMapper;
 import lombok.NoArgsConstructor;
 import next.model.Question;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -24,7 +27,6 @@ public class JdbcQuestionDao implements QuestionDao {
     }
 
     @Override
-    @Transactional
     public Question insert(Question question) {
         String sql = "INSERT INTO QUESTIONS (writer, title, contents, createdDate) VALUES (?, ?, ?, ?)";
         PreparedStatementCreator psc = new PreparedStatementCreator() {
@@ -45,7 +47,6 @@ public class JdbcQuestionDao implements QuestionDao {
     }
 
     @Override
-    @Transactional
     public List<Question> findAll() {
         String sql = "SELECT questionId, writer, title, createdDate, countOfAnswer FROM QUESTIONS "
                 + "order by questionId desc";
@@ -63,7 +64,6 @@ public class JdbcQuestionDao implements QuestionDao {
     }
 
     @Override
-    @Transactional
     public Question findById(long questionId) {
         String sql = "SELECT questionId, writer, title, contents, createdDate, countOfAnswer FROM QUESTIONS "
                 + "WHERE questionId = ?";
@@ -80,21 +80,18 @@ public class JdbcQuestionDao implements QuestionDao {
     }
 
     @Override
-    @Transactional
     public void update(Question question) {
         String sql = "UPDATE QUESTIONS set title = ?, contents = ? WHERE questionId = ?";
         jdbcTemplate.update(sql, question.getTitle(), question.getContents(), question.getQuestionId());
     }
 
     @Override
-    @Transactional
     public void delete(long questionId) {
         String sql = "DELETE FROM QUESTIONS WHERE questionId = ?";
         jdbcTemplate.update(sql, questionId);
     }
 
     @Override
-    @Transactional
     public void updateCountOfAnswer(long questionId) {
         String sql = "UPDATE QUESTIONS set countOfAnswer = countOfAnswer + 1 WHERE questionId = ?";
         jdbcTemplate.update(sql, questionId);
