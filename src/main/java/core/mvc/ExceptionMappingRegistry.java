@@ -14,9 +14,9 @@ public class ExceptionMappingRegistry {
         exceptionMappings.add(exceptionMapping);
     }
 
-    public Optional<ExceptionHandler> getHandler(Throwable throwable) {
+    public Optional<ExceptionHandler> getHandler(Class<? extends Exception> exceptionClass) {
         return exceptionMappings.stream()
-                .map(exceptionMapping -> exceptionMapping.getHandler(throwable))
+                .map(exceptionMapping -> exceptionMapping.getHandler(exceptionClass))
                 .findFirst();
     }
 }

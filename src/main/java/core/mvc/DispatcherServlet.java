@@ -53,7 +53,7 @@ public class DispatcherServlet extends HttpServlet {
 
     private void handleException(HttpServletRequest req, HttpServletResponse resp, Exception e) throws ServletException {
         try {
-            Optional<ExceptionHandler> maybeExceptionHandler = exceptionMappingRegistry.getHandler(e);
+            Optional<ExceptionHandler> maybeExceptionHandler = exceptionMappingRegistry.getHandler(e.getClass());
             if (!maybeExceptionHandler.isPresent()) {
                 throw new ServletException(e.getMessage());
             }

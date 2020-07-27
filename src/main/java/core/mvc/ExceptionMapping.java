@@ -4,6 +4,6 @@ public interface ExceptionMapping {
 
     void initialize();
 
-    ExceptionHandler getHandler(Throwable throwable);
+    ExceptionHandler getHandler(Class<? extends Exception> exceptionClass);
 
 }
