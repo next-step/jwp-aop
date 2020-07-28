@@ -2,6 +2,7 @@ package core.di.factory.example;
 
 import core.annotation.Bean;
 import core.annotation.Configuration;
+import core.di.beans.factory.support.proxy.example.HelloFactoryBean;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -16,5 +17,10 @@ public class ExampleConfig {
         ds.setUsername("sa");
         ds.setPassword("");
         return ds;
+    }
+
+    @Bean
+    public HelloFactoryBean helloFactoryBean() throws Exception {
+        return new HelloFactoryBean();
     }
 }

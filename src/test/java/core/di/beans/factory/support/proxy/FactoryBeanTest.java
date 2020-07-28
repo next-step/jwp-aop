@@ -3,10 +3,10 @@ package core.di.beans.factory.support.proxy;
 import core.di.beans.factory.support.proxy.example.HelloFactoryBean;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.di.factory.example.ExampleConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import study.proxy.example.Hello;
-import study.proxy.example.HelloTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,7 +16,7 @@ public class FactoryBeanTest {
 
     @BeforeEach
     public void setUp() {
-        context = new AnnotationConfigApplicationContext();
+        context = new AnnotationConfigApplicationContext(ExampleConfig.class);
     }
 
     @Test
@@ -31,10 +31,11 @@ public class FactoryBeanTest {
 
     @Test
     public void getBean() throws Exception {
-        Hello hello = context.getBean(HelloTarget.class);
+        Object hello = context.getBean(HelloFactoryBean.class);
+        Hello proxyHello = (Hello) hello;
 
-        assertThat(hello.sayHello("spring")).isEqualTo("HELLO SPRING");
-        assertThat(hello.sayHi("spring")).isEqualTo("HI SPRING");
-        assertThat(hello.sayThankYou("spring")).isEqualTo("THANK YOU SPRING");
+        assertThat(proxyHello.sayHello("spring")).isEqualTo("HELLO SPRING");
+        assertThat(proxyHello.sayHi("spring")).isEqualTo("HI SPRING");
+        assertThat(proxyHello.sayThankYou("spring")).isEqualTo("THANK YOU SPRING");
     }
 }

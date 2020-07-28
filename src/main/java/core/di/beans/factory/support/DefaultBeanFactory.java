@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.beans.factory.proxy.FactoryBean;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,17 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(b -> {
+                if (b instanceof FactoryBean) {
+                    FactoryBean factory = (FactoryBean) b;
+                    try {
+                        b = factory.getObject();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                beans.put(clazz, b);
+            });
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
