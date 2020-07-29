@@ -22,6 +22,8 @@ public class ProxyFactoryBeanTest {
         assertThat(proxyHello.sayHello("spring")).isEqualTo("HELLO SPRING");
         assertThat(proxyHello.sayHi("spring")).isEqualTo("HI SPRING");
         assertThat(proxyHello.sayThankYou("spring")).isEqualTo("THANK YOU SPRING");
+        assertThat(proxyHello.pingpong("spring")).isEqualTo("spring");
+        assertThat(proxyHello.talk("spring")).isEqualTo("TALK SPRING");
     }
 
 
