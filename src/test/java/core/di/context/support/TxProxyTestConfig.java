@@ -1,4 +1,4 @@
-package next.config;
+package core.di.context.support;
 
 import core.annotation.Bean;
 import core.annotation.ComponentScan;
@@ -12,8 +12,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan({"next", "core"})
-public class MyConfiguration {
+@ComponentScan({"core.di.context.support"})
+public class TxProxyTestConfig {
 
     @Bean
     public DataSource dataSource() {
