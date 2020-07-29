@@ -5,21 +5,19 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ProxyFactoryBean implements FactoryBean<Object> {
     private static final Logger logger = LoggerFactory.getLogger(ProxyFactoryBean.class);
 
     private Class<?> target;
 
-    private List<MethodInterceptor> advice;
+    ProxyFactoryBeanAdvisor proxyFactoryBeanAdvisor;
+
 
     private MethodMatcher pointcut;
 
     public ProxyFactoryBean() {
-        advice = new ArrayList<>();
-        advice.add(new NoAdvice());
+        proxyFactoryBeanAdvisor = new ProxyFactoryBeanAdvisor();
+
         pointcut = new AllMethodMatcher();
     }
 
@@ -27,7 +25,7 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
     public Object getObject() throws Exception {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(target);
-        enhancer.setCallbacks(convertAdviceListToArray());
+        enhancer.setCallbacks(proxyFactoryBeanAdvisor.convertAdviceListToArray());
         enhancer.setCallbackFilter(method -> pointcut.matches(method, target) ? 1 : 0);
 
         return enhancer.create();
@@ -37,16 +35,12 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
         this.target = target;
     }
 
-    public void addAdvice(MethodInterceptor methodInterceptor) {
-        advice.add(methodInterceptor);
+    public void addAdvice(MethodInterceptor advice) {
+        proxyFactoryBeanAdvisor.addAdvice(advice);
     }
 
     public void setPointcut(MethodMatcher methodMatcher) {
         pointcut = methodMatcher;
     }
 
-    private MethodInterceptor[] convertAdviceListToArray() {
-        MethodInterceptor[] arrayMethodInterceptors = new MethodInterceptor[advice.size()];
-        return advice.toArray(arrayMethodInterceptors);
-    }
 }
