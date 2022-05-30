@@ -45,7 +45,7 @@ public class ApiQnaController extends AbstractNewController {
             return jsonView().addObject("result", Result.fail("Login is required"));
         }
 
-        User user = UserSessionUtils.getUserFromSession(req.getSession());
+        User user = UserSessionUtils.userFromSession(req.getSession());
         Answer answer = new Answer(user.getUserId(), req.getParameter("contents"),
                 Long.parseLong(req.getParameter("questionId")));
         logger.debug("answer : {}", answer);

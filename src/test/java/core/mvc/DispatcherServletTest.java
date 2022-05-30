@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import support.test.DBInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,6 +74,6 @@ class DispatcherServletTest {
         dispatcher.service(secondRequest, secondResponse);
 
         assertThat(secondResponse.getRedirectedUrl()).isEqualTo("/");
-        assertThat(UserSessionUtils.getUserFromSession(secondRequest.getSession())).isNotNull();
+        assertThat(UserSessionUtils.userFromSession(secondRequest.getSession())).isNotNull();
     }
 }

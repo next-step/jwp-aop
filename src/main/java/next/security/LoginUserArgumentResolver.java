@@ -23,7 +23,7 @@ public class LoginUserArgumentResolver extends AbstractAnnotationArgumentResolve
                                   HttpServletRequest request,
                                   HttpServletResponse response) {
         if (UserSessionUtils.isLogined(request.getSession())) {
-            User loginUser = UserSessionUtils.getUserFromSession(request.getSession());
+            User loginUser = UserSessionUtils.userFromSession(request.getSession());
             logger.debug("Logined User : {}", loginUser);
             return loginUser;
         }

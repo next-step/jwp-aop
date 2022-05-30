@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 public class UserSessionUtils {
     public static final String USER_SESSION_KEY = "user";
 
-    public static User getUserFromSession(HttpSession session) {
+    public static User userFromSession(HttpSession session) {
         Object user = session.getAttribute(USER_SESSION_KEY);
         if (user == null) {
             return null;
@@ -16,10 +16,7 @@ public class UserSessionUtils {
     }
 
     public static boolean isLogined(HttpSession session) {
-        if (getUserFromSession(session) == null) {
-            return false;
-        }
-        return true;
+        return userFromSession(session) != null;
     }
 
     public static boolean isSameUser(HttpSession session, User user) {
@@ -31,6 +28,6 @@ public class UserSessionUtils {
             return false;
         }
 
-        return user.isSameUser(getUserFromSession(session));
+        return user.isSameUser(userFromSession(session));
     }
 }
