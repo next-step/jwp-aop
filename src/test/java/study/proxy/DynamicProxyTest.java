@@ -16,5 +16,6 @@ public class DynamicProxyTest {
         assertThat(sut.sayHello("sungjun")).isEqualTo("HELLO SUNGJUN");
         assertThat(sut.sayHi("sungjun")).isEqualTo("HI SUNGJUN");
         assertThat(sut.sayThankYou("sungjun")).isEqualTo("THANK YOU SUNGJUN");
+        assertThat(sut.pingpong("sungjun")).isEqualTo("Pong sungjun");
     }
 }
