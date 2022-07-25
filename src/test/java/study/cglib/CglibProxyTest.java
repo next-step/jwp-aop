@@ -6,6 +6,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.proxy.SayPrefixMethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,5 +46,26 @@ public class CglibProxyTest {
 
         assertThat(proxy.sayHello(null)).isEqualTo("Hello JavaJiGi!");
         assertThat(proxy.lengthOfName("SanJiGi")).isEqualTo(7);
+    }
+
+    @DisplayName("HelloTarget 대문자 변환 값을 확인 할 수 있다")
+    @Test
+    void helloTargetTest() {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(HelloTarget.class);
+        enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+            String result = (String) proxy.invokeSuper(obj, args);
+            if (new SayPrefixMethodMatcher().matches(method, obj.getClass(), args)) {
+                return result.toUpperCase();
+            }
+            return result;
+        });
+
+        HelloTarget actual = (HelloTarget) enhancer.create();
+
+        assertThat(actual.sayHello("sungjun")).isEqualTo("HELLO SUNGJUN");
+        assertThat(actual.sayHi("sungjun")).isEqualTo("HI SUNGJUN");
+        assertThat(actual.sayThankYou("sungjun")).isEqualTo("THANK YOU SUNGJUN");
+        assertThat(actual.pingpong("sungjun")).isEqualTo("Pong sungjun");
     }
 }
