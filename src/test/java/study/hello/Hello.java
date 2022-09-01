@@ -1,4 +1,4 @@
-package study.cglib;
+package study.hello;
 
 interface Hello {
 
@@ -7,4 +7,6 @@ interface Hello {
     String sayHi(String name);
 
     String sayThankYou(String name);
+
+    String pingpong(String name);
 }
