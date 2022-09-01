@@ -14,7 +14,7 @@ class JDKDynamicProxyTest {
     public static final StartNameMethodMatcher SAY_START_NAME_METHOD_MATCHER = new StartNameMethodMatcher("say");
 
     @Test
-    @DisplayName("프록시 객체의 메소드를 호출하면 say로 시작하는 메소드만 ")
+    @DisplayName("프록시 객체의 메소드를 호출하면 say로 시작하는 메소드만 대문자")
     void proxyMethod_say_uppercase() {
         //given
         Hello proxyHello = (Hello) Proxy.newProxyInstance(JDKDynamicProxyTest.class.getClassLoader(),
@@ -30,7 +30,7 @@ class JDKDynamicProxyTest {
     }
 
     @Test
-    @DisplayName("람다로 만든 프록시 객체의 메소드를 호출하면 say로 시작하는 메소드만 ")
+    @DisplayName("람다로 만든 프록시 객체의 메소드를 호출하면 say로 시작하는 메소드만 대문자")
     void lambdaProxyMethod_say_uppercase() {
         //given
         HelloTarget target = new HelloTarget();
