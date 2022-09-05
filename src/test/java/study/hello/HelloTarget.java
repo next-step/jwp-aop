@@ -1,6 +1,6 @@
 package study.hello;
 
-class HelloTarget implements Hello {
+public class HelloTarget implements Hello {
 
     @Override
     public String sayHello(String name) {
