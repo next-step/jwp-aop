@@ -2,5 +2,5 @@ package core.aop;
 
 public interface FactoryBean<T> {
 
-    T object() throws Exception;
+    T object();
 }
