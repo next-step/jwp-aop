@@ -2,6 +2,7 @@ package study.proxy.jdkdynamic;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import study.proxy.HelloMethodMatcher;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -14,7 +15,7 @@ class JdkDynamicProxyTest {
     @Test
     void toUppercase() {
         Hello target = new HelloTarget();
-        InvocationHandler handler = new HelloInvocationHandler(target);
+        InvocationHandler handler = new HelloInvocationHandler(target, new HelloMethodMatcher("say"));
 
         Hello proxy = (Hello) Proxy.newProxyInstance(
             Hello.class.getClassLoader(),
@@ -25,5 +26,6 @@ class JdkDynamicProxyTest {
         assertThat(proxy.sayHello("proxy")).isEqualTo("HELLO PROXY");
         assertThat(proxy.sayHi("proxy")).isEqualTo("HI PROXY");
         assertThat(proxy.sayThankYou("proxy")).isEqualTo("THANK YOU PROXY");
+        assertThat(proxy.pingPong("proxy")).isEqualTo("Pong proxy");
     }
 }

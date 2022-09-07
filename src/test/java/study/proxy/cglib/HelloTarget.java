@@ -13,4 +13,8 @@ public class HelloTarget {
     public String sayThankYou(String name) {
         return "Thank You " + name;
     }
+
+    public String pingPong(String name) {
+        return "Pong " + name;
+    }
 }
