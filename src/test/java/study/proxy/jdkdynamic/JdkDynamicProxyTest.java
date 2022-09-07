@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JdkDynamicProxyTest {
 
-    @DisplayName("프록시를 적용할 대상 객체의 모든 메서드의 반환 값을 대문자로 변환한다.")
+    @DisplayName("JDK 동적 프록시 - 모든 메서드의 반환 값을 대문자로 변환한다.")
     @Test
     void toUppercase() {
         Hello target = new HelloTarget();
