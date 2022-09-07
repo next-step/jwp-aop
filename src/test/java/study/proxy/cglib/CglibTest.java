@@ -1,24 +1,22 @@
-package study.proxy.jdk;
+package study.proxy.cglib;
 
+import net.sf.cglib.proxy.Enhancer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Proxy;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DynamicInvocationHandlerTest {
-
-    private static Hello proxyInstance;
+public class CglibTest {
+    private static HelloTarget proxyInstance;
 
     @BeforeAll
-    static void staticSetUp() {
-        proxyInstance = (Hello) Proxy.newProxyInstance(
-                DynamicInvocationHandlerTest.class.getClassLoader(),
-                new Class[]{Hello.class},
-                new DynamicInvocationHandler(new HelloTarget()));
-    }
+    static void staticSetup() {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(HelloTarget.class);
+        enhancer.setCallback(new HelloMethodInterceptor());
 
+        proxyInstance = (HelloTarget) enhancer.create();
+    }
 
     @Test
     void sayHelloWithProxy() {

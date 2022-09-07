@@ -1,4 +1,4 @@
-package study.proxy;
+package study.proxy.jdk;
 
 public interface Hello {
     String sayHello(String name);
