@@ -3,6 +3,7 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
@@ -45,25 +46,26 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             return (T) bean;
         }
 
+        return (T) createBean(clazz).map(beanInstance -> {
+            initialize(beanInstance, clazz);
+            return beans.put(clazz, extractFactoryBean(beanInstance));
+        }).orElse(null);
+    }
+
+    private Object extractFactoryBean(Object bean) {
+        if (bean instanceof FactoryBean) {
+            FactoryBean<?> factory = (FactoryBean<?>) bean;
+            return factory.object();
+        }
+        return bean;
+    }
+
+    private Optional<Object> createBean(Class<?> clazz) {
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
-            Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
-            initialize(bean, clazz);
-            return (T) optionalBean.orElse(null);
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
+            return createAnnotatedBean(beanDefinition);
         }
-
-        Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
-        if (!concreteClazz.isPresent()) {
-            return null;
-        }
-
-        beanDefinition = beanDefinitions.get(concreteClazz.get());
-        log.debug("BeanDefinition : {}", beanDefinition);
-        bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
-        initialize(bean, concreteClazz.get());
-        return (T) bean;
+        return createConcreteBean(clazz);
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -83,6 +85,15 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         Method method = abd.getMethod();
         Object[] args = populateArguments(method.getParameterTypes());
         return BeanFactoryUtils.invokeMethod(method, getBean(method.getDeclaringClass()), args);
+    }
+
+    private Optional<Object> createConcreteBean(Class<?> clazz) {
+        return BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses())
+                .map(concreteClass -> {
+                    BeanDefinition beanDefinition = beanDefinitions.get(concreteClass);
+                    log.debug("BeanDefinition : {}", beanDefinition);
+                    return Optional.of(inject(beanDefinition));
+                });
     }
 
     private Object[] populateArguments(Class<?>[] paramTypes) {
