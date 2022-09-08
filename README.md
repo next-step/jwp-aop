@@ -22,3 +22,9 @@
   - [x] JDK Dynamic Proxy 에서 동작하도록 만들기 
   - [x] CGLib Proxy 에서 동작하도록 만들기
   - [x] 테스트 케이스 만들기
+
+### Step 2 - Proxy와 Bean 의존관계
+- [ ] Bean 컨테이너의 Bean과 Proxy를 연결
+  - [ ] 자바 객체가 특정 interface를 구현하는 경우 빈을 생성할 때 예외 처리하도록 Bean 컨테이너를 개선
+  - [ ] 재사용가능한 FactoryBean 만들기
+  - [ ] 테스트 케이스 작성하기 
