@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CglibProxyTest {
 
-    @DisplayName("CGLIB 프록시 - 모든 메서드의 반환 값을 대문자로 변환한다.")
+    @DisplayName("CGLIB 프록시 - 프록시 적용 대상 메서드의 반환 값을 대문자로 변환한다.")
     @Test
     void toUppercase() {
         Enhancer enhancer = new Enhancer();
