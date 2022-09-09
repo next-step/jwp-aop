@@ -6,7 +6,6 @@ import org.springframework.util.Assert;
 
 final class CglibAopProxy implements AopProxy {
 
-    private final Enhancer enhancer = new Enhancer();
     private final Class<?> targetClass;
     private final Advisor advisor;
 
@@ -23,6 +22,7 @@ final class CglibAopProxy implements AopProxy {
 
     @Override
     public Object proxy() {
+        Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(targetClass);
         enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) ->
                 AdvisorMethodInvocation.of(advisor, targetClass, method, () -> proxy.invokeSuper(obj, args)).proceed());

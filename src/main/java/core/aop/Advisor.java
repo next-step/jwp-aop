@@ -20,8 +20,12 @@ public final class Advisor {
         return new Advisor(advice, pointcut);
     }
 
-    public boolean matches(Class<?> targetClass, Method method) {
-        return pointcut.matches(targetClass, method);
+    public boolean matches(Class<?> targetClass) {
+        return pointcut.matches(targetClass);
+    }
+
+    public boolean matches(Method method) {
+        return pointcut.matches(method);
     }
 
     public Object invoke(Joinpoint joinpoint) throws Throwable {

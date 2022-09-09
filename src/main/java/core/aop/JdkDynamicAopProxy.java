@@ -14,6 +14,7 @@ final class JdkDynamicAopProxy implements AopProxy {
         Assert.notNull(targetClass, "'targetClass' must not be null");
         Assert.notNull(targetSource, "'targetSource' must not be null");
         Assert.notNull(advisor, "'advisor' must not be null");
+        Assert.isTrue(targetClass.isInterface(), String.format("targetClass(%s) must be interface", targetClass));
         this.targetClass = targetClass;
         this.targetSource = targetSource;
         this.advisor = advisor;
@@ -26,15 +27,11 @@ final class JdkDynamicAopProxy implements AopProxy {
     @Override
     public Object proxy() {
         return Proxy.newProxyInstance(
-                defaultClassLoader(),
+                targetClass.getClassLoader(),
                 targetSource.getClass().getInterfaces(),
                 (proxy, method, args) ->
                         AdvisorMethodInvocation.of(advisor, targetClass, method,
                                 () -> method.invoke(targetSource, args)).proceed()
         );
-    }
-
-    private ClassLoader defaultClassLoader() {
-        return Thread.currentThread().getContextClassLoader();
     }
 }

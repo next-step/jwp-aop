@@ -4,16 +4,11 @@ import java.lang.reflect.Proxy;
 
 final class DefaultAopProxyFactory {
 
-    private static final DefaultAopProxyFactory INSTANCE = new DefaultAopProxyFactory();
-
     private DefaultAopProxyFactory() {
-        if (INSTANCE != null) {
-            throw new AssertionError(String.format("%s is singleton", getClass()));
-        }
     }
 
     static DefaultAopProxyFactory instance() {
-        return INSTANCE;
+        return DefaultAopProxyFactoryHolder.INSTANCE;
     }
 
     Object newProxy(Class<?> targetClass, Object source, Advisor advisor) {
@@ -25,5 +20,9 @@ final class DefaultAopProxyFactory {
             return JdkDynamicAopProxy.of(targetClass, source, advisor);
         }
         return CglibAopProxy.of(targetClass, advisor);
+    }
+
+    private static class DefaultAopProxyFactoryHolder {
+        private static final DefaultAopProxyFactory INSTANCE = new DefaultAopProxyFactory();
     }
 }

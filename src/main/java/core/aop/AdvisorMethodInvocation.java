@@ -28,7 +28,7 @@ final class AdvisorMethodInvocation implements Joinpoint {
 
     @Override
     public Object proceed() throws Throwable {
-        if (advisor.matches(targetClass, method)) {
+        if (advisor.matches(targetClass) && advisor.matches(method)) {
             return advisor.invoke(joinpoint);
         }
         return joinpoint.proceed();
