@@ -3,7 +3,7 @@
 ## 1단계 요구사항
 - [x] Java Dynamic Proxy 적용
 - [x] CGLib Proxy 적용
-- [ ] 부가기능이 추가될 Method 선정을 위한 MethodMatcher 적용
+- [x] 부가기능이 추가될 Method 선정을 위한 MethodMatcher 적용
 
 ---
 

@@ -1,10 +1,7 @@
 package study.aop;
 
-import com.google.common.collect.Maps;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Locale;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +10,11 @@ public class DynamicInvocationHandler implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(DynamicInvocationHandler.class);
 
     private final Object target;
+    private final MethodMatcher methodMatcher;
 
-    public DynamicInvocationHandler(Object target) {
+    public DynamicInvocationHandler(Object target, MethodMatcher methodMatcher) {
         this.target = target;
+        this.methodMatcher = methodMatcher;
     }
 
     @Override
@@ -24,6 +23,9 @@ public class DynamicInvocationHandler implements InvocationHandler {
 
         String resultString = (String) method.invoke(this.target, args);
 
-        return resultString.toUpperCase();
+        if (methodMatcher.matches(method, proxy.getClass(), args)) {
+            return resultString.toUpperCase();
+        }
+        return resultString;
     }
 }
