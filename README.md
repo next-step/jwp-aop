@@ -1,7 +1,7 @@
 # AOP 구현
 
 ## 1단계 요구사항
-- [ ] Java Dynamic Proxy 적용
+- [x] Java Dynamic Proxy 적용
 - [ ] CGLib Proxy 적용
 - [ ] 부가기능이 추가될 Method 선정을 위한 MethodMatcher 적용
 
