@@ -2,20 +2,22 @@ package study.proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("say 메서드만 Proxy 적용")
-class SayMethodMatcherTest {
+@DisplayName("특정 메서드만 Proxy 적용")
+class MethodMatcherTest {
 
     @DisplayName("JDK Dynamic Proxy - say 메서드만 대문자로 변환")
     @Test
     void jdkDynamicProxyUppercaseSayMethod() {
         final Hello hello = new HelloTarget();
 
-        final UppercaseInvocationHandler invocationHandler = new UppercaseInvocationHandler(hello);
+        final InvocationHandler invocationHandler = new UppercaseInvocationHandler(hello, new SayMethodMatcher());
         final Hello actual = (Hello) Proxy.newProxyInstance(
             Hello.class.getClassLoader(), new Class[]{Hello.class}, invocationHandler
         );
@@ -32,7 +34,7 @@ class SayMethodMatcherTest {
     void cgLibProxyUppercaseSayMethod() {
         HelloService helloService = new HelloService();
 
-        final UppercaseInterceptor uppercaseInterceptor = new UppercaseInterceptor(helloService);
+        final MethodInterceptor uppercaseInterceptor = new UppercaseInterceptor(helloService, new SayMethodMatcher());
         final HelloService actual = (HelloService) Enhancer.create(HelloService.class, uppercaseInterceptor);
 
         assertThat(actual.sayHello("Yongju")).isEqualTo("HELLO YONGJU");
@@ -47,8 +49,8 @@ class SayMethodMatcherTest {
     void jdkDynamicProxyUppercasePingPongMethod() {
         final Hello hello = new HelloTarget();
 
-        final SayMethodMatcher sayMethodMatcher = (method, clazz, args) -> "pingPong".equals(method.getName());
-        final UppercaseInvocationHandler invocationHandler = new UppercaseInvocationHandler(hello, sayMethodMatcher);
+        final MethodMatcher methodMatcher = (method, clazz, args) -> "pingPong".equals(method.getName());
+        final InvocationHandler invocationHandler = new UppercaseInvocationHandler(hello, methodMatcher);
         final Hello actual = (Hello) Proxy.newProxyInstance(
             Hello.class.getClassLoader(), new Class[]{Hello.class}, invocationHandler
         );
@@ -65,8 +67,8 @@ class SayMethodMatcherTest {
     void cgLibProxyUppercasePingPongMethod() {
         HelloService helloService = new HelloService();
 
-        final SayMethodMatcher sayMethodMatcher = (method, clazz, args) -> "pingPong".equals(method.getName());
-        final UppercaseInterceptor uppercaseInterceptor = new UppercaseInterceptor(helloService, sayMethodMatcher);
+        final MethodMatcher methodMatcher = (method, clazz, args) -> "pingPong".equals(method.getName());
+        final MethodInterceptor uppercaseInterceptor = new UppercaseInterceptor(helloService, methodMatcher);
         final HelloService actual = (HelloService) Enhancer.create(HelloService.class, uppercaseInterceptor);
 
         assertThat(actual.sayHello("Yongju")).isEqualTo("Hello Yongju");

@@ -3,6 +3,7 @@ package study.proxy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ class UppercaseInterceptorTest {
         assertThat(helloService.sayHi("Yongju")).isEqualTo("Hi Yongju");
         assertThat(helloService.sayThankYou("Yongju")).isEqualTo("Thank You Yongju");
 
-        final UppercaseInterceptor uppercaseInterceptor = new UppercaseInterceptor(helloService);
+        final MethodInterceptor uppercaseInterceptor = new UppercaseInterceptor(helloService);
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloService.class);
         enhancer.setCallback(uppercaseInterceptor);

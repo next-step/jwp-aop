@@ -2,6 +2,7 @@ package study.proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class UppercaseInvocationHandlerTest {
         assertThat(hello.sayHi("Yongju")).isEqualTo("Hi Yongju");
         assertThat(hello.sayThankYou("Yongju")).isEqualTo("Thank You Yongju");
 
-        final UppercaseInvocationHandler invocationHandler = new UppercaseInvocationHandler(hello);
+        final InvocationHandler invocationHandler = new UppercaseInvocationHandler(hello);
         final Hello actual = (Hello) Proxy.newProxyInstance(
             Hello.class.getClassLoader(), new Class[]{Hello.class}, invocationHandler
         );
