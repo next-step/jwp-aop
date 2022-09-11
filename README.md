@@ -7,3 +7,14 @@
 
 ## 온라인 코드 리뷰 과정
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+
+# 🚀 1단계 - JDK Proxy와 CGLib Proxy
+
+### 기능 목록
+- [ ] JDK Dynamic Proxy 적용
+  - [ ] Hello 인터페이스와 구현 클래스가 있을 때 모든 메서드의 반환 값을 대문자로 변환한다
+- [ ] CGLib 적용
+  - [ ] 인터페이스가 없고 구현 클래스만 있을 때 모든 메서드의 반환 값을 대문자로 변환한다
+- [ ] HelloTarget 클래스에 say로 시작하는 메서드 이외에 pingpong 메서드 추가
+  - [ ] say 로 시작하는 메서드에 한해서만 메서드의 반환 값을 대문자로 변환한다.
+  - [ ] JDK Dynamic Proxy, CGLib Proxy 둘 다 적용 되어야 한다.
