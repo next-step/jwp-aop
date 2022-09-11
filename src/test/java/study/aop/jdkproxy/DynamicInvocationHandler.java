@@ -1,5 +1,7 @@
 package study.aop.jdkproxy;
 
+import study.aop.SayMethodMatcher;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -16,11 +18,13 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			.forEach(method -> this.methods.put(method.getName(), method));
 	}
 
-	@SuppressWarnings("SuspiciousInvocationHandlerImplementation")
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		System.out.printf("invoke method name: %s, args: %s%n", method.getName(), Arrays.toString(args));
 		final Object result = methods.get(method.getName()).invoke(target, args);
-		return result.toString().toUpperCase();
+		if (new SayMethodMatcher().matches(method, target.getClass(), args)) {
+			return result.toString().toUpperCase();
+		}
+		return result;
 	}
 }

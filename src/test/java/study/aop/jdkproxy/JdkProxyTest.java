@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("JDK Proxy 테스트")
 public class JdkProxyTest {
-    private final String name = "jeongsu";
+    private final String name = "yang";
     private Hello proxyInstance;
 
     @BeforeEach
@@ -19,7 +19,7 @@ public class JdkProxyTest {
                 new DynamicInvocationHandler(new HelloTarget()));
     }
 
-    @DisplayName("프록시 객체의 sayHello 메서드를 호출하면 대문자를 반환한다.")
+    @DisplayName("프록시 객체의 sayHello 메서드를 호출하면 대문자로 변환된 결과를 반환한다.")
     @Test
     void sayHello() {
         // when
@@ -29,7 +29,7 @@ public class JdkProxyTest {
         assertThat(result).isEqualTo("HELLO " + name.toUpperCase());
     }
 
-    @DisplayName("프록시 객체의 sayHi 메서드를 호출하면 대문자를 반환한다.")
+    @DisplayName("프록시 객체의 sayHi 메서드를 호출하면 대문자로 변환된 결과를 반환한다.")
     @Test
     void sayHi() {
         // when
@@ -39,7 +39,7 @@ public class JdkProxyTest {
         assertThat(result).isEqualTo("HI " + name.toUpperCase());
     }
 
-    @DisplayName("프록시 객체의 sayThankYou 메서드를 호출하면 대문자를 반환한다.")
+    @DisplayName("프록시 객체의 sayThankYou 메서드를 호출하면 대문자로 변환된 결과를 반환한다.")
     @Test
     void sayThankYou() {
         // when
@@ -47,5 +47,15 @@ public class JdkProxyTest {
 
         // then
         assertThat(result).isEqualTo("THANK YOU " + name.toUpperCase());
+    }
+
+    @DisplayName("프록시 객체의 pingPong 메서드를 호출하면 대문자로 변환되지 않은 결과를 반환한다.")
+    @Test
+    void pingPong() {
+        // when
+        final String result = proxyInstance.pingPong(name);
+
+        // then
+        assertThat(result).isEqualTo("Pong " + name);
     }
 }
