@@ -15,6 +15,8 @@
   - [x] Hello 인터페이스와 구현 클래스가 있을 때 모든 메서드의 반환 값을 대문자로 변환한다
 - [x] CGLib 적용 (HelloService)
   - [x] 인터페이스가 없고 구현 클래스만 있을 때 모든 메서드의 반환 값을 대문자로 변환한다
-- [ ] HelloTarget 클래스에 say로 시작하는 메서드 이외에 pingpong 메서드 추가
-  - [ ] say 로 시작하는 메서드에 한해서만 메서드의 반환 값을 대문자로 변환한다.
-  - [ ] JDK Dynamic Proxy, CGLib Proxy 둘 다 적용 되어야 한다.
+- [x] HelloTarget, HelloService 클래스에 say로 시작하는 메서드 이외에 pingpong 메서드 추가
+  - [x] say 로 시작하는 메서드에 한해서만 메서드의 반환 값을 대문자로 변환한다.
+  - [x] JDK Dynamic Proxy, CGLib Proxy 둘 다 적용 되어야 한다.
+    - [x] SayMethodMatcher 인터페이스 추가
+  - [x] pingPong 메서드에 한해서만 메서드의 반환 값을 대문자로 변환한다.

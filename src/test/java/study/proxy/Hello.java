@@ -7,4 +7,6 @@ public interface Hello {
     String sayHi(String name);
 
     String sayThankYou(String name);
+
+    String pingPong(String name);
 }
