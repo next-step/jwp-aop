@@ -1,4 +1,12 @@
 # AOP 구현
+
+## 1단계 요구사항
+- [ ] Java Dynamic Proxy 적용
+- [ ] CGLib Proxy 적용
+- [ ] 부가기능이 추가될 Method 선정을 위한 MethodMatcher 적용
+
+---
+
 ## 진행 방법
 * 프레임워크 구현에 대한 요구사항을 파악한다.
 * 요구사항에 대한 구현을 완료한 후 자신의 github 아이디에 해당하는 브랜치에 Pull Request(이하 PR)를 통해 코드 리뷰 요청을 한다.
