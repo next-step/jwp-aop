@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CGLibTest {
 
+    private static final String NAME = "CGLib";
     private HelloCGLibTarget target;
 
     @BeforeEach
@@ -22,13 +23,21 @@ public class CGLibTest {
     @Test
     @DisplayName("CGLib를 사용하여 모든 메소드의 반환 값을 대문자로 변환한다.")
     void dynamicProxy() {
-        // given
-        final String name = "Test";
-
         // when
         // then
-        assertThat(target.sayHello(name)).isEqualTo("HELLO TEST");
-        assertThat(target.sayHi(name)).isEqualTo("HI TEST");
-        assertThat(target.sayThankYou(name)).isEqualTo("THANK YOU TEST");
+        assertThat(target.sayHello(NAME)).isEqualTo("HELLO CGLIB");
+        assertThat(target.sayHi(NAME)).isEqualTo("HI CGLIB");
+        assertThat(target.sayThankYou(NAME)).isEqualTo("THANK YOU CGLIB");
+    }
+
+    @Test
+    @DisplayName("Java Dynamic Proxy를 사용하여 say로 시작하는 메소드의 반환 값을 대문자로 변환한다.")
+    void dynamicProxyMethodStartWithSay() {
+        // when
+        // then
+        assertThat(target.sayHello(NAME)).isEqualTo("HELLO CGLIB");
+        assertThat(target.sayHi(NAME)).isEqualTo("HI CGLIB");
+        assertThat(target.sayThankYou(NAME)).isEqualTo("THANK YOU CGLIB");
+        assertThat(target.pinpong(NAME)).isEqualTo("ping pong CGLib");
     }
 }

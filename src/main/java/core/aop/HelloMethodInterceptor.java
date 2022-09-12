@@ -17,7 +17,7 @@ public class HelloMethodInterceptor implements MethodInterceptor {
     public Object intercept(Object obj, Method method, Object[] objects, MethodProxy proxy) throws Throwable {
         Object invoke = proxy.invoke(proxyTarget, objects);
 
-        if (method.getReturnType().equals(String.class)) {
+        if (method.getName().startsWith("say") && method.getReturnType().equals(String.class)) {
             return invoke.toString().toUpperCase();
         }
 

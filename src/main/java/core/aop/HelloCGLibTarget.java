@@ -13,4 +13,8 @@ public class HelloCGLibTarget{
     public String sayThankYou(String name) {
         return "Thank You " + name;
     }
+
+    public String pinpong(String name) {
+        return "ping pong " + name;
+    }
 }
