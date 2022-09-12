@@ -10,6 +10,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
     private final Object proxyTarget;
     private final Map<String, Method> methods = new HashMap<>();
 
+    private MethodMatcher methodMatcher;
+
     public DynamicInvocationHandler(Object proxyTarget) {
         this.proxyTarget = proxyTarget;
         for (Method method : proxyTarget.getClass().getDeclaredMethods()) {
@@ -17,11 +19,16 @@ public class DynamicInvocationHandler implements InvocationHandler {
         }
     }
 
+    public DynamicInvocationHandler(Object proxyTarget, MethodMatcher methodMatcher) {
+        this(proxyTarget);
+        this.methodMatcher = methodMatcher;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object invoke = methods.get(method.getName()).invoke(proxyTarget, args);
 
-        if (method.getName().startsWith("say") && method.getReturnType().equals(String.class)) {
+        if (methodMatcher.matches(method, proxyTarget.getClass(), args) && method.getReturnType().equals(String.class)) {
             return invoke.toString().toUpperCase();
         }
 

@@ -17,7 +17,7 @@ public class JDKDynamicProxyTest {
     void setup() {
         dynamicProxyHello = (Hello) Proxy.newProxyInstance(HelloTarget.class.getClassLoader(),
                 new Class[] {Hello.class},
-                new DynamicInvocationHandler(new HelloTarget()));
+                new DynamicInvocationHandler(new HelloTarget(), new SayPrefixMethodMatcher()));
     }
 
     @Test
