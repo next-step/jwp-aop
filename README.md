@@ -7,3 +7,11 @@
 
 ## 온라인 코드 리뷰 과정
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+
+### 미션 요구사항
+#### Step1
+* JDK Dynamic Proxy를 사용하여 Hello 인터페이스 구현클래스의 모든 메소드의 반환 값을 대문자로 변환
+* CGLib Proxy를 사용하여 Hello 인터페이스 구현클래스의 모든 메소드의 반환 값을 대문자로 변환
+* Hello 인터페이스 구현클래스에 pingpong()과 같은 새로운 메소드가 추가 될 경우 say로 시작하는 메소드에 한해서만 메소드의 반환 값을 대문자로 변환
+  * JDK Dynamic Proxy를 사용
+  * CGLib Proxy를 사용
