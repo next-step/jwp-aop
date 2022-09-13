@@ -16,20 +16,12 @@ public class Aspect {
         addAdvice(advices);
     }
 
-    public void addAdvice(Advice advice) {
-        advices.add(advice);
-    }
-
     public void addAdvice(Advice[] advices) {
         this.advices.addAll(Arrays.asList(advices));
     }
 
     public Callback[] toArrayAdvice() {
         return advices.toArray(Advice[]::new);
-    }
-
-    public void clear() {
-        advices.clear();
     }
 
     public int matches(Method method, Target target) {

@@ -70,13 +70,14 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     private void registerBean(Class<?> clazz, Object instance) {
         if (instance instanceof FactoryBean) {
-            FactoryBean factory = (FactoryBean) instance;
+            FactoryBean<?> factory = (FactoryBean<?>) instance;
 
             try {
                 instance = factory.getObject();
                 beans.put(factory.getObjectType(), instance);
                 return;
             } catch (Exception e) {
+                log.error("Failed Register Bean: {}, cause: {}", clazz.getName(), e.getMessage());
                 throw new RuntimeException(e);
             }
         }

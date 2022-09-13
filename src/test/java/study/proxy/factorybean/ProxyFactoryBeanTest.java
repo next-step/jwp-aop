@@ -40,5 +40,6 @@ public class ProxyFactoryBeanTest {
         HelloTarget helloTarget = context.getBean(HelloTarget.class);
 
         assertThat(helloTarget.sayHello("catsbi")).isEqualTo("HELLO CATSBI");
+        assertThat(helloTarget.pingpong("catsbi")).isEqualTo("pong catsbi");
     }
 }

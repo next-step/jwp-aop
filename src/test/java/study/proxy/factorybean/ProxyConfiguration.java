@@ -14,12 +14,16 @@ public class ProxyConfiguration {
 
 
     @Bean
-    public ProxyFactoryBean helloTarget() {
+    public ProxyFactoryBean helloTargetProxy() {
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-        proxyFactoryBean.setTarget(new Target(new HelloTarget(), HelloTarget.class));
+        proxyFactoryBean.setTarget(helloTarget());
         proxyFactoryBean.setAspect(toUpperCaseAspect());
 
         return proxyFactoryBean;
+    }
+
+    private Target helloTarget() {
+        return new Target(new HelloTarget(), HelloTarget.class);
     }
 
     private Aspect toUpperCaseAspect() {
