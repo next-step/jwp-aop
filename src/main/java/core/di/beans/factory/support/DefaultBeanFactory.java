@@ -21,9 +21,9 @@ import java.util.Set;
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
-    private Map<Class<?>, Object> beans = Maps.newHashMap();
+    private final Map<Class<?>, Object> beans = Maps.newHashMap();
 
-    private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private final Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
 
     @Override
     public void preInstantiateSingletons() {
@@ -54,7 +54,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
-        if (!concreteClazz.isPresent()) {
+        if (concreteClazz.isEmpty()) {
             return null;
         }
 
@@ -98,6 +98,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     }
 
     private Object inject(BeanDefinition beanDefinition) {
+        final Object beanInstance = injectByMode(beanDefinition);
+        return injectFromFactory(beanInstance);
+    }
+
+    private Object injectByMode(BeanDefinition beanDefinition) {
         if (beanDefinition.getResolvedInjectMode() == InjectType.INJECT_NO) {
             return BeanUtils.instantiate(beanDefinition.getBeanClass());
         } else if (beanDefinition.getResolvedInjectMode() == InjectType.INJECT_FIELD) {
@@ -130,6 +135,18 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         } catch (IllegalAccessException | IllegalArgumentException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private static Object injectFromFactory(Object beanInstance) {
+        if (beanInstance instanceof FactoryBean) {
+            FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
+            try {
+                return factory.getObject();
+            } catch (Exception e) {
+                throw new IllegalStateException("Bean 생성을 실패하였습니다.", e);
+            }
+        }
+        return beanInstance;
     }
 
     @Override
