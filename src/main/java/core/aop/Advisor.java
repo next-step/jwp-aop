@@ -10,8 +10,8 @@ public final class Advisor {
     private final Pointcut pointcut;
 
     private Advisor(Advice advice, Pointcut pointcut) {
-        Assert.notNull(advice, "`advice` must not be null");
-        Assert.notNull(pointcut, "`pointcut` must not be null");
+        Assert.notNull(advice, "'advice' must not be null");
+        Assert.notNull(pointcut, "'pointcut' must not be null");
         this.advice = advice;
         this.pointcut = pointcut;
     }

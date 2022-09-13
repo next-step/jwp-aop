@@ -29,9 +29,12 @@ final class JdkDynamicAopProxy implements AopProxy {
         return Proxy.newProxyInstance(
                 targetClass.getClassLoader(),
                 targetSource.getClass().getInterfaces(),
-                (proxy, method, args) ->
-                        AdvisorMethodInvocation.of(advisor, targetClass, method,
-                                () -> method.invoke(targetSource, args)).proceed()
+                (proxy, method, args) -> {
+                    if (advisor.matches(targetClass) || advisor.matches(method)) {
+                        return advisor.invoke(() -> method.invoke(targetSource, args));
+                    }
+                    return method.invoke(targetSource, args);
+                }
         );
     }
 }

@@ -16,7 +16,7 @@ class AdvisorTest {
     private static final Pointcut SAY_METHOD_POINT_CUT = new Pointcut() {
         @Override
         public boolean matches(Class<?> targetClass) {
-            return true;
+            return false;
         }
 
         @Override
