@@ -5,7 +5,7 @@ import net.sf.cglib.proxy.MethodProxy;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import study.proxy.MethodMatcher;
+import core.di.beans.factory.aop.MethodMatcher;
 
 import java.lang.reflect.Method;
 
@@ -18,7 +18,7 @@ public class HelloMethodInterceptor implements MethodInterceptor {
         logger.info("invoke method name: {}, args: {}", method.getName(), args[0]);
 
         Object result = proxy.invokeSuper(obj, args);
-        if (methodMatcher.matches(method, obj.getClass(), args) && result instanceof String) {
+        if (methodMatcher.matches(method, obj.getClass()) && result instanceof String) {
             return StringUtils.upperCase((String) result);
         }
 

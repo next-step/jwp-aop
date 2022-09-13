@@ -1,12 +1,14 @@
 package study.proxy;
 
+import core.di.beans.factory.aop.MethodMatcher;
+
 import java.lang.reflect.Method;
 
 public class SayPrefixMethodMatcher implements MethodMatcher {
     public static final String PASS_PREFIX = "say";
 
     @Override
-    public boolean matches(Method method, Class<?> targetClass, Object[] args) {
+    public boolean matches(Method method, Class<?> targetClass) {
         return  method.getName().startsWith(PASS_PREFIX);
     }
 }
