@@ -6,21 +6,21 @@ import org.springframework.util.Assert;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class TransactionObject {
+public class ConnectionHolder {
 
-    private static final ThreadLocal<TransactionObject> TRANSACTION_HOLDER = new NamedThreadLocal<>("current transaction");
+    private static final ThreadLocal<ConnectionHolder> CONNECTION_HOLDER_THREAD_LOCAL = new NamedThreadLocal<>("current connection");
     private final Connection connection;
-    private final TransactionObject oldTransactionInfo;
+    private final ConnectionHolder oldConnectionInfo;
 
-    private TransactionObject(Connection connection) {
-        Assert.notNull(connection, "connectionHolder must not be null");
+    private ConnectionHolder(Connection connection) {
+        Assert.notNull(connection, "'connection' must not be null");
         this.connection = connection;
-        this.oldTransactionInfo = TRANSACTION_HOLDER.get();
-        TRANSACTION_HOLDER.set(this);
+        this.oldConnectionInfo = CONNECTION_HOLDER_THREAD_LOCAL.get();
+        CONNECTION_HOLDER_THREAD_LOCAL.set(this);
     }
 
-    public static TransactionObject from(Connection connection) {
-        return new TransactionObject(connection);
+    public static ConnectionHolder from(Connection connection) {
+        return new ConnectionHolder(connection);
     }
 
     public Connection connection() {
@@ -50,17 +50,17 @@ public class TransactionObject {
     public void clear() {
         try {
             connection.close();
-            TRANSACTION_HOLDER.remove();
+            CONNECTION_HOLDER_THREAD_LOCAL.remove();
         } catch (SQLException e) {
             throw new TransactionException("close failed", e);
         }
     }
 
     public boolean isNew() {
-        return oldTransactionInfo == null;
+        return oldConnectionInfo == null;
     }
 
-    public void restoreTransaction() {
-        TRANSACTION_HOLDER.set(this.oldTransactionInfo);
+    public void restore() {
+        CONNECTION_HOLDER_THREAD_LOCAL.set(this.oldConnectionInfo);
     }
 }

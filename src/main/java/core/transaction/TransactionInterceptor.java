@@ -22,30 +22,30 @@ public class TransactionInterceptor implements Advice {
 
     @Override
     public Object invoke(Joinpoint joinpoint) throws Throwable {
-        TransactionObject transaction = newTransaction();
+        ConnectionHolder connection = newConnection();
         try {
-            transaction.setAutoCommit(false);
+            connection.setAutoCommit(false);
             Object result = joinpoint.proceed();
-            transaction.commit();
+            connection.commit();
             return result;
         } catch (Throwable e) {
-            transaction.rollback();
+            connection.rollback();
             throw e;
         } finally {
-            cleanupAfterCompletion(transaction);
+            cleanupAfterCompletion(connection);
         }
     }
 
-    public TransactionObject newTransaction() throws TransactionException {
-        return TransactionObject.from(DataSourceUtils.connection(dataSource));
+    public ConnectionHolder newConnection() throws TransactionException {
+        return ConnectionHolder.from(DataSourceUtils.connection(dataSource));
     }
 
-    private void cleanupAfterCompletion(TransactionObject transaction) {
-        if (transaction.isNew()) {
-            DataSourceUtils.releaseConnection(transaction.connection(), dataSource);
-            transaction.clear();
+    private void cleanupAfterCompletion(ConnectionHolder connectionHolder) {
+        if (connectionHolder.isNew()) {
+            DataSourceUtils.releaseConnection(connectionHolder.connection(), dataSource);
+            connectionHolder.clear();
             return;
         }
-        transaction.restoreTransaction();
+        connectionHolder.restore();
     }
 }
