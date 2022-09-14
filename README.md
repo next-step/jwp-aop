@@ -36,8 +36,8 @@
     - [ ] Pointcut: 부가기능 수행 대상 선정
 
 ### 기능 목록
-- [ ] FactoryBean 인터페이스 추가
-  - [ ] 제네릭 타입을 활용하여 리턴하도록 한다
+- [x] FactoryBean 인터페이스 추가
+  - [x] 제네릭 타입을 활용하여 리턴하도록 한다
 - [ ] FactoryBean 인터페이스를 구현한 ProxyFactoryBean 구현체 추가
   - [ ] Advisor(Advice, Pointcut)을 주입 받아 Proxy 객체를 생성할 수 있게 한다
   - [ ] 빈으로 등록할 인스턴스(target)를 주입받는다
