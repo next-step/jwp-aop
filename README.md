@@ -38,10 +38,12 @@
 ### 기능 목록
 - [x] FactoryBean 인터페이스 추가
   - [x] 제네릭 타입을 활용하여 리턴하도록 한다
-- [ ] FactoryBean 인터페이스를 구현한 ProxyFactoryBean 구현체 추가
-  - [ ] 빈으로 등록할 인스턴스(target)를 주입받는다
-    - [ ] target의 타입(interface or concrete class)에 따라 프록시 객체 생성 방법을 다르게 한다
-      - [ ] interface: 구현체의 인스턴스와 인스턴스의 인터페이스 타입을 주입 받아서 JDK Dynamic Proxy 객체를 생성한다
+- [x] FactoryBean 인터페이스를 구현한 ProxyFactoryBean 구현체 추가
+  - [x] 빈으로 등록할 인스턴스(target)를 주입받는다
+    - [x] target의 타입(interface or concrete class)에 따라 프록시 객체 생성 방법을 다르게 한다
+      - [x] interface: 구현체의 인스턴스와 인스턴스의 인터페이스 타입을 주입 받아서 JDK Dynamic Proxy 객체를 생성한다
+        - [x] 반드시 구현하는 인터페이스를 주입 받아야 한다
+        - [x] 반드시 InvocationHandler 를 주입 받아야 한다
       - [x] concrete class: 구현하는 인터페이스가 없는 클래스는 CGLib Proxy 객체를 생성한다.
         - [x] 반드시 MethodInterceptor 를 주입 받아야 한다
   - [ ] Advisor(Advice, Pointcut)을 주입 받아 Proxy 객체를 생성할 수 있게 한다
