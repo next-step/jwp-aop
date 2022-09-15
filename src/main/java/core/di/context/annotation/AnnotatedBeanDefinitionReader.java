@@ -35,20 +35,24 @@ public class AnnotatedBeanDefinitionReader implements BeanDefinitionReader {
         Set<Method> beanMethods = BeanFactoryUtils.getBeanMethods(annotatedClass, Bean.class);
         for (Method beanMethod : beanMethods) {
             log.debug("@Bean method : {}", beanMethod);
-            final Class<?> returnType = returnType(beanMethod);
+            final Class<?> returnType = getReturnType(beanMethod);
             AnnotatedBeanDefinition abd = new AnnotatedBeanDefinition(returnType, beanMethod);
             beanDefinitionRegistry.registerBeanDefinition(beanMethod.getReturnType(), abd);
         }
     }
 
-    private Class<?> returnType(final Method beanMethod) {
+    private Class<?> getReturnType(final Method beanMethod) {
         final Class<?> returnType = beanMethod.getReturnType();
         if (returnType.isAssignableFrom(FactoryBean.class)) {
-            final Type genericReturnType = beanMethod.getGenericReturnType();
-            final ParameterizedType genericReturnType1 = (ParameterizedType) genericReturnType;
-            return (Class<?>) genericReturnType1.getActualTypeArguments()[0];
+            return getReturnGenericType(beanMethod);
         }
 
         return returnType;
+    }
+
+    private Class<?> getReturnGenericType(final Method beanMethod) {
+        final Type genericReturnType = beanMethod.getGenericReturnType();
+        final ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
+        return (Class<?>) parameterizedType.getActualTypeArguments()[0];
     }
 }
