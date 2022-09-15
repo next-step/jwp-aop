@@ -3,6 +3,7 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
@@ -46,24 +47,41 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(instance -> registerBean(clazz, instance));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
 
         Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
-        if (!concreteClazz.isPresent()) {
+        if (concreteClazz.isEmpty()) {
             return null;
         }
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
+        registerBean(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
+    }
+
+    private void registerBean(Class<?> clazz, Object instance) {
+        if (instance instanceof FactoryBean) {
+            registerFactoryBean(instance);
+            return;
+        }
+        beans.put(clazz, instance);
+    }
+
+    private void registerFactoryBean(Object instance) {
+        FactoryBean<?> factoryBean = (FactoryBean<?>) instance;
+        try {
+            beans.put(factoryBean.getObjectType(), factoryBean.getObject());
+        } catch (Exception e) {
+            throw new RuntimeException("FactoryBean 등록 중 예외가 발생했습니다.", e);
+        }
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
