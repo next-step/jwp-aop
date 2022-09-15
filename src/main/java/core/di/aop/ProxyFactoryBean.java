@@ -22,7 +22,11 @@ public class ProxyFactoryBean<T> implements FactoryBean<T> {
         return (T) Proxy.newProxyInstance(
             superInterface.getClassLoader(), new Class[]{superInterface}, invocationHandler
         );
+    }
 
+    @Override
+    public Class<T> getObjectType() {
+        return (Class<T>) target.getClass();
     }
 
     public void setTarget(final T target) {
