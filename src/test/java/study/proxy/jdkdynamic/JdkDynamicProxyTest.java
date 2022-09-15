@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class JdkDynamicProxyTest {
 
@@ -23,9 +24,11 @@ class JdkDynamicProxyTest {
             handler
         );
 
-        assertThat(proxy.sayHello("proxy")).isEqualTo("HELLO PROXY");
-        assertThat(proxy.sayHi("proxy")).isEqualTo("HI PROXY");
-        assertThat(proxy.sayThankYou("proxy")).isEqualTo("THANK YOU PROXY");
-        assertThat(proxy.pingPong("proxy")).isEqualTo("Pong proxy");
+        assertAll(
+            () -> assertThat(proxy.sayHello("proxy")).isEqualTo("HELLO PROXY"),
+            () -> assertThat(proxy.sayHi("proxy")).isEqualTo("HI PROXY"),
+            () -> assertThat(proxy.sayThankYou("proxy")).isEqualTo("THANK YOU PROXY"),
+            () -> assertThat(proxy.pingPong("proxy")).isEqualTo("Pong proxy")
+        );
     }
 }
