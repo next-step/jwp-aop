@@ -1,10 +1,13 @@
 package core.di.context.annotation;
 
 import core.annotation.Bean;
+import core.di.aop.FactoryBean;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.BeanDefinitionRegistry;
 import core.di.beans.factory.support.BeanFactoryUtils;
 import core.di.beans.factory.support.DefaultBeanDefinition;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +35,20 @@ public class AnnotatedBeanDefinitionReader implements BeanDefinitionReader {
         Set<Method> beanMethods = BeanFactoryUtils.getBeanMethods(annotatedClass, Bean.class);
         for (Method beanMethod : beanMethods) {
             log.debug("@Bean method : {}", beanMethod);
-            AnnotatedBeanDefinition abd = new AnnotatedBeanDefinition(beanMethod.getReturnType(), beanMethod);
+            final Class<?> returnType = returnType(beanMethod);
+            AnnotatedBeanDefinition abd = new AnnotatedBeanDefinition(returnType, beanMethod);
             beanDefinitionRegistry.registerBeanDefinition(beanMethod.getReturnType(), abd);
         }
+    }
+
+    private Class<?> returnType(final Method beanMethod) {
+        final Class<?> returnType = beanMethod.getReturnType();
+        if (returnType.isAssignableFrom(FactoryBean.class)) {
+            final Type genericReturnType = beanMethod.getGenericReturnType();
+            final ParameterizedType genericReturnType1 = (ParameterizedType) genericReturnType;
+            return (Class<?>) genericReturnType1.getActualTypeArguments()[0];
+        }
+
+        return returnType;
     }
 }
