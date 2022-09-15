@@ -26,9 +26,9 @@
 # 🚀 2단계 - Proxy와 Bean 의존관계
 
 ### 요구 사항
-- [ ] Bean 컨테이너의 Bean과 Proxy를 연결
-  - [ ] 특정 Interface(FactoryBean)를 구현하는 경우 빈을 생성할 때 예외 처리하도록 Bean 컨테이너 개선
-    - [ ] FactoryBean의 구현체를 빈으로 등록하지 않고 FactoryBean 의 메서드 수행결과로 반환된 인스턴스를 빈으로 등록
+- [x] Bean 컨테이너의 Bean과 Proxy를 연결
+  - [x] 특정 Interface(FactoryBean)를 구현하는 경우 빈을 생성할 때 예외 처리하도록 Bean 컨테이너 개선
+    - [x] FactoryBean의 구현체를 빈으로 등록하지 않고 FactoryBean 의 메서드 수행결과로 반환된 인스턴스를 빈으로 등록
 - [ ] 재사용 가능한 FactoryBean
   - [ ] FactoryBean 을 제네릭 타입을 활용하여 프록시 빈 생성을 하나의 FactoryBean으로 생성 가능하게 해야한다.
     - [ ] Target: 프록시 대상
@@ -53,5 +53,6 @@
     - [ ] 적용 대상을 선정하는 인터페이스
   - [ ] Advisor Interface
     - [ ] 1개의 Advice와 1개의 PointCut을 주입받아 적용 대상에 부가 기능을 수행할 인터페이스
-- [ ] DefaultBeanFactory 개선
-  - [ ] 등록하려는 빈의 타입이 FactoryBean인 경우 빈으로 등록하지 않고 메서드를 통해 생성된 프록시 객체를 빈으로 등록한다 
+- [x] DefaultBeanFactory 개선
+  - [x] 등록하려는 빈의 타입이 FactoryBean인 경우 빈으로 등록하지 않고 메서드를 통해 생성된 프록시 객체를 빈으로 등록한다 
+  - [x] AnnotatedBeanDefinitionReader BeanDifinition을 생성할 때 프록시 빈의 경우 
