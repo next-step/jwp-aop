@@ -33,6 +33,13 @@ class JdkDynamicAopProxyTest {
     }
 
     @Test
+    @DisplayName("인터페이스로만 생성 가능")
+    void instance_concreteClass_thrownIllegalArgumentException() {
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                JdkDynamicAopProxy.of(HelloTarget.class, new HelloTarget(), SAY_METHOD_UPPERCASE_ADVISOR));
+    }
+
+    @Test
     @DisplayName("프록시 객체 생성")
     void proxy() {
         //given, when

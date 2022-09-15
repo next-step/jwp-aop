@@ -15,7 +15,7 @@ class CglibAopProxyTest {
     @DisplayName("구현 클래스, 어드바이저로 생성")
     void instance() {
         assertThatNoException().isThrownBy(() ->
-                CglibAopProxy.of(HelloTarget.class, SAY_METHOD_UPPERCASE_ADVISOR));
+                CglibAopProxy.of(HelloTarget.class, new HelloTarget(), SAY_METHOD_UPPERCASE_ADVISOR));
     }
 
     @Test
@@ -23,9 +23,9 @@ class CglibAopProxyTest {
     void instance_null_thrownIllegalArgumentException() {
         assertAll(
                 () -> assertThatIllegalArgumentException().isThrownBy(() ->
-                        CglibAopProxy.of(null, SAY_METHOD_UPPERCASE_ADVISOR)),
+                        CglibAopProxy.of(null, new HelloTarget(), SAY_METHOD_UPPERCASE_ADVISOR)),
                 () -> assertThatIllegalArgumentException().isThrownBy(() ->
-                        CglibAopProxy.of(HelloTarget.class, null))
+                        CglibAopProxy.of(HelloTarget.class, new HelloTarget(), null))
         );
     }
 
@@ -33,7 +33,7 @@ class CglibAopProxyTest {
     @DisplayName("프록시 객체 생성")
     void proxy() {
         //given, when
-        HelloTarget proxy = (HelloTarget) CglibAopProxy.of(HelloTarget.class, SAY_METHOD_UPPERCASE_ADVISOR).proxy();
+        HelloTarget proxy = (HelloTarget) CglibAopProxy.of(HelloTarget.class, new HelloTarget(), SAY_METHOD_UPPERCASE_ADVISOR).proxy();
         //then
         assertAll(
                 () -> assertThat(proxy.sayHello("yong")).isEqualTo("HELLO YONG"),

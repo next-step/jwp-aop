@@ -7,9 +7,11 @@ import core.di.beans.factory.support.DefaultBeanFactory;
 import core.di.context.ApplicationContext;
 import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
+import core.transaction.TransactionBeanPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +31,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
         }
+        beanFactory.addBeanPostProcessor(new TransactionBeanPostProcessor(beanFactory.getBean(DataSource.class)));
         beanFactory.preInstantiateSingletons();
     }
 

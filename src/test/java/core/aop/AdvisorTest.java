@@ -13,14 +13,24 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class AdvisorTest {
 
     private static final Advice UPPERCASE_ADVICE = joinpoint -> String.valueOf(joinpoint.proceed()).toUpperCase();
-    private static final Pointcut SAY_METHOD_POINT_CUT = (targetClass, method) -> StringUtils.startsWith(method.getName(), "say");
+    private static final Pointcut SAY_METHOD_POINT_CUT = new Pointcut() {
+        @Override
+        public boolean matches(Class<?> targetClass) {
+            return false;
+        }
+
+        @Override
+        public boolean matches(Method method) {
+            return StringUtils.startsWith(method.getName(), "say");
+        }
+    };
     public static final Advisor SAY_METHOD_UPPERCASE_ADVISOR = Advisor.of(UPPERCASE_ADVICE, SAY_METHOD_POINT_CUT);
 
     @Test
     @DisplayName("조인 포인트와 어드바이스로 생성")
     void instance() {
         assertThatNoException()
-                .isThrownBy(() -> Advisor.of(Joinpoint::proceed, (targetClass, method) -> true));
+                .isThrownBy(() -> Advisor.of(Joinpoint::proceed, SAY_METHOD_POINT_CUT));
     }
 
     @Test
@@ -28,7 +38,7 @@ class AdvisorTest {
     void instance_null_thrownIllegalArgumentException() {
         assertAll(
                 () -> assertThatIllegalArgumentException()
-                        .isThrownBy(() -> Advisor.of(null, (targetClass, method) -> true)),
+                        .isThrownBy(() -> Advisor.of(null, SAY_METHOD_POINT_CUT)),
                 () -> assertThatIllegalArgumentException()
                         .isThrownBy(() -> Advisor.of(Joinpoint::proceed, null))
         );
@@ -38,8 +48,8 @@ class AdvisorTest {
     @DisplayName("포인트 컷 일치 여부")
     void matches() {
         assertAll(
-                () -> assertThat(SAY_METHOD_UPPERCASE_ADVISOR.matches(AdvisorTest.class, sayMethod())).isTrue(),
-                () -> assertThat(SAY_METHOD_UPPERCASE_ADVISOR.matches(AdvisorTest.class, anyMethod())).isFalse()
+                () -> assertThat(SAY_METHOD_UPPERCASE_ADVISOR.matches(sayMethod())).isTrue(),
+                () -> assertThat(SAY_METHOD_UPPERCASE_ADVISOR.matches(anyMethod())).isFalse()
         );
     }
 

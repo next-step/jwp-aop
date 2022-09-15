@@ -33,23 +33,6 @@ class ProxyFactoryBeanTest {
     }
 
     @Test
-    @DisplayName("인터페이스의 프록시 객체 생성")
-    void newProxy_interface() {
-        //given
-        ProxyFactoryBean<Hello> uppercaseSayHelloProxyFactory = ProxyFactoryBean.of(Hello.class, new HelloTarget(), SAY_METHOD_UPPERCASE_ADVISOR);
-        //when
-        Hello uppercaseSayHello = uppercaseSayHelloProxyFactory.object();
-        //then
-        assertAll(
-                () -> assertThat(uppercaseSayHello).isNotNull(),
-                () -> assertThat(uppercaseSayHello.sayHello("yong")).isEqualTo("HELLO YONG"),
-                () -> assertThat(uppercaseSayHello.sayHi("yong")).isEqualTo("HI YONG"),
-                () -> assertThat(uppercaseSayHello.sayThankYou("yong")).isEqualTo("THANK YOU YONG"),
-                () -> assertThat(uppercaseSayHello.pingpong("yong")).isEqualTo("Pong yong")
-        );
-    }
-
-    @Test
     @DisplayName("구현 클래스의 프록시 객체 생성")
     void newProxy_concrete() {
         //given
