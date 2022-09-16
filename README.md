@@ -47,8 +47,8 @@
       - [x] concrete class: 구현하는 인터페이스가 없는 클래스는 CGLib Proxy 객체를 생성한다.
         - [x] 반드시 MethodInterceptor 를 주입 받아야 한다
   - [ ] Advisor(Advice, Pointcut)을 주입 받아 Proxy 객체를 생성할 수 있게 한다
-  - [ ] Advice Interface
-    - [ ] 부가 기능 로직을 수행할 인터페이스
+  - [x] Advice Interface
+    - [x] 부가 기능 로직을 수행할 인터페이스
   - [ ] PointCut Interface
     - [ ] 적용 대상을 선정하는 인터페이스
   - [ ] Advisor Interface
