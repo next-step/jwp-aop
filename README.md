@@ -49,8 +49,8 @@
   - [ ] Advisor(Advice, Pointcut)을 주입 받아 Proxy 객체를 생성할 수 있게 한다
   - [x] Advice Interface
     - [x] 부가 기능 로직을 수행할 인터페이스
-  - [ ] PointCut Interface
-    - [ ] 적용 대상을 선정하는 인터페이스
+  - [x] PointCut Interface
+    - [x] 적용 대상을 선정하는 인터페이스
   - [ ] Advisor Interface
     - [ ] 1개의 Advice와 1개의 PointCut을 주입받아 적용 대상에 부가 기능을 수행할 인터페이스
 - [x] DefaultBeanFactory 개선
