@@ -51,8 +51,8 @@
     - [x] 부가 기능 로직을 수행할 인터페이스
   - [x] PointCut Interface
     - [x] 적용 대상을 선정하는 인터페이스
-  - [ ] Advisor Interface
-    - [ ] 1개의 Advice와 1개의 PointCut을 주입받아 적용 대상에 부가 기능을 수행할 인터페이스
+  - [x] Advisor Interface
+    - [x] 1개의 Advice와 1개의 PointCut을 주입받아 적용 대상에 부가 기능을 수행할 인터페이스
 - [x] DefaultBeanFactory 개선
   - [x] 등록하려는 빈의 타입이 FactoryBean인 경우 빈으로 등록하지 않고 메서드를 통해 생성된 프록시 객체를 빈으로 등록한다 
   - [x] AnnotatedBeanDefinitionReader BeanDifinition을 생성할 때 프록시 빈의 경우 
