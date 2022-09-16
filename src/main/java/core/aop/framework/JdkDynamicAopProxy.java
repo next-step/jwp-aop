@@ -1,27 +1,36 @@
 package core.aop.framework;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.List;
 
 import org.springframework.util.ClassUtils;
 
-public class JdkDynamicAopProxy implements AopProxy {
+import core.aop.Advice;
+import core.aop.TargetSource;
+import core.aop.intercept.MethodInvocation;
 
-    private final Object target;
+public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 
-    public JdkDynamicAopProxy(Object target) {
-        this.target = target;
+    private final AdvisedSupport advised;
+
+    public JdkDynamicAopProxy(AdvisedSupport config) {
+        this.advised = config;
     }
 
     @Override
     public Object getProxy() {
-        Class<?>[] interfaces = ClassUtils.getAllInterfacesForClass(target.getClass());
-        return Proxy.newProxyInstance(target.getClass().getClassLoader(), interfaces, (proxy, method, args) -> {
-            String result = String.valueOf(method.invoke(target, args));
-            String methodName = method.getName();
-            if (methodName.startsWith("say")) {
-                return result.toUpperCase();
-            }
-            return result;
-        });
+        return Proxy.newProxyInstance(ClassUtils.getDefaultClassLoader(), this.advised.getProxiedInterfaces(), this);
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) {
+        TargetSource targetSource = this.advised.getTargetSource();
+        Object target = targetSource.getTarget();
+        Class<?> targetClass = (target != null) ? target.getClass() : null;
+        List<Advice> advices = this.advised.getAdvices(method, targetClass);
+        MethodInvocation invocation = new ReflectiveMethodInvocation(target, method, args, advices);
+        return invocation.proceed();
     }
 }

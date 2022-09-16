@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import core.aop.example.TestTarget;
 import core.aop.framework.ProxyFactoryBean;
+import core.aop.intercept.MethodInterceptor;
+import core.aop.intercept.MethodInvocation;
 import study.proxy.jdkdynamic.Hello;
 import study.proxy.jdkdynamic.HelloTarget;
 
@@ -18,6 +20,7 @@ class ProxyFactoryBeanTest {
     void jdkDynamicProxy() {
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
         proxyFactoryBean.setTarget(new HelloTarget());
+        proxyFactoryBean.addAdvice(new UppercaseAdvice());
 
         Hello proxy = (Hello) proxyFactoryBean.getObject();
 
@@ -25,7 +28,7 @@ class ProxyFactoryBeanTest {
             () -> assertThat(proxy.sayHello("Jack")).isEqualTo("HELLO JACK"),
             () -> assertThat(proxy.sayHi("Jack")).isEqualTo("HI JACK"),
             () -> assertThat(proxy.sayThankYou("Jack")).isEqualTo("THANK YOU JACK"),
-            () -> assertThat(proxy.pingPong("Jack")).isEqualTo("Pong Jack")
+            () -> assertThat(proxy.pingPong("Jack")).isEqualTo("PONG JACK")
         );
     }
 
@@ -34,6 +37,7 @@ class ProxyFactoryBeanTest {
     void cglib() {
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
         proxyFactoryBean.setTarget(new TestTarget());
+        proxyFactoryBean.addAdvice(new UppercaseAdvice());
 
         TestTarget proxy = (TestTarget) proxyFactoryBean.getObject();
 
@@ -41,7 +45,14 @@ class ProxyFactoryBeanTest {
             () -> assertThat(proxy.sayHello("Jack")).isEqualTo("HELLO JACK"),
             () -> assertThat(proxy.sayHi("Jack")).isEqualTo("HI JACK"),
             () -> assertThat(proxy.sayThankYou("Jack")).isEqualTo("THANK YOU JACK"),
-            () -> assertThat(proxy.pingPong("Jack")).isEqualTo("Pong Jack")
+            () -> assertThat(proxy.pingPong("Jack")).isEqualTo("PONG JACK")
         );
+    }
+
+    static class UppercaseAdvice implements MethodInterceptor {
+        @Override
+        public Object invoke(MethodInvocation invocation) {
+            return String.valueOf(invocation.proceed()).toUpperCase();
+        }
     }
 }
