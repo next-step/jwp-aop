@@ -1,11 +1,6 @@
 package core.aop.framework;
 
-import java.lang.reflect.Proxy;
-
 import org.springframework.util.ClassUtils;
-
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
 
 import core.aop.FactoryBean;
 
@@ -19,29 +14,16 @@ public class ProxyFactoryBean implements FactoryBean<Object> {
 
     @Override
     public Object getObject() {
+        AopProxy aopProxy = createAopProxy();
+        return aopProxy.getProxy();
+    }
+
+    private AopProxy createAopProxy() {
         Class<?>[] interfaces = ClassUtils.getAllInterfacesForClass(target.getClass());
         if (interfaces.length == 0) {
-            Enhancer enhancer = new Enhancer();
-            enhancer.setSuperclass(target.getClass());
-            enhancer.setCallback((MethodInterceptor)(obj, method, args, proxy) -> {
-                String result = String.valueOf(proxy.invoke(target, args));
-                String methodName = method.getName();
-                if (methodName.startsWith("say")) {
-                    return result.toUpperCase();
-                }
-                return result;
-            });
-            return enhancer.create();
+            return new CglibAopProxy(target);
         }
-
-        return Proxy.newProxyInstance(target.getClass().getClassLoader(), interfaces, (proxy, method, args) -> {
-            String result = String.valueOf(method.invoke(target, args));
-            String methodName = method.getName();
-            if (methodName.startsWith("say")) {
-                return result.toUpperCase();
-            }
-            return result;
-        });
+        return new JdkDynamicAopProxy(target);
     }
 
     @Override
