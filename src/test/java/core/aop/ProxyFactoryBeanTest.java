@@ -7,9 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import core.aop.example.TestTarget;
+import core.aop.example.UppercaseAdvice;
 import core.aop.framework.ProxyFactoryBean;
-import core.aop.intercept.MethodInterceptor;
-import core.aop.intercept.MethodInvocation;
 import study.proxy.jdkdynamic.Hello;
 import study.proxy.jdkdynamic.HelloTarget;
 
@@ -47,12 +46,5 @@ class ProxyFactoryBeanTest {
             () -> assertThat(proxy.sayThankYou("Jack")).isEqualTo("THANK YOU JACK"),
             () -> assertThat(proxy.pingPong("Jack")).isEqualTo("PONG JACK")
         );
-    }
-
-    static class UppercaseAdvice implements MethodInterceptor {
-        @Override
-        public Object invoke(MethodInvocation invocation) {
-            return String.valueOf(invocation.proceed()).toUpperCase();
-        }
     }
 }
