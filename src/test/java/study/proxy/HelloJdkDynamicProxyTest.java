@@ -1,5 +1,6 @@
 package study.proxy;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
@@ -7,11 +8,12 @@ import java.lang.reflect.Proxy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class JdkDynamicProxyTest {
+public class HelloJdkDynamicProxyTest {
     @Test
+    @DisplayName("Jdk Dynamic Proxy 학습 테스트")
     void jdkDynamicProxyTest() {
         Hello helloProxy = (Hello) Proxy.newProxyInstance(
-                JdkDynamicProxyTest.class.getClassLoader(),
+                Hello.class.getClassLoader(),
                 new Class[]{Hello.class},
                 new HelloUpperCaseInvocationHandler(new HelloTarget())
         );
