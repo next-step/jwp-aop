@@ -7,6 +7,7 @@ import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
+import core.mvc.tobe.HandlerExceptionResolver;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
         ahm.initialize();
 
-        DispatcherServlet dispatcherServlet = new DispatcherServlet();
+        DispatcherServlet dispatcherServlet = new DispatcherServlet(HandlerExceptionResolver.from(ac));
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());

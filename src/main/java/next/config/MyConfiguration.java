@@ -4,8 +4,14 @@ import core.annotation.Bean;
 import core.annotation.ComponentScan;
 import core.annotation.Configuration;
 import core.jdbc.JdbcTemplate;
+import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.HandlerConverter;
-import core.mvc.tobe.support.*;
+import core.mvc.tobe.support.ArgumentResolver;
+import core.mvc.tobe.support.HttpRequestArgumentResolver;
+import core.mvc.tobe.support.HttpResponseArgumentResolver;
+import core.mvc.tobe.support.ModelArgumentResolver;
+import core.mvc.tobe.support.PathVariableArgumentResolver;
+import core.mvc.tobe.support.RequestParamArgumentResolver;
 import next.security.LoginUserArgumentResolver;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -39,6 +45,11 @@ public class MyConfiguration {
         handlerConverter.setArgumentResolvers(defaultArgumentResolvers());
         handlerConverter.addArgumentResolver(loginUserArgumentResolver());
         return handlerConverter;
+    }
+
+    @Bean
+    public ExceptionHandlerConverter exceptionHandlerConverter() {
+        return ExceptionHandlerConverter.from(defaultArgumentResolvers());
     }
 
     LoginUserArgumentResolver loginUserArgumentResolver() {
