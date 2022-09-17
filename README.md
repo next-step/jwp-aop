@@ -76,3 +76,22 @@ public class JdkProxyTest {
     }
 }
 ```
+
+# 기능 목록
+- MethodMatcher 인터페이스
+  - target 클래스의 특정 조건에 해당하는 메서드와 일치하는지에 대한 메서드를 제공한다.
+  - NameMethodMatcher 구현체
+    - 생성 시 name 을 입력받는다.
+    - matches 메서드에서 해당 name 으로 시작하는 method 와 일치할 경우 true 를 반환한다.
+
+** Jdk Dynamic Proxy
+- HelloUpperCaseMethodInterceptor 구현체 (InvocationHandler 인터페이스 구현)
+  - 프록시 target 객체, methodMatcher, target 클래스의 메서드들을 필드로 관리한다.
+  - jdk dynamic proxy 생성 시, invoke 메서드가 호출되며 target 클래스의 메서드를 호출하기 전에 전후처리를 담당한다.
+  - methodMatcher 를 통해, 특정 조건의 메서드에 대한 처리를 수행할 수 있다.
+
+** CGLIB Proxy
+- HelloUpperCaseMethodInterceptor 구현체 (MethodInterceptor 인터페이스 구현)
+  - 프록시 target 객체, methodMatcher 를 필드로 관리한다.
+  - cglib proxy 생성 시, intercept 메서드가 호출되며 target 클래스의 메서드를 호출하기 전에 전후처리를 담당한다.
+  - methodMatcher 를 통해, 특정 조건의 메서드에 대한 처리를 수행할 수 있다.
