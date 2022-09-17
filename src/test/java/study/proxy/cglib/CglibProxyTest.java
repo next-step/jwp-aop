@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import study.proxy.HelloMethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class CglibProxyTest {
 
@@ -18,9 +19,11 @@ class CglibProxyTest {
 
         HelloTarget proxy = (HelloTarget) enhancer.create();
 
-        assertThat(proxy.sayHello("proxy")).isEqualTo("HELLO PROXY");
-        assertThat(proxy.sayHi("proxy")).isEqualTo("HI PROXY");
-        assertThat(proxy.sayThankYou("proxy")).isEqualTo("THANK YOU PROXY");
-        assertThat(proxy.pingPong("proxy")).isEqualTo("Pong proxy");
+        assertAll(
+            () -> assertThat(proxy.sayHello("proxy")).isEqualTo("HELLO PROXY"),
+            () -> assertThat(proxy.sayHi("proxy")).isEqualTo("HI PROXY"),
+            () -> assertThat(proxy.sayThankYou("proxy")).isEqualTo("THANK YOU PROXY"),
+            () -> assertThat(proxy.pingPong("proxy")).isEqualTo("Pong proxy")
+        );
     }
 }
