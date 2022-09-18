@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-public class AnnotationHandlerMapping implements HandlerMapping {
+public class AnnotationHandlerMapping implements HandlerMapping<HttpServletRequest> {
     private static final Logger logger = LoggerFactory.getLogger(AnnotationHandlerMapping.class);
 
     private ApplicationContext applicationContext;

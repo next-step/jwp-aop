@@ -1,9 +1,7 @@
 package core.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-
-public interface HandlerMapping {
+public interface HandlerMapping<T> {
     void initialize();
 
-    Object getHandler(HttpServletRequest request);
+    Object getHandler(T target);
 }
