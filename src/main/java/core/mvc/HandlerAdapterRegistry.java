@@ -3,14 +3,14 @@ package core.mvc;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HandlerAdapterRegistry {
-    private final List<HandlerAdapter> handlerAdapters = new ArrayList<>();
+public class HandlerAdapterRegistry<T extends SupportableHandler> {
+    private final List<T> handlerAdapters = new ArrayList<>();
 
-    public void addHandlerAdapter(HandlerAdapter handlerAdapter) {
+    public void addHandlerAdapter(T handlerAdapter) {
         handlerAdapters.add(handlerAdapter);
     }
 
-    public HandlerAdapter getHandlerAdapter(Object handler) {
+    public T getHandlerAdapter(Object handler) {
         return handlerAdapters.stream()
                 .filter(ha -> ha.supports(handler))
                 .findFirst()
