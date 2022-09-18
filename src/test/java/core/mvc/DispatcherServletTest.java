@@ -1,9 +1,10 @@
 package core.mvc;
 
+import core.annotation.web.ControllerAdvice;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ControllerAdviceExceptionHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
-import core.mvc.tobe.HandlerExceptionResolver;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import next.config.MyConfiguration;
 import next.controller.UserSessionUtils;
@@ -25,9 +26,11 @@ class DispatcherServletTest {
     void setUp() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
-        dispatcher = new DispatcherServlet(HandlerExceptionResolver.from(ac));
+        dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
+        dispatcher.addExceptionHandlerMapping(ControllerAdviceExceptionHandlerMapping.of(ac.beansAnnotatedWith(ControllerAdvice.class)));
+        dispatcher.addExceptionHandlerAdapter(new ExceptionHandlerExecutionHandlerAdapter());
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();

@@ -2,8 +2,6 @@ package core.mvc.tobe;
 
 import core.annotation.web.ExceptionHandler;
 import core.mvc.ModelAndView;
-import core.mvc.tobe.support.HttpRequestArgumentResolver;
-import core.mvc.tobe.support.HttpResponseArgumentResolver;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,8 +21,7 @@ class ExceptionHandlerExecutionTest {
     void instance() {
         Assertions.assertThatNoException().isThrownBy(() -> ExceptionHandlerExecution.of(
                 new ControllerAdviceTest(),
-                ControllerAdviceTest.class.getMethod("handleException", Exception.class, HttpServletRequest.class, HttpServletResponse.class),
-                List.of(new HttpRequestArgumentResolver(), new HttpResponseArgumentResolver())
+                ControllerAdviceTest.class.getMethod("handleException", Exception.class, HttpServletRequest.class, HttpServletResponse.class)
         ));
     }
 
@@ -35,8 +31,7 @@ class ExceptionHandlerExecutionTest {
         //given
         ExceptionHandlerExecution handleException = ExceptionHandlerExecution.of(
                 new ControllerAdviceTest(),
-                ControllerAdviceTest.class.getMethod("handleException", Exception.class, HttpServletRequest.class, HttpServletResponse.class),
-                List.of(new HttpRequestArgumentResolver(), new HttpResponseArgumentResolver())
+                ControllerAdviceTest.class.getMethod("handleException", Exception.class, HttpServletRequest.class, HttpServletResponse.class)
         );
         //when
         ModelAndView result = handleException.handle(new Exception(), new MockHttpServletRequest(), new MockHttpServletResponse());
