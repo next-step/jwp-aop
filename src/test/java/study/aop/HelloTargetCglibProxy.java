@@ -1,14 +1,15 @@
 package study.aop;
 
+import core.aop.MethodMatcher;
 import java.lang.reflect.Method;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
-public class HelloTargetCglibProxyTest implements MethodInterceptor {
+public class HelloTargetCglibProxy implements MethodInterceptor {
 
     private final MethodMatcher methodMatcher;
 
-    public HelloTargetCglibProxyTest(MethodMatcher methodMatcher) {
+    public HelloTargetCglibProxy(MethodMatcher methodMatcher) {
         this.methodMatcher = methodMatcher;
     }
 

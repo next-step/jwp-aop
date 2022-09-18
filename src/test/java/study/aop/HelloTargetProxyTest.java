@@ -2,6 +2,7 @@ package study.aop;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import core.aop.MethodMatcherUpperCaseStartsWith;
 import java.lang.reflect.Proxy;
 import net.sf.cglib.proxy.Enhancer;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class HelloTargetProxyTest {
     void cglibProxyTest() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback(new HelloTargetCglibProxyTest(new MethodMatcherUpperCaseStartsWith()));
+        enhancer.setCallback(new HelloTargetCglibProxy(new MethodMatcherUpperCaseStartsWith()));
 
         Hello hello = (HelloTarget) enhancer.create();
 

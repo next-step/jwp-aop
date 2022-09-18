@@ -1,6 +1,7 @@
 package study.aop;
 
 import core.annotation.Component;
+import core.aop.MethodMatcherUpperCaseStartsWith;
 import core.di.beans.factory.FactoryBean;
 import net.sf.cglib.proxy.Enhancer;
 
@@ -14,7 +15,7 @@ public class HelloFactoryBean implements FactoryBean<Hello> {
     public Hello getObject() throws Exception {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloFactoryBeanTarget.class);
-        enhancer.setCallback(new HelloTargetCglibProxyTest(new MethodMatcherUpperCaseStartsWith()));
+        enhancer.setCallback(new HelloTargetCglibProxy(new MethodMatcherUpperCaseStartsWith()));
 
         return (HelloFactoryBeanTarget) enhancer.create();
     }

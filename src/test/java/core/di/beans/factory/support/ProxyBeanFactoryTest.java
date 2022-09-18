@@ -1,7 +1,6 @@
 package core.di.beans.factory.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
