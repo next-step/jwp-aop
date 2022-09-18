@@ -1,6 +1,5 @@
 package core.mvc;
 
-import core.mvc.tobe.HandlerExceptionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,21 +14,28 @@ public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
-    private final HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
-    private final HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
+    private final HandlerMappingRegistry<HttpServletRequest> handlerMappingRegistry = new HandlerMappingRegistry<>();
+    private final HandlerAdapterRegistry<HandlerAdapter> handlerAdapterRegistry = new HandlerAdapterRegistry<>();
     private final HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
-    private final HandlerExceptionResolver handlerExceptionResolver;
 
-    public DispatcherServlet(HandlerExceptionResolver handlerExceptionResolver) {
-        this.handlerExceptionResolver = handlerExceptionResolver;
-    }
+    private final HandlerMappingRegistry<Throwable> exceptionHandlerMappingRegistry = new HandlerMappingRegistry<>();
+    private final HandlerAdapterRegistry<ExceptionHandlerAdapter> exceptionHandlerAdapterRegistry = new HandlerAdapterRegistry<>();
+    private final ExceptionHandlerExecutor exceptionHandlerExecutor = new ExceptionHandlerExecutor(exceptionHandlerAdapterRegistry);
 
-    public void addHandlerMapping(HandlerMapping handlerMapping) {
-        handlerMappingRegistry.addHandlerMpping(handlerMapping);
+    public void addHandlerMapping(HandlerMapping<HttpServletRequest> handlerMapping) {
+        handlerMappingRegistry.addHandlerMapping(handlerMapping);
     }
 
     public void addHandlerAdapter(HandlerAdapter handlerAdapter) {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
+    }
+
+    public void addExceptionHandlerMapping(HandlerMapping<Throwable> handlerMapping) {
+        exceptionHandlerMappingRegistry.addHandlerMapping(handlerMapping);
+    }
+
+    public void addExceptionHandlerAdapter(ExceptionHandlerAdapter exceptionHandlerAdapter) {
+        exceptionHandlerAdapterRegistry.addHandlerAdapter(exceptionHandlerAdapter);
     }
 
     @Override
@@ -53,7 +59,9 @@ public class DispatcherServlet extends HttpServlet {
 
     private void resolveException(Throwable exception, HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
-            ModelAndView modelAndView = handlerExceptionResolver.resolveException(exception, request, response);
+            Object exceptionHandler = exceptionHandlerMappingRegistry.getHandler(exception)
+                    .orElseThrow(() -> new ServletException(exception));
+            ModelAndView modelAndView = exceptionHandlerExecutor.handle(exception, request, response, exceptionHandler);
             render(modelAndView, request, response);
         } catch (Throwable ex) {
             logger.error("Exception : {}", ex);
