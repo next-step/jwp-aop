@@ -4,7 +4,8 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 
     private final AopProxyFactory aopProxyFactory;
 
-    public ProxyCreatorSupport() {
+    public ProxyCreatorSupport(Object target) {
+        super(target);
         this.aopProxyFactory = new DefaultAopProxyFactory();
     }
 

@@ -14,11 +14,16 @@ import core.aop.target.SingletonTargetSource;
 
 public class AdvisedSupport implements Advised {
 
-    protected final AdvisorChainFactory advisorChainFactory = new DefaultAdvisorChainFactory();
-    protected TargetSource targetSource;
+    private final AdvisorChainFactory advisorChainFactory = new DefaultAdvisorChainFactory();
     private final List<Class<?>> interfaces = new ArrayList<>();
     private final List<Advisor> advisors = new ArrayList<>();
     private boolean proxyTargetClass = false;
+    private TargetSource targetSource;
+
+    public AdvisedSupport(Object target) {
+        this.targetSource = new SingletonTargetSource(target);
+        setInterfaces(ClassUtils.getAllInterfacesForClass(target.getClass(), ClassUtils.getDefaultClassLoader()));
+    }
 
     public void setInterfaces(Class<?>... interfaces) {
         for (Class<?> intf : interfaces) {
@@ -26,10 +31,6 @@ public class AdvisedSupport implements Advised {
                 this.interfaces.add(intf);
             }
         }
-    }
-
-    public void setTarget(Object target) {
-        this.targetSource = new SingletonTargetSource(target);
     }
 
     public TargetSource getTargetSource() {

@@ -3,7 +3,6 @@ package core.aop;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,17 +16,10 @@ import core.aop.intercept.MethodInvocation;
 
 class ProxyFactoryBeanTest {
 
-    private ProxyFactoryBean proxyFactoryBean;
-
-    @BeforeEach
-    void setup() {
-        proxyFactoryBean = new ProxyFactoryBean();
-    }
-
     @DisplayName("인터페이스 기반이라면 JDK Dynamic Proxy 로 프록시를 생성한다.")
     @Test
     void jdkDynamicProxy() {
-        proxyFactoryBean.setTarget(new TestTarget());
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new TestTarget());
         proxyFactoryBean.addAdvice(new UppercaseAdvice());
 
         TestInterface proxy = (TestInterface) proxyFactoryBean.getObject();
@@ -43,7 +35,7 @@ class ProxyFactoryBeanTest {
     @DisplayName("구체 클래스 기반이라면 CGLIB 로 프록시를 생성한다.")
     @Test
     void cglib() {
-        proxyFactoryBean.setTarget(new ConcreteTarget());
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new ConcreteTarget());
         proxyFactoryBean.addAdvice(new UppercaseAdvice());
 
         ConcreteTarget proxy = (ConcreteTarget) proxyFactoryBean.getObject();
@@ -59,7 +51,7 @@ class ProxyFactoryBeanTest {
     @DisplayName("둘 이상의 Advice 를 적용한다.")
     @Test
     void multipleAdvices() {
-        proxyFactoryBean.setTarget(new ConcreteTarget());
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new ConcreteTarget());
         proxyFactoryBean.addAdvice(new UppercaseAdvice());
         proxyFactoryBean.addAdvice(new ExclamationMarkAdvice());
 

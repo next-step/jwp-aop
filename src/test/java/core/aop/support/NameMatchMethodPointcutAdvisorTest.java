@@ -19,8 +19,7 @@ class NameMatchMethodPointcutAdvisorTest {
 
     @BeforeEach
     void setup() {
-        factoryBean = new ProxyFactoryBean();
-        factoryBean.setTarget(new TestTarget());
+        factoryBean = new ProxyFactoryBean(new TestTarget());
     }
 
     @DisplayName("이름이 'say' 로 시작하는 메서드에만 Advice 를 적용한다.")
