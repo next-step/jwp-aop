@@ -2,7 +2,7 @@ package study.aop;
 
 import core.annotation.Component;
 import core.aop.MethodMatcherUpperCaseStartsWith;
-import core.di.beans.factory.FactoryBean;
+import core.aop.FactoryBean;
 import net.sf.cglib.proxy.Enhancer;
 
 @Component

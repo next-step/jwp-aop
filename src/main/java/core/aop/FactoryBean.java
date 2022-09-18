@@ -1,4 +1,4 @@
-package core.di.beans.factory;
+package core.aop;
 
 public interface FactoryBean<T> {
 

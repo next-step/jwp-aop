@@ -1,6 +1,5 @@
 package core.aop;
 
-import core.di.beans.factory.FactoryBean;
 import java.lang.reflect.Method;
 import java.util.List;
 import net.sf.cglib.proxy.Enhancer;

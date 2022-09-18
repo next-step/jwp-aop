@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
-import core.di.beans.factory.FactoryBean;
+import core.aop.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import java.lang.reflect.Constructor;
