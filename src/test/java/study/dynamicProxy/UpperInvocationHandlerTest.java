@@ -13,7 +13,7 @@ import study.example.HelloTarget;
 public class UpperInvocationHandlerTest {
 	@Test
 	@DisplayName("메서드 반환 값 대문자 변환")
-	public void test() {
+	public void toUpperCase() {
 		Hello proxyInstance = (Hello) Proxy.newProxyInstance(UpperInvocationHandlerTest.class.getClassLoader(),
 															 new Class[] {Hello.class },
 															 new UpperInvocationHandler(new HelloTarget()));
