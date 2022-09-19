@@ -1,4 +1,4 @@
-package study.example;
+package study.dynamicProxy;
 
 public interface Hello {
 	String sayHello(String name);

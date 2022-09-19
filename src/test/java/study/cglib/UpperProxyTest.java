@@ -10,17 +10,16 @@ import org.junit.jupiter.api.Test;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import study.example.HelloTarget2;
 
 public class UpperProxyTest {
     @Test
     @DisplayName("메서드 반환 값 대문자 변환")
     public void toUpperCase() {
         Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(HelloTarget2.class);
+        enhancer.setSuperclass(HelloTarget.class);
         enhancer.setCallback(new UpperMethodInterceptor());
         Object obj = enhancer.create();
-        HelloTarget2 proxyInstance = (HelloTarget2) obj;
+        HelloTarget proxyInstance = (HelloTarget) obj;
 
         assertThat(proxyInstance.sayHello("dhlee")).isEqualTo("HELLO DHLEE");
         assertThat(proxyInstance.sayHi("dhlee")).isEqualTo("HI DHLEE");

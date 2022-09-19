@@ -7,9 +7,6 @@ import java.lang.reflect.Proxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import study.example.Hello;
-import study.example.HelloTarget;
-
 public class UpperInvocationHandlerTest {
 	@Test
 	@DisplayName("메서드 반환 값 대문자 변환")
