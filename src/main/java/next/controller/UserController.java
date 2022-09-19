@@ -1,7 +1,11 @@
 package next.controller;
 
 import core.annotation.Inject;
-import core.annotation.web.*;
+import core.annotation.web.Controller;
+import core.annotation.web.PathVariable;
+import core.annotation.web.RequestMapping;
+import core.annotation.web.RequestMethod;
+import core.annotation.web.RequestParam;
 import core.mvc.ModelAndView;
 import core.mvc.tobe.AbstractNewController;
 import next.dao.UserDao;
@@ -59,7 +63,7 @@ public class UserController extends AbstractNewController {
         return mav;
     }
 
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
     public ModelAndView update(@LoginUser User loginUser,
                                @PathVariable String userId,
                                UserUpdatedDto updateUser) throws Exception {

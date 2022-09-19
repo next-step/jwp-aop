@@ -8,29 +8,38 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Optional;
 
 public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
-    private HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
+    private final HandlerMappingRegistry<HttpServletRequest> handlerMappingRegistry = new HandlerMappingRegistry<>();
+    private final HandlerAdapterRegistry<HandlerAdapter> handlerAdapterRegistry = new HandlerAdapterRegistry<>();
+    private final HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
-    private HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
+    private final HandlerMappingRegistry<Throwable> exceptionHandlerMappingRegistry = new HandlerMappingRegistry<>();
+    private final HandlerAdapterRegistry<ExceptionHandlerAdapter> exceptionHandlerAdapterRegistry = new HandlerAdapterRegistry<>();
+    private final ExceptionHandlerExecutor exceptionHandlerExecutor = new ExceptionHandlerExecutor(exceptionHandlerAdapterRegistry);
 
-    private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
-
-    public void addHandlerMapping(HandlerMapping handlerMapping) {
-        handlerMappingRegistry.addHandlerMpping(handlerMapping);
+    public void addHandlerMapping(HandlerMapping<HttpServletRequest> handlerMapping) {
+        handlerMappingRegistry.addHandlerMapping(handlerMapping);
     }
 
     public void addHandlerAdapter(HandlerAdapter handlerAdapter) {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
     }
 
+    public void addExceptionHandlerMapping(HandlerMapping<Throwable> handlerMapping) {
+        exceptionHandlerMappingRegistry.addHandlerMapping(handlerMapping);
+    }
+
+    public void addExceptionHandlerAdapter(ExceptionHandlerAdapter exceptionHandlerAdapter) {
+        exceptionHandlerAdapterRegistry.addHandlerAdapter(exceptionHandlerAdapter);
+    }
+
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
         String requestUri = req.getRequestURI();
         logger.debug("Method : {}, Request URI : {}", req.getMethod(), requestUri);
 
@@ -41,12 +50,22 @@ public class DispatcherServlet extends HttpServlet {
                 return;
             }
 
-
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
         } catch (Throwable e) {
-            logger.error("Exception : {}", e);
-            throw new ServletException(e.getMessage());
+            resolveException(e, req, resp);
+        }
+    }
+
+    private void resolveException(Throwable exception, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        try {
+            Object exceptionHandler = exceptionHandlerMappingRegistry.getHandler(exception)
+                    .orElseThrow(() -> new ServletException(exception));
+            ModelAndView modelAndView = exceptionHandlerExecutor.handle(exception, request, response, exceptionHandler);
+            render(modelAndView, request, response);
+        } catch (Throwable ex) {
+            logger.error("Exception : {}", ex);
+            throw new ServletException(ex.getMessage());
         }
     }
 

@@ -1,11 +1,14 @@
 package next.config;
 
+import core.annotation.web.ControllerAdvice;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.DispatcherServlet;
+import core.mvc.ExceptionHandlerExecutionHandlerAdapter;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ControllerAdviceExceptionHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
@@ -31,6 +34,8 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
+        dispatcherServlet.addExceptionHandlerMapping(ControllerAdviceExceptionHandlerMapping.of(ac.beansAnnotatedWith(ControllerAdvice.class)));
+        dispatcherServlet.addExceptionHandlerAdapter(new ExceptionHandlerExecutionHandlerAdapter());
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
