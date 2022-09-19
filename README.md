@@ -56,3 +56,5 @@
 - [x] DefaultBeanFactory 개선
   - [x] 등록하려는 빈의 타입이 FactoryBean인 경우 빈으로 등록하지 않고 메서드를 통해 생성된 프록시 객체를 빈으로 등록한다 
   - [x] AnnotatedBeanDefinitionReader BeanDifinition을 생성할 때 프록시 빈의 경우 
+- [x] AopProxy
+  - [x] Jdk Dynamic Proxy, CGLib Proxy를 생성할 수 있는 공통 인터페이스 
