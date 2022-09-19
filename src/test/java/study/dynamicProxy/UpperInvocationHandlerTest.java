@@ -13,10 +13,11 @@ public class UpperInvocationHandlerTest {
 	public void toUpperCase() {
 		Hello proxyInstance = (Hello) Proxy.newProxyInstance(UpperInvocationHandlerTest.class.getClassLoader(),
 															 new Class[] {Hello.class },
-															 new UpperInvocationHandler(new HelloTarget()));
+															 new UpperInvocationHandler(new HelloTarget(), (method, targetClass, args) -> method.getName().startsWith("say")));
 
 		assertThat(proxyInstance.sayHello("dhlee")).isEqualTo("HELLO DHLEE");
 		assertThat(proxyInstance.sayHi("dhlee")).isEqualTo("HI DHLEE");
 		assertThat(proxyInstance.sayThankYou("dhlee")).isEqualTo("THANK YOU DHLEE");
+		assertThat(proxyInstance.pingpong("dhlee")).isEqualTo("Pong dhlee");
 	}
 }

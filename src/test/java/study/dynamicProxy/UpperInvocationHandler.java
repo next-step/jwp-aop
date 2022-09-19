@@ -8,14 +8,19 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import study.MethodMatcher;
+
 public class UpperInvocationHandler implements InvocationHandler {
 	private static final Logger logger = LoggerFactory.getLogger(UpperInvocationHandler.class);
 
-	private Object target;
+	private final Object target;
 	private final Map<String, Method> methods = new HashMap<>();
+	private final MethodMatcher methodMatcher;
 
-	public UpperInvocationHandler(Object target) {
+	public UpperInvocationHandler(Object target, MethodMatcher methodMatcher) {
 		this.target = target;
+		this.methodMatcher = methodMatcher;
+
 		for (Method method : target.getClass().getDeclaredMethods()) {
 			this.methods.put(method.getName(), method);
 		}
@@ -27,6 +32,10 @@ public class UpperInvocationHandler implements InvocationHandler {
 
 		Object result = methods.get(method.getName()).invoke(target, args);
 
-		return result.toString().toUpperCase();
+		if (methodMatcher.matches(method, proxy.getClass(), args)) {
+			return result.toString().toUpperCase();
+		}
+
+		return result;
 	}
 }
