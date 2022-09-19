@@ -7,3 +7,8 @@
 
 ## 온라인 코드 리뷰 과정
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+
+## 🚀 1단계 - JDK Proxy와 CGLib Proxy
+1. [X] 요구사항 1 - Java Dynamic Proxy 적용
+2. [X] 요구사항 2 - CGLib Proxy 적용
+3. [X] 요구사항 3 - say로 시작하는 메소드에 한해서만 메소드의 반환 값을 대문자로 변환해야 한다.
