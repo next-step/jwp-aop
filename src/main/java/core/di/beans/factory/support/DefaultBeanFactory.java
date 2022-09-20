@@ -75,16 +75,31 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             registerFactoryBean(instance);
             return;
         }
-        beans.put(clazz, instance);
+
+        Object bean = applyBeanPostProcessorsAfterInitialization(instance);
+        beans.put(clazz, bean);
     }
 
     private void registerFactoryBean(Object instance) {
         FactoryBean<?> factoryBean = (FactoryBean<?>) instance;
         try {
-            beans.put(factoryBean.getObjectType(), factoryBean.getObject());
+            Object bean = applyBeanPostProcessorsAfterInitialization(factoryBean.getObject());
+            beans.put(factoryBean.getObjectType(), bean);
         } catch (Exception e) {
             throw new RuntimeException("FactoryBean 등록 중 예외가 발생했습니다.", e);
         }
+    }
+
+    private Object applyBeanPostProcessorsAfterInitialization(Object existingBean) {
+        Object result = existingBean;
+        for (BeanPostProcessor processor : beanPostProcessors) {
+            Object current = processor.postProcessAfterInitialization(result);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
