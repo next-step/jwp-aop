@@ -67,7 +67,7 @@ class ProxyFactoryBeanTest {
 
     static class ExclamationMarkAdvice implements MethodInterceptor {
         @Override
-        public Object invoke(MethodInvocation invocation) {
+        public Object invoke(MethodInvocation invocation) throws Throwable {
             return invocation.proceed() + "!!";
         }
     }
