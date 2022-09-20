@@ -19,7 +19,7 @@ class JdkDynamicAopProxyTest {
         final Hello helloTarget = new HelloTarget();
         final Advice2 advice2 = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
         final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
-        final JdkDynamicAopProxy jdkDynamicAopProxy = new JdkDynamicAopProxy(helloTarget, Hello.class, advisor);
+        final JdkDynamicAopProxy jdkDynamicAopProxy = new JdkDynamicAopProxy(helloTarget, advisor);
 
         //when
         final Hello proxy = (Hello) jdkDynamicAopProxy.getProxy();
@@ -38,28 +38,16 @@ class JdkDynamicAopProxyTest {
         final Advice2 advice2 = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
         final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
 
-        assertThatThrownBy(() -> new JdkDynamicAopProxy(null, Hello.class, advisor))
+        assertThatThrownBy(() -> new JdkDynamicAopProxy(null, advisor))
             .isInstanceOf(ProxyGenerateException.class)
             .hasMessage("프록시 대상이 없어 프록시 객체를 생성할 수 없습니다.");
-    }
-
-    @DisplayName("프록시 대상의 타입이 없으면 객체 생성 시 예외가 발생한다")
-    @Test
-    void must_have_super_type() {
-        final Hello helloTarget = new HelloTarget();
-        final Advice2 advice2 = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
-        final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
-
-        assertThatThrownBy(() -> new JdkDynamicAopProxy(helloTarget, null, advisor))
-            .isInstanceOf(ProxyGenerateException.class)
-            .hasMessage("프록시 대상의 타입이 없어 프록시 객체를 생성할 수 없습니다.");
     }
 
     @DisplayName("advisor가 없으면 객체 생성 시 예외가 발생한다")
     @Test
     void must_have_advisor() {
         final Hello helloTarget = new HelloTarget();
-        assertThatThrownBy(() -> new JdkDynamicAopProxy(helloTarget, Hello.class, null))
+        assertThatThrownBy(() -> new JdkDynamicAopProxy(helloTarget, null))
             .isInstanceOf(ProxyGenerateException.class)
             .hasMessage("Advisor가 없어 프록시 객체를 생성할 수 없습니다.");
     }

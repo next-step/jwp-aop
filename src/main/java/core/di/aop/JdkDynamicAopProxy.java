@@ -7,14 +7,13 @@ import java.util.Objects;
 
 public class JdkDynamicAopProxy implements AopProxy {
 
-    private final Class<?> superInterface;
+    private final Object target;
     private final InvocationHandler invocationHandler;
 
-    public JdkDynamicAopProxy(final Object target, final Class<?> superInterface, final PointcutAdvisor advisor) {
+    public JdkDynamicAopProxy(final Object target, final PointcutAdvisor advisor) {
         validateRequired(target, ProxyGenerateException.target());
-        validateRequired(superInterface, ProxyGenerateException.superInterface());
         validateRequired(advisor, ProxyGenerateException.advisor());
-        this.superInterface = superInterface;
+        this.target = target;
         this.invocationHandler = (proxy, method, args) -> {
             if (advisor.matches(method, target.getClass())) {
                 return advisor.invoke(() -> method.invoke(target, args));
@@ -33,7 +32,7 @@ public class JdkDynamicAopProxy implements AopProxy {
     @Override
     public Object getProxy() {
         return Proxy.newProxyInstance(
-            superInterface.getClassLoader(), new Class[]{superInterface}, invocationHandler
+            target.getClass().getClassLoader(), target.getClass().getInterfaces(), invocationHandler
         );
     }
 }
