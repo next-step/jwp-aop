@@ -10,7 +10,7 @@ import study.proxy.HelloTarget;
 
 class AopProxyFactoryTest {
 
-    private final Advice2 advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
+    private final Advice advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
     private final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
 
 

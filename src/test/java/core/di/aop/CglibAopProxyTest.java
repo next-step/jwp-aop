@@ -15,8 +15,8 @@ class CglibAopProxyTest {
     @Test
     void create() {
         // given
-        final Advice2 advice2 = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
-        final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
+        final Advice advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
+        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
         final CglibAopProxy cglibAopProxy = new CglibAopProxy(HelloService.class, advisor);
 
         // when
@@ -34,8 +34,8 @@ class CglibAopProxyTest {
     @DisplayName("프록시 대상이 없으면 객체 생성 시 예외가 발생한다")
     @Test
     void must_have_target() {
-        final Advice2 advice2 = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
-        final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
+        final Advice advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
+        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
 
         assertThatThrownBy(() -> new CglibAopProxy(null, advisor))
             .isInstanceOf(ProxyGenerateException.class)

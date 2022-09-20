@@ -2,9 +2,12 @@ package study.proxy;
 
 import core.annotation.Bean;
 import core.annotation.Configuration;
+import core.di.aop.Advice;
 import core.di.aop.FactoryBean;
+import core.di.aop.MethodInvocation;
+import core.di.aop.PointcutAdvisor;
 import core.di.aop.ProxyFactoryBean;
-import core.di.factory.example.UserRepository;
+import core.di.aop.SayMethodPointcut;
 
 @Configuration
 public class ProxyConfig {
@@ -13,20 +16,17 @@ public class ProxyConfig {
     public FactoryBean<Hello> hello() {
         final HelloTarget target = new HelloTarget();
 
-        final ProxyFactoryBean<Hello> proxyFactoryBean = new ProxyFactoryBean<>();
-        proxyFactoryBean.setTarget(target);
-        proxyFactoryBean.setSuperInterface(UserRepository.class);
-        proxyFactoryBean.setInvocationHandler((proxy, method, args) -> method.invoke(target, args));
+        final Advice advice = MethodInvocation::proceed;
+        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
 
-        return proxyFactoryBean;
+        return new ProxyFactoryBean<>(target, advisor);
     }
 
     @Bean
     public FactoryBean<HelloService> helloService() {
-        final ProxyFactoryBean<HelloService> proxyFactoryBean = new ProxyFactoryBean<>();
-        proxyFactoryBean.setTarget(new HelloService());
-        proxyFactoryBean.setMethodInterceptor((obj, method, args, proxy) -> proxy.invokeSuper(obj, args));
+        final Advice advice = MethodInvocation::proceed;
+        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
 
-        return proxyFactoryBean;
+        return new ProxyFactoryBean<>(new HelloService(), advisor);
     }
 }

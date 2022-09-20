@@ -4,10 +4,10 @@ import java.lang.reflect.Method;
 
 public class PointcutAdvisor {
 
-    private final Advice2 advice;
+    private final Advice advice;
     private final Pointcut pointcut;
 
-    public PointcutAdvisor(final Advice2 advice, final Pointcut pointcut) {
+    public PointcutAdvisor(final Advice advice, final Pointcut pointcut) {
         this.advice = advice;
         this.pointcut = pointcut;
     }

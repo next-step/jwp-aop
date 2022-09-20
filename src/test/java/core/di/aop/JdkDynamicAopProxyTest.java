@@ -17,8 +17,8 @@ class JdkDynamicAopProxyTest {
     void create_jdk_dynamic_proxy() {
         //given
         final Hello helloTarget = new HelloTarget();
-        final Advice2 advice2 = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
-        final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
+        final Advice advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
+        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
         final JdkDynamicAopProxy jdkDynamicAopProxy = new JdkDynamicAopProxy(helloTarget, advisor);
 
         //when
@@ -35,8 +35,8 @@ class JdkDynamicAopProxyTest {
     @DisplayName("프록시 대상이 없으면 객체 생성 시 예외가 발생한다")
     @Test
     void must_have_target() {
-        final Advice2 advice2 = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
-        final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
+        final Advice advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
+        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
 
         assertThatThrownBy(() -> new JdkDynamicAopProxy(null, advisor))
             .isInstanceOf(ProxyGenerateException.class)
