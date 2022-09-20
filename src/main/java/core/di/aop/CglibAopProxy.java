@@ -1,5 +1,6 @@
 package core.di.aop;
 
+import core.di.aop.exception.ProxyGenerateException;
 import java.util.Objects;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -10,8 +11,8 @@ public class CglibAopProxy implements AopProxy {
     private final MethodInterceptor methodInterceptor;
 
     public CglibAopProxy(final Class<?> target, final PointcutAdvisor advisor) {
-        validateNonNull(target);
-        validateNonNull(advisor);
+        validateRequired(target, ProxyGenerateException.target());
+        validateRequired(advisor, ProxyGenerateException.advisor());
         this.target = target;
         this.methodInterceptor = (obj, method, args, proxy) -> {
             if (advisor.matches(method, target)) {
@@ -21,9 +22,9 @@ public class CglibAopProxy implements AopProxy {
         };
     }
 
-    private void validateNonNull(final Object target) {
-        if (Objects.isNull(target)) {
-            throw new IllegalArgumentException();
+    private void validateRequired(final Object argument, ProxyGenerateException exception) {
+        if (Objects.isNull(argument)) {
+            throw exception;
         }
     }
 

@@ -3,6 +3,7 @@ package core.di.aop;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import core.di.aop.exception.ProxyGenerateException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,14 +38,16 @@ class CglibAopProxyTest {
         final PointcutAdvisor advisor = new PointcutAdvisor(advice2, SayMethodPointcut.getInstance());
 
         assertThatThrownBy(() -> new CglibAopProxy(null, advisor))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(ProxyGenerateException.class)
+            .hasMessage("프록시 대상이 없어 프록시 객체를 생성할 수 없습니다.");
     }
 
     @DisplayName("advisor가 없으면 객체 생성 시 예외가 발생한다")
     @Test
     void must_have_advisor() {
         assertThatThrownBy(() -> new CglibAopProxy(HelloService.class, null))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(ProxyGenerateException.class)
+            .hasMessage("Advisor가 없어 프록시 객체를 생성할 수 없습니다.");
     }
 
 }

@@ -11,9 +11,9 @@ public class JdkDynamicAopProxy implements AopProxy {
     private final InvocationHandler invocationHandler;
 
     public JdkDynamicAopProxy(final Object target, final Class<?> superInterface, final PointcutAdvisor advisor) {
-        validateRequiredField(target, ProxyGenerateException.target());
-        validateRequiredField(superInterface, ProxyGenerateException.superInterface());
-        validateRequiredField(advisor, ProxyGenerateException.advisor());
+        validateRequired(target, ProxyGenerateException.target());
+        validateRequired(superInterface, ProxyGenerateException.superInterface());
+        validateRequired(advisor, ProxyGenerateException.advisor());
         this.superInterface = superInterface;
         this.invocationHandler = (proxy, method, args) -> {
             if (advisor.matches(method, target.getClass())) {
@@ -24,9 +24,9 @@ public class JdkDynamicAopProxy implements AopProxy {
         };
     }
 
-    private void validateRequiredField(final Object requiredArgument, ProxyGenerateException proxyGenerateException) {
-        if (Objects.isNull(requiredArgument)) {
-            throw proxyGenerateException;
+    private void validateRequired(final Object argument, ProxyGenerateException exception) {
+        if (Objects.isNull(argument)) {
+            throw exception;
         }
     }
 
