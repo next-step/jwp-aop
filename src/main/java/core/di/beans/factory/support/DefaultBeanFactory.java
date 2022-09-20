@@ -6,6 +6,7 @@ import core.annotation.PostConstruct;
 import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.beans.factory.config.BeanPostProcessor;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+
+    private List<BeanPostProcessor> beanPostProcessors = Lists.newArrayList();
 
     @Override
     public void preInstantiateSingletons() {
@@ -160,5 +163,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     public void registerBeanDefinition(Class<?> clazz, BeanDefinition beanDefinition) {
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
+    }
+
+    public void addPostBeanProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
     }
 }
