@@ -2,11 +2,11 @@ package study.proxy.factorybean;
 
 import core.annotation.Bean;
 import core.annotation.Configuration;
-import core.di.beans.factory.aop.Advice;
+import core.di.beans.factory.aop.advisor.Advice;
 import core.di.beans.factory.aop.Aspect;
-import core.di.beans.factory.aop.Pointcut;
+import core.di.beans.factory.aop.advisor.Pointcut;
 import core.di.beans.factory.aop.ProxyFactoryBean;
-import core.di.beans.factory.aop.Target;
+import core.di.beans.factory.aop.advisor.Target;
 import study.proxy.cglib.HelloTarget;
 
 @Configuration

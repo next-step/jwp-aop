@@ -1,15 +1,11 @@
 package study.proxy.factorybean;
 
 import core.di.beans.factory.aop.Aspect;
-import core.di.beans.factory.aop.DefaultPointcut;
+import core.di.beans.factory.aop.advisor.DefaultPointcut;
 import core.di.beans.factory.aop.ProxyFactoryBean;
-import core.di.beans.factory.aop.Target;
-import core.di.beans.factory.support.BeanDefinitionReader;
-import core.di.beans.factory.support.DefaultBeanFactory;
+import core.di.beans.factory.aop.advisor.Target;
 import core.di.context.ApplicationContext;
-import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.support.AnnotationConfigApplicationContext;
-import core.di.factory.example.ExampleConfig;
 import org.junit.jupiter.api.Test;
 import study.proxy.cglib.HelloTarget;
 

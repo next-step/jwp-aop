@@ -3,9 +3,8 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
-import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
-import core.di.beans.factory.aop.FactoryBean;
+import core.di.beans.factory.aop.processor.BeanPostProcessor;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
@@ -15,9 +14,12 @@ import org.springframework.beans.BeanUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
@@ -26,6 +28,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+
+    private Queue<BeanPostProcessor> beanPostProcessors = new PriorityQueue<>(Comparator.comparingInt(BeanPostProcessor::priority));
 
     @Override
     public void preInstantiateSingletons() {
@@ -68,21 +72,11 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         return (T) bean;
     }
 
-    private void registerBean(Class<?> clazz, Object instance) {
-        if (instance instanceof FactoryBean) {
-            FactoryBean<?> factory = (FactoryBean<?>) instance;
-
-            try {
-                instance = factory.getObject();
-                beans.put(factory.getObjectType(), instance);
-                return;
-            } catch (Exception e) {
-                log.error("Failed Register Bean: {}, cause: {}", clazz.getName(), e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
-
-        beans.put(clazz, instance);
+    private void registerBean(Class<?> clazz, final Object instance) {
+        beanPostProcessors.stream()
+                .filter(supplier -> supplier.supports(clazz, instance))
+                .findFirst()
+                .ifPresent(supplier -> supplier.action(clazz, instance, (c, i)-> beans.put(c, i), this));
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -161,5 +155,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     public void registerBeanDefinition(Class<?> clazz, BeanDefinition beanDefinition) {
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
+    }
+
+    public void addBeanSupplier(BeanPostProcessor supplier) {
+        this.beanPostProcessors.offer(supplier);
     }
 }

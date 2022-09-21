@@ -1,6 +1,6 @@
 package study.proxy.factorybean;
 
-import core.di.beans.factory.aop.Pointcut;
+import core.di.beans.factory.aop.advisor.Pointcut;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
