@@ -1,6 +1,6 @@
 package study.proxy.factorybean;
 
-import core.di.beans.factory.aop.Advice;
+import core.di.beans.factory.aop.advisor.Advice;
 import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
