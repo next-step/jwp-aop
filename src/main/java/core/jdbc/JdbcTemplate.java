@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.jdbc.datasource.DataSourceUtils;
+
 public class JdbcTemplate {
     private DataSource dataSource;
 
@@ -17,11 +19,15 @@ public class JdbcTemplate {
     }
 
     public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try {
+            Connection conn = DataSourceUtils.getConnection(dataSource);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pss.setParameters(pstmt);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            DataSourceUtils.releaseConnectionDependingOnTransactionActivation();
         }
     }
 
@@ -30,7 +36,8 @@ public class JdbcTemplate {
     }
 
     public void update(PreparedStatementCreator psc, KeyHolder holder) {
-        try (Connection conn = dataSource.getConnection()) {
+        try {
+            Connection conn = DataSourceUtils.getConnection(dataSource);
             PreparedStatement ps = psc.createPreparedStatement(conn);
             ps.executeUpdate();
 
@@ -41,6 +48,8 @@ public class JdbcTemplate {
             rs.close();
         } catch (SQLException e) {
             throw new DataAccessException(e);
+        } finally {
+            DataSourceUtils.releaseConnectionDependingOnTransactionActivation();
         }
     }
 
@@ -58,7 +67,9 @@ public class JdbcTemplate {
 
     public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
         ResultSet rs = null;
-        try (Connection conn = dataSource.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try {
+            Connection conn = DataSourceUtils.getConnection(dataSource);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pss.setParameters(pstmt);
             rs = pstmt.executeQuery();
 
@@ -77,6 +88,7 @@ public class JdbcTemplate {
             } catch (SQLException e) {
                 throw new DataAccessException(e);
             }
+            DataSourceUtils.releaseConnectionDependingOnTransactionActivation();
         }
     }
 

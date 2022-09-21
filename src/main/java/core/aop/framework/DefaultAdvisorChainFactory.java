@@ -17,8 +17,8 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory {
         return Arrays.stream(config.getAdvisors())
             .filter(PointcutAdvisor.class::isInstance)
             .map(PointcutAdvisor.class::cast)
-            .filter(advisor -> advisor.getPointcut().getClassFilter().matches(actualClass))
-            .filter(advisor -> advisor.getPointcut().getMethodMatcher().matches(method, actualClass))
+            .filter(advisor -> advisor.classMatches(actualClass))
+            .filter(advisor -> advisor.methodMatches(method, actualClass))
             .map(Advisor::getAdvice)
             .collect(Collectors.toList());
     }

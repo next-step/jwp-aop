@@ -6,7 +6,7 @@ import core.aop.intercept.MethodInvocation;
 public class UppercaseAdvice implements MethodInterceptor {
 
     @Override
-    public Object invoke(MethodInvocation invocation) {
+    public Object invoke(MethodInvocation invocation) throws Throwable {
         return String.valueOf(invocation.proceed()).toUpperCase();
     }
 }

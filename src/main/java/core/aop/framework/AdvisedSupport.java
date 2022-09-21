@@ -11,14 +11,21 @@ import core.aop.Advisor;
 import core.aop.TargetSource;
 import core.aop.support.DefaultPointcutAdvisor;
 import core.aop.target.SingletonTargetSource;
+import core.di.beans.factory.BeanFactory;
 
 public class AdvisedSupport implements Advised {
 
-    protected final AdvisorChainFactory advisorChainFactory = new DefaultAdvisorChainFactory();
-    protected TargetSource targetSource;
+    private final AdvisorChainFactory advisorChainFactory = new DefaultAdvisorChainFactory();
     private final List<Class<?>> interfaces = new ArrayList<>();
     private final List<Advisor> advisors = new ArrayList<>();
     private boolean proxyTargetClass = false;
+    private BeanFactory beanFactory;
+    private TargetSource targetSource;
+
+    public AdvisedSupport(Object target) {
+        this.targetSource = new SingletonTargetSource(target);
+        setInterfaces(ClassUtils.getAllInterfacesForClass(target.getClass(), ClassUtils.getDefaultClassLoader()));
+    }
 
     public void setInterfaces(Class<?>... interfaces) {
         for (Class<?> intf : interfaces) {
@@ -28,8 +35,12 @@ public class AdvisedSupport implements Advised {
         }
     }
 
-    public void setTarget(Object target) {
-        this.targetSource = new SingletonTargetSource(target);
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+    }
+
+    public BeanFactory getBeanFactory() {
+        return beanFactory;
     }
 
     public TargetSource getTargetSource() {

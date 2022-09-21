@@ -32,7 +32,7 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
     }
 
     @Override
-    public Object proceed() {
+    public Object proceed() throws Throwable {
         if (this.currentIndex == this.advices.size() - 1) {
             return invokeJoinpoint();
         }

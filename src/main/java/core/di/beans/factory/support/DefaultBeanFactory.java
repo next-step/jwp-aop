@@ -6,6 +6,7 @@ import core.annotation.PostConstruct;
 import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.beans.factory.config.BeanPostProcessor;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+
+    private List<BeanPostProcessor> beanPostProcessors = Lists.newArrayList();
 
     @Override
     public void preInstantiateSingletons() {
@@ -72,16 +75,31 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             registerFactoryBean(instance);
             return;
         }
-        beans.put(clazz, instance);
+
+        Object bean = applyBeanPostProcessorsAfterInitialization(instance);
+        beans.put(clazz, bean);
     }
 
     private void registerFactoryBean(Object instance) {
         FactoryBean<?> factoryBean = (FactoryBean<?>) instance;
         try {
-            beans.put(factoryBean.getObjectType(), factoryBean.getObject());
+            Object bean = applyBeanPostProcessorsAfterInitialization(factoryBean.getObject());
+            beans.put(factoryBean.getObjectType(), bean);
         } catch (Exception e) {
             throw new RuntimeException("FactoryBean 등록 중 예외가 발생했습니다.", e);
         }
+    }
+
+    private Object applyBeanPostProcessorsAfterInitialization(Object existingBean) {
+        Object result = existingBean;
+        for (BeanPostProcessor processor : beanPostProcessors) {
+            Object current = processor.postProcessAfterInitialization(result);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -160,5 +178,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     public void registerBeanDefinition(Class<?> clazz, BeanDefinition beanDefinition) {
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
+    }
+
+    public void addPostBeanProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
     }
 }
