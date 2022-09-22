@@ -1,8 +1,8 @@
-package aop;
+package aop.methodMatcher;
 
 import java.lang.reflect.Method;
 
-public class MethodMatcherSay implements MethodMatcher {
+public class MethodMatcherPrefixSay implements MethodMatcher {
 
     private static final String startMatcher = "say";
 
@@ -11,6 +11,7 @@ public class MethodMatcherSay implements MethodMatcher {
         if (method.getName().startsWith(startMatcher)) {
             return true;
         }
+
         return false;
     }
 }
