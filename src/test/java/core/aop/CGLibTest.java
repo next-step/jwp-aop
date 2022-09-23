@@ -14,10 +14,7 @@ public class CGLibTest {
 
     @BeforeEach
     void setup() {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(HelloCGLibTarget.class);
-        enhancer.setCallback(new HelloMethodInterceptor(new HelloCGLibTarget(), new SayPrefixMethodMatcher()));
-        target = (HelloCGLibTarget) enhancer.create();
+        target = (HelloCGLibTarget) Enhancer.create(HelloCGLibTarget.class, new HelloMethodInterceptor(new HelloCGLibTarget(), new SayPrefixMethodMatcher()));
     }
 
     @Test
