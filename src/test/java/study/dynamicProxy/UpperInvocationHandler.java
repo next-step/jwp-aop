@@ -32,7 +32,7 @@ public class UpperInvocationHandler implements InvocationHandler {
 
 		Object result = methods.get(method.getName()).invoke(target, args);
 
-		if (methodMatcher.matches(method, proxy.getClass(), args)) {
+		if (methodMatcher.matches(method)) {
 			return result.toString().toUpperCase();
 		}
 

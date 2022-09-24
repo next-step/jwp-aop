@@ -18,7 +18,7 @@ public class UpperProxyTest {
     public void toUpperCase() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback(new UpperMethodInterceptor((method, targetClass, args) -> method.getName().startsWith("say")));
+        enhancer.setCallback(new UpperMethodInterceptor((method) -> method.getName().startsWith("say")));
         Object obj = enhancer.create();
         HelloTarget proxyInstance = (HelloTarget) obj;
 
@@ -39,7 +39,7 @@ public class UpperProxyTest {
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
             Object returnValue = proxy.invokeSuper(obj, args);
-            if (methodMatcher.matches(method, obj.getClass(), args)) {
+            if (methodMatcher.matches(method)) {
                 return returnValue.toString().toUpperCase();
             }
             return returnValue;
