@@ -16,7 +16,7 @@ public class HelloJdkDynamicProxyTest {
         Hello helloProxy = (Hello) Proxy.newProxyInstance(
                 Hello.class.getClassLoader(),
                 new Class[]{Hello.class},
-                new HelloUpperCaseInvocationHandler(new HelloTarget(), new NameMethodMatcher("say"))
+                new HelloUpperCaseInvocationHandler(new HelloTargetImpl(), new NameMethodMatcher("say"))
         );
 
         assertAll(

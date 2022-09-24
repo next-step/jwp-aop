@@ -1,6 +1,6 @@
 package study.proxy.jdkdynamic;
 
-public class HelloTarget implements Hello {
+public class HelloTargetImpl implements Hello {
     @Override
     public String sayHello(String name) {
         return "Hello " + name;
