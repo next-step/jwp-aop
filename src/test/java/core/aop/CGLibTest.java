@@ -12,9 +12,10 @@ public class CGLibTest {
     private HelloCGLibTarget target;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         Advisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
-        target = (HelloCGLibTarget) new CGLibAopProxy(new HelloCGLibTarget(), advisor).proxy();
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new HelloCGLibTarget(), advisor);
+        target = (HelloCGLibTarget) proxyFactoryBean.getObject();
     }
 
     @Test

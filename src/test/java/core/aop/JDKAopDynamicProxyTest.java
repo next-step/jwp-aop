@@ -4,20 +4,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Proxy;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JDKDynamicProxyTest {
+public class JDKAopDynamicProxyTest {
 
     private Hello dynamicProxyHello;
     private static final String NAME = "Test";
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         Advisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
-        JDKDynamicProxy jdkDynamicProxy = new JDKDynamicProxy(new HelloTarget(), Hello.class, advisor);
-        dynamicProxyHello = (Hello) jdkDynamicProxy.proxy();
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new HelloTarget(), advisor);
+        dynamicProxyHello = (Hello) proxyFactoryBean.getObject();
     }
 
     @Test
