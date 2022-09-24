@@ -15,9 +15,9 @@ public class JDKDynamicProxyTest {
 
     @BeforeEach
     void setup() {
-        dynamicProxyHello = (Hello) Proxy.newProxyInstance(HelloTarget.class.getClassLoader(),
-                new Class[] {Hello.class},
-                new DynamicInvocationHandler(new HelloTarget(), new SayPrefixMethodMatcher()));
+        Advisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
+        JDKDynamicProxy jdkDynamicProxy = new JDKDynamicProxy(new HelloTarget(), Hello.class, advisor);
+        dynamicProxyHello = (Hello) jdkDynamicProxy.proxy();
     }
 
     @Test

@@ -9,14 +9,14 @@ import java.lang.reflect.Method;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class SayPointcutAdvisorTest {
+class PointcutAdvisorTest {
 
     @Test
     @DisplayName("say로 시작하는 메소드명일 경우 결과 값을 대문자로 바꾸어 반환한다")
     void uppercaseAdviceIfMethodNameStartWithSay() throws Throwable {
         // given
         HelloTarget target = new HelloTarget();
-        Advisor advisor = new SayPointcutAdvisor(UppercaseAdvice.getInstance());
+        Advisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
 
         // when
         String sayHello = methodResult("sayHello", target, advisor);
@@ -34,12 +34,12 @@ class SayPointcutAdvisorTest {
     }
 
     private String methodResult(String methodName, HelloTarget target, Advisor advisor) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        UppercaseAdvice uppercaseAdvice = UppercaseAdvice.getInstance();
+        Advice advice = advisor.advice();
         Pointcut pointcut = advisor.pointcut();
         Method method = method(methodName, target);
 
         if (pointcut.matches(method, null)) {
-            return (String) uppercaseAdvice.invoke(target, method, new Object[]{"test"});
+            return (String) advice.invoke(target, method, new Object[]{"test"});
         }
 
         return (String) method.invoke(target, new Object[]{"test"});

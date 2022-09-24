@@ -1,6 +1,5 @@
 package core.aop;
 
-import net.sf.cglib.proxy.Enhancer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,8 @@ public class CGLibTest {
 
     @BeforeEach
     void setup() {
-        target = (HelloCGLibTarget) Enhancer.create(HelloCGLibTarget.class, new HelloMethodInterceptor(new HelloCGLibTarget(), new SayPrefixMethodMatcher()));
+        Advisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
+        target = (HelloCGLibTarget) new CGLibAopProxy(new HelloCGLibTarget(), advisor).proxy();
     }
 
     @Test
