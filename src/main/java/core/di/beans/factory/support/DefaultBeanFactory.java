@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
+import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(b -> putBean(clazz, b));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
@@ -64,6 +65,23 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         beans.put(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
+    }
+
+    private void putBean(Class<?> clazz, Object bean) {
+        if (bean instanceof FactoryBean) {
+            FactoryBean factoryBean = (FactoryBean) bean;
+            beans.put(factoryBean.getObjectType(), getFactoryBeanObject(factoryBean));
+            return;
+        }
+        beans.put(clazz, bean);
+    }
+
+    private Object getFactoryBeanObject(FactoryBean factoryBean) {
+        try {
+            return factoryBean.getObject();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed To Get Object From FactoryBean", e);
+        }
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
