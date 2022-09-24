@@ -10,7 +10,7 @@ public class NameMethodMatcher implements MethodMatcher {
     }
 
     @Override
-    public boolean matches(Method method, Class targetClass, Object[] args) {
+    public boolean matches(Method method) {
         return method.getName().startsWith(name);
     }
 }

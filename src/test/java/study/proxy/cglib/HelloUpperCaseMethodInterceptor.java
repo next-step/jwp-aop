@@ -19,7 +19,7 @@ public class HelloUpperCaseMethodInterceptor implements MethodInterceptor {
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
         Object invokeResult = methodProxy.invoke(target, objects);
 
-        if (invokeResult instanceof String && methodMatcher.matches(method, target.getClass(), objects)) {
+        if (invokeResult instanceof String && methodMatcher.matches(method)) {
             return ((String) invokeResult).toUpperCase();
         }
 
