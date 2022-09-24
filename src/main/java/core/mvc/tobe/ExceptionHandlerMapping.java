@@ -25,7 +25,7 @@ public class ExceptionHandlerMapping {
         return controllerAdvices;
     }
 
-    public HandlerExecution getHandler(Throwable throwable) {
-        return handlerExecutions.get(throwable.getClass());
+    public HandlerExecution getHandler(Class<? extends Throwable> exceptionClass) {
+        return handlerExecutions.get(exceptionClass);
     }
 }

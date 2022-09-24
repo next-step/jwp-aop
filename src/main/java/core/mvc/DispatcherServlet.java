@@ -65,7 +65,7 @@ public class DispatcherServlet extends HttpServlet {
 
     private void processHandlerException(HttpServletRequest request, HttpServletResponse response, Throwable throwable) throws ServletException {
         try {
-            HandlerExecution exceptionHandler = exceptionHandlerMapping.getHandler(throwable);
+            HandlerExecution exceptionHandler = exceptionHandlerMapping.getHandler(throwable.getClass());
             ModelAndView mav = exceptionHandler.handle(request, response);
             render(mav, request, response);
         } catch (Exception e) {
