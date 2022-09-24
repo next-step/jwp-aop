@@ -35,6 +35,6 @@ public class CGLibTest {
         assertThat(target.sayHello(NAME)).isEqualTo("HELLO CGLIB");
         assertThat(target.sayHi(NAME)).isEqualTo("HI CGLIB");
         assertThat(target.sayThankYou(NAME)).isEqualTo("THANK YOU CGLIB");
-        assertThat(target.pinpong(NAME)).isEqualTo("ping pong CGLib");
+        assertThat(target.pingpong(NAME)).isEqualTo("ping pong CGLib");
     }
 }

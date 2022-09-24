@@ -38,6 +38,6 @@ public class JDKDynamicProxyTest {
         assertThat(dynamicProxyHello.sayHello(NAME)).isEqualTo("HELLO TEST");
         assertThat(dynamicProxyHello.sayHi(NAME)).isEqualTo("HI TEST");
         assertThat(dynamicProxyHello.sayThankYou(NAME)).isEqualTo("THANK YOU TEST");
-        assertThat(dynamicProxyHello.pinpong(NAME)).isEqualTo("ping pong Test");
+        assertThat(dynamicProxyHello.pingpong(NAME)).isEqualTo("ping pong Test");
     }
 }
