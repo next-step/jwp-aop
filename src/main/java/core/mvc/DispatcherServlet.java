@@ -15,11 +15,11 @@ public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
-    private HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
+    private final HandlerMappingRegistry handlerMappingRegistry = new HandlerMappingRegistry();
 
-    private HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
+    private final HandlerAdapterRegistry handlerAdapterRegistry = new HandlerAdapterRegistry();
 
-    private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
+    private final HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
@@ -36,7 +36,7 @@ public class DispatcherServlet extends HttpServlet {
 
         try {
             Optional<Object> maybeHandler = handlerMappingRegistry.getHandler(req);
-            if (!maybeHandler.isPresent()) {
+            if (maybeHandler.isEmpty()) {
                 resp.setStatus(HttpStatus.NOT_FOUND.value());
                 return;
             }
@@ -45,8 +45,23 @@ public class DispatcherServlet extends HttpServlet {
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
         } catch (Throwable e) {
-            logger.error("Exception : {}", e);
+            logger.error("Exception : {}", e.getMessage());
+            proceedExceptionHandle(req, resp, e);
+        }
+    }
+
+    private void proceedExceptionHandle(HttpServletRequest req, HttpServletResponse resp, Throwable e) throws ServletException {
+        Optional<Object> maybeHandler = handlerMappingRegistry.getHandler(e);
+
+        if (maybeHandler.isEmpty()) {
             throw new ServletException(e.getMessage());
+        }
+
+        try {
+            ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
+            render(mav, req, resp);
+        } catch (Exception ex) {
+            throw new ServletException(ex);
         }
     }
 
