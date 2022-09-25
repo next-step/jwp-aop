@@ -13,7 +13,7 @@ public class CGLibTest {
 
     @BeforeEach
     void setup() throws Exception {
-        Advisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
+        AbstractAopAdvisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new HelloCGLibTarget(), advisor);
         target = (HelloCGLibTarget) proxyFactoryBean.getObject();
     }
@@ -37,5 +37,14 @@ public class CGLibTest {
         assertThat(target.sayHi(NAME)).isEqualTo("HI CGLIB");
         assertThat(target.sayThankYou(NAME)).isEqualTo("THANK YOU CGLIB");
         assertThat(target.pingpong(NAME)).isEqualTo("ping pong CGLib");
+    }
+
+    @Test
+    @DisplayName("결과 값이 String이 아닌 Object 일 경우")
+    void resultIsObject() {
+        // when
+        String name = target.sayObjectTest().getClass().getName();
+        // then
+        assertThat(name).isEqualTo("java.lang.String");
     }
 }

@@ -17,4 +17,8 @@ public class HelloCGLibTarget{
     public String pingpong(String name) {
         return "ping pong " + name;
     }
+
+    public Object sayObjectTest() {
+        return new HelloCGLibTarget();
+    }
 }

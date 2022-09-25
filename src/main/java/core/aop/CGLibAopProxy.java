@@ -2,16 +2,13 @@ package core.aop;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
-import java.lang.reflect.Method;
 
 public class CGLibAopProxy implements AopProxy {
 
     private final Object target;
     private final MethodInterceptor methodInterceptor;
 
-    public CGLibAopProxy(Object target, Advisor advisor) {
+    public CGLibAopProxy(Object target, AbstractAopAdvisor advisor) {
         this.target = target;
         this.methodInterceptor = (obj, method, args, proxy) -> {
             if (advisor.matches(method, target.getClass())) {

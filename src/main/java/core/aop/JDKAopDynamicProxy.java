@@ -9,7 +9,7 @@ public class JDKAopDynamicProxy implements AopProxy {
     private final Object target;
     private final InvocationHandler invocationHandler;
 
-    public JDKAopDynamicProxy(Object target, Advisor advisor) {
+    public JDKAopDynamicProxy(Object target, AbstractAopAdvisor advisor) {
         this.target = target;
         this.invocationHandler = (proxy, method, args) -> {
             if (advisor.matches(method, target.getClass())) {

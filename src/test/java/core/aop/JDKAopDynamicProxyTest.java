@@ -13,7 +13,7 @@ public class JDKAopDynamicProxyTest {
 
     @BeforeEach
     void setup() throws Exception {
-        Advisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
+        AbstractAopAdvisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new HelloTarget(), advisor);
         dynamicProxyHello = (Hello) proxyFactoryBean.getObject();
     }

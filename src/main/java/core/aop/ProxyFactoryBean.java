@@ -2,23 +2,23 @@ package core.aop;
 
 public class ProxyFactoryBean<T> implements FactoryBean<T> {
 
-    private T target;
-    private final Advisor advisor;
+    private final T target;
+    private final AbstractAopAdvisor advisor;
 
-    public ProxyFactoryBean(T target, Advisor advisor) {
+    public ProxyFactoryBean(T target, AbstractAopAdvisor advisor) {
         this.target = target;
         this.advisor = advisor;
     }
 
     @Override
     public T getObject() throws Exception {
-        if (availableJDKDynamicProxy()) {
-            return (T) new JDKAopDynamicProxy(target, advisor).proxy();
+        if (availableCGLibDynamicProxy()) {
+            return (T) new CGLibAopProxy(target, advisor).proxy();
         }
-        return (T) new CGLibAopProxy(target, advisor).proxy();
+        return (T) new JDKAopDynamicProxy(target, advisor).proxy();
     }
 
-    private boolean availableJDKDynamicProxy() {
-        return target.getClass().getInterfaces().length > 0;
+    private boolean availableCGLibDynamicProxy() {
+        return target.getClass().getInterfaces().length == 0;
     }
 }
