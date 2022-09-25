@@ -12,7 +12,7 @@ public class JdkProxyTest {
         Hello proxiedHello = (Hello) java.lang.reflect.Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[] { Hello.class },
-                new UpperCaseInvocationHandler(new HelloTarget()));
+                new UpperCaseInvocationHandler(new HelloTarget(), (method, targetClass, args) -> method.getName().startsWith("say")));
         assertThat(proxiedHello.sayHello("javajigi")).isEqualTo("HELLO JAVAJIGI");
         assertThat(proxiedHello.sayHi("javajigi")).isEqualTo("HI JAVAJIGI");
         assertThat(proxiedHello.sayThankYou("javajigi")).isEqualTo("THANK YOU JAVAJIGI");
@@ -22,7 +22,8 @@ public class JdkProxyTest {
     @DisplayName("CGLib 사용하여 say로 시작하는 메서드만 대문자로 리턴값 출력")
     @Test
     void toUppercaseWithCGLib() {
-        EnhancerWrapper enhancerWrapper = new EnhancerWrapper(HelloTarget.class, new UppercaseMethodInterceptor());
+        EnhancerWrapper enhancerWrapper = new EnhancerWrapper(HelloTarget.class,
+                new UppercaseMethodInterceptor((method, targetClass, args) -> method.getName().startsWith("say")));
         HelloTarget helloTarget = (HelloTarget) enhancerWrapper.create();
 
         assertThat(helloTarget.sayHello("javajigi")).isEqualTo("HELLO JAVAJIGI");
