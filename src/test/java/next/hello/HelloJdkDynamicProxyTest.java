@@ -1,5 +1,6 @@
 package next.hello;
 
+import next.handler.UpperCaseInvocationHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

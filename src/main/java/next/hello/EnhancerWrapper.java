@@ -1,7 +1,6 @@
 package next.hello;
 
 import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Enhancer;
 
 public class EnhancerWrapper {
