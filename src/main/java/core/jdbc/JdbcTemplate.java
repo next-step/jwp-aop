@@ -1,5 +1,7 @@
 package core.jdbc;
 
+import core.annotation.Component;
+import core.annotation.Inject;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,9 +10,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class JdbcTemplate {
     private DataSource dataSource;
 
+    @Inject
     public JdbcTemplate(DataSource dataSource) {
         super();
         this.dataSource = dataSource;
