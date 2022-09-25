@@ -80,14 +80,6 @@ public class ProxyBeanFactory implements BeanDefinitionRegistry, ConfigurableLis
         return (T) bean;
     }
 
-    private Object coverProxy(Object beanInstance) throws Exception {
-        if (beanInstance instanceof FactoryBean) {
-            FactoryBean factory = (FactoryBean) beanInstance;
-            return factory.getObject();
-        }
-        return beanInstance;
-    }
-
     private void initialize(Object bean, Class<?> beanClass) {
         Set<Method> initializeMethods = BeanFactoryUtils.getBeanMethods(beanClass, PostConstruct.class);
         if (initializeMethods.isEmpty()) {

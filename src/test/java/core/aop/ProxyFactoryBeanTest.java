@@ -17,7 +17,7 @@ class ProxyFactoryBeanTest {
         Advisor advisor = new Advisor(advice, pointCut);
         Hello hello = new HelloTarget();
 
-        ProxyFactoryBean helloProxyFactoryBean = new ProxyFactoryBean(hello, Arrays.asList(advisor));
+        FactoryBean helloProxyFactoryBean = new ProxyFactoryBean(hello, Arrays.asList(advisor));
 
         Hello helloProxy = (Hello) helloProxyFactoryBean.getObject();
 
