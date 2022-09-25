@@ -1,4 +1,4 @@
-package next.hello;
+package next.wrapper;
 
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
