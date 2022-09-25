@@ -16,7 +16,11 @@ public class UppercaseAdvice implements Advice {
     @Override
     public Object invoke(Object object, Method method, Object[] args) {
         try {
-            return method.invoke(object, args).toString().toUpperCase();
+            Object invoke = method.invoke(object, args);
+            if (invoke.getClass().getName().equals("java.lang.String")) {
+                return invoke.toString().toUpperCase();
+            }
+            return invoke;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

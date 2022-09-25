@@ -45,6 +45,6 @@ public class CGLibTest {
         // when
         String name = target.sayObjectTest().getClass().getName();
         // then
-        assertThat(name).isEqualTo("java.lang.String");
+        assertThat(name).isEqualTo("core.aop.HelloCGLibTarget");
     }
 }
