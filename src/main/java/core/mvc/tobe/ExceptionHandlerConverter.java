@@ -1,12 +1,12 @@
 package core.mvc.tobe;
 
 import com.google.common.collect.Lists;
-import core.annotation.web.RequestMapping;
 import core.mvc.tobe.support.ArgumentResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class HandlerConverter {
-
-    private static final Logger logger = LoggerFactory.getLogger(HandlerConverter.class);
+public class ExceptionHandlerConverter {
+    private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerConverter.class);
 
     private List<ArgumentResolver> argumentResolvers = Lists.newArrayList();
 
@@ -31,12 +30,12 @@ public class HandlerConverter {
         this.argumentResolvers.add(argumentResolver);
     }
 
-    public Map<HandlerKey, HandlerExecution> convert(Map<Class<?>, Object> controllers) {
+    public Map<HandlerKey, HandlerExecution> convert(Map<Class<?>, Object> exceptionHandlers) {
         Map<HandlerKey, HandlerExecution> handlers = new HashMap<>();
-        Set<Class<?>> controllerClazz = controllers.keySet();
-        for (Class<?> controller : controllerClazz) {
-            Object target = controllers.get(controller);
-            addHandlerExecution(handlers, target, controller.getMethods());
+        Set<Class<?>> exceptionHandlerClass = exceptionHandlers.keySet();
+        for (Class<?> exceptionHandler : exceptionHandlerClass) {
+            Object target = exceptionHandlers.get(exceptionHandler);
+            addHandlerExecution(handlers, target, exceptionHandler.getMethods());
         }
 
         return handlers;
@@ -44,14 +43,13 @@ public class HandlerConverter {
 
     private void addHandlerExecution(Map<HandlerKey, HandlerExecution> handlers, final Object target, Method[] methods) {
         Arrays.stream(methods)
-                .filter(method -> method.isAnnotationPresent(RequestMapping.class))
+                .filter(method -> method.isAnnotationPresent(ExceptionHandler.class))
                 .forEach(method -> {
-                    RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
-                    RequestHandlerKey requestHandlerKey = new RequestHandlerKey(requestMapping.value(), requestMapping.method());
+                    ExceptionHandler exceptionHandler = method.getAnnotation(ExceptionHandler.class);
+                    ExceptionHandlerKey exceptionHandlerKey = new ExceptionHandlerKey(exceptionHandler.value());
                     HandlerExecution handlerExecution = new HandlerExecution(nameDiscoverer, argumentResolvers, target, method);
-                    handlers.put(requestHandlerKey, handlerExecution);
-                    logger.info("Add - method: {}, path: {}, HandlerExecution: {}", requestMapping.method(), requestMapping.value(), method.getName());
+                    handlers.put(exceptionHandlerKey, handlerExecution);
+                    logger.info("Add - exception: {}, HandlerExecution: {}", exceptionHandler.value(), method.getName());
                 });
     }
-
 }
