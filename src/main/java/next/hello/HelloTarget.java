@@ -12,4 +12,8 @@ public class HelloTarget implements Hello {
     public String sayThankYou(String name) {
         return "Thank You " + name;
     }
+
+    public String pingpong(String name) {
+        return "Pong " + name;
+    }
 }

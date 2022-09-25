@@ -12,7 +12,7 @@ class HelloCGLibProxyTest {
     @ParameterizedTest
     @ValueSource(strings = "one")
     void returnUpperCase(String name) {
-        EnhancerWrapper enhancerWrapper = new EnhancerWrapper(HelloTarget.class, new HelloMethodInterceptor());
+        EnhancerWrapper enhancerWrapper = new EnhancerWrapper(HelloTarget.class, new UppercaseMethodInterceptor());
         HelloTarget helloTarget = (HelloTarget) enhancerWrapper.create();
 
         assertAll(
