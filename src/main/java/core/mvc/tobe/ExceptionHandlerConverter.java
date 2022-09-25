@@ -38,13 +38,15 @@ public class ExceptionHandlerConverter {
     private void addHandlerExecution(Map<Class<? extends Throwable>, HandlerExecution> exceptionHandlers, Object target, Method[] methods) {
         Arrays.stream(methods)
             .filter(method -> method.isAnnotationPresent(ExceptionHandler.class))
-            .forEach(method -> {
-                ExceptionHandler exceptionHandler = method.getAnnotation(ExceptionHandler.class);
-                Class<? extends Throwable>[] exceptions = exceptionHandler.value();
-                for (Class<? extends Throwable> exception : exceptions) {
-                    HandlerExecution handlerExecution = new HandlerExecution(nameDiscoverer, argumentResolvers, target, method);
-                    exceptionHandlers.put(exception, handlerExecution);
-                }
-            });
+            .forEach(method -> addExceptionHandler(exceptionHandlers, target, method));
+    }
+
+    private void addExceptionHandler(Map<Class<? extends Throwable>, HandlerExecution> exceptionHandlers, Object target, Method method) {
+        ExceptionHandler exceptionHandler = method.getAnnotation(ExceptionHandler.class);
+        Class<? extends Throwable>[] exceptions = exceptionHandler.value();
+        for (Class<? extends Throwable> exception : exceptions) {
+            HandlerExecution handlerExecution = new HandlerExecution(nameDiscoverer, argumentResolvers, target, method);
+            exceptionHandlers.put(exception, handlerExecution);
+        }
     }
 }
