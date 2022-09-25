@@ -5,6 +5,10 @@
 - [x] CGLib Proxy 적용
 - [x] 부가기능이 추가될 Method 선정을 위한 MethodMatcher 적용
 
+## 3단계 요구사항
+- [ ] DB Transaction 처리를 하고 싶은 메소드에 @Transactional 애노테이션을 추가하면 Transaction 처리가 가능하도록 해야 한다.
+- [ ] 다음 예제 코드와 같이 addAnswer() 메소드에 Transactional을 설정하면 addAnswer() 메소드는 하나의 Transaction으로 묶여서 처리되어야 한다.
+
 ---
 
 ## 진행 방법
