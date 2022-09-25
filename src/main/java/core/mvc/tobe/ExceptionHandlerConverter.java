@@ -25,12 +25,12 @@ public class ExceptionHandlerConverter {
         this.argumentResolvers.addAll(argumentResolvers);
     }
 
-    public Map<Class<? extends Throwable>, HandlerExecution> convert(Map<Class<?>, Object> controllerAdvices) {
+    public Map<Class<? extends Throwable>, HandlerExecution> convert(Map<Class<?>, Object> handlers) {
         Map<Class<? extends Throwable>, HandlerExecution> exceptionHandlers = Maps.newHashMap();
-        Set<Class<?>> controllerAdviceClasses = controllerAdvices.keySet();
-        for (Class<?> controllerAdviceClass : controllerAdviceClasses) {
-            Object target = controllerAdvices.get(controllerAdviceClass);
-            addHandlerExecution(exceptionHandlers, target, controllerAdviceClass.getMethods());
+        Set<Class<?>> handlerClasses = handlers.keySet();
+        for (Class<?> handlerClass : handlerClasses) {
+            Object target = handlers.get(handlerClass);
+            addHandlerExecution(exceptionHandlers, target, handlerClass.getMethods());
         }
         return exceptionHandlers;
     }
