@@ -67,8 +67,8 @@
 - [ ] `@Transaction` 애너테이션 메서드가 있으면 Transaction 처리한다.
   - [ ] BeanFactory에 ProxyBean을 등록하기 위한 BeanPostProcessor
     - [ ] Transaction 처리를 위한 Pointcut, Advice, ProxyPointcutAdvisor, BeanPostProcessor
-    - [ ] Advisor 타입을 추가하여 다형성 활용, JdkProxy, CglibProxy 모두 적용
-  - [ ] BeanFactory에 
+    - [x] Advisor 타입을 추가하여 다형성 활용, JdkProxy, CglibProxy 모두 적용
+      - [x] PointcutAdvisor, ProxyPointcutAdvisor
 - [x] Thread 별로 Connection 을 유지할 수 있도록 ThreadLocal 으로 관리한다.
   - [x] ConnectionHolder
     - [x] Connection을 ThreadLocal로 관리한다
