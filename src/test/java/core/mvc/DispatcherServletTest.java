@@ -3,7 +3,7 @@ package core.mvc;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.ExceptionHandlerConverter;
-import core.mvc.tobe.HandlerConverter;
+import core.mvc.tobe.RequestHandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import next.config.MyConfiguration;
 import next.controller.UserSessionUtils;
@@ -26,7 +26,8 @@ class DispatcherServletTest {
     @BeforeEach
     void setUp() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class), ac.getBean(ExceptionHandlerConverter.class));
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(RequestHandlerConverter.class),
+                ac.getBean(ExceptionHandlerConverter.class));
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());

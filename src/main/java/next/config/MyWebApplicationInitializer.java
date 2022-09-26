@@ -3,13 +3,13 @@ package next.config;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.DispatcherServlet;
-import core.mvc.asis.ControllerAdviceHandlerAdapter;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.ExceptionMapping;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.HandlerConverter;
+import core.mvc.tobe.RequestHandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
 import org.slf4j.Logger;
@@ -25,9 +25,9 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         ApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        HandlerConverter handlerConverter = ac.getBean(HandlerConverter.class);
-        ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
-        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter, exceptionHandlerConverter);
+        HandlerConverter requestHandlerConverter = ac.getBean(RequestHandlerConverter.class);
+        HandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, requestHandlerConverter, exceptionHandlerConverter);
         ahm.initialize();
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
@@ -36,7 +36,6 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
-        dispatcherServlet.addHandlerAdapter(new ControllerAdviceHandlerAdapter());
 
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
