@@ -10,9 +10,14 @@ import next.model.Question;
 
 import java.sql.*;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Repository
 public class JdbcQuestionDao implements QuestionDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(JdbcQuestionDao.class);
+
     private JdbcTemplate jdbcTemplate;
 
     @Inject
@@ -43,13 +48,13 @@ public class JdbcQuestionDao implements QuestionDao {
     @Override
     public List<Question> findAll() {
         String sql = "SELECT questionId, writer, title, createdDate, countOfAnswer FROM QUESTIONS "
-                + "order by questionId desc";
+            + "order by questionId desc";
 
         RowMapper<Question> rm = new RowMapper<Question>() {
             @Override
             public Question mapRow(ResultSet rs) throws SQLException {
                 return new Question(rs.getLong("questionId"), rs.getString("writer"), rs.getString("title"), null,
-                        rs.getTimestamp("createdDate"), rs.getInt("countOfAnswer"));
+                    rs.getTimestamp("createdDate"), rs.getInt("countOfAnswer"));
             }
 
         };
@@ -60,13 +65,13 @@ public class JdbcQuestionDao implements QuestionDao {
     @Override
     public Question findById(long questionId) {
         String sql = "SELECT questionId, writer, title, contents, createdDate, countOfAnswer FROM QUESTIONS "
-                + "WHERE questionId = ?";
+            + "WHERE questionId = ?";
 
         RowMapper<Question> rm = new RowMapper<Question>() {
             @Override
             public Question mapRow(ResultSet rs) throws SQLException {
                 return new Question(rs.getLong("questionId"), rs.getString("writer"), rs.getString("title"),
-                        rs.getString("contents"), rs.getTimestamp("createdDate"), rs.getInt("countOfAnswer"));
+                    rs.getString("contents"), rs.getTimestamp("createdDate"), rs.getInt("countOfAnswer"));
             }
         };
 
@@ -87,7 +92,16 @@ public class JdbcQuestionDao implements QuestionDao {
 
     @Override
     public void updateCountOfAnswer(long questionId) {
+        validateExistsQuestion(questionId);
         String sql = "UPDATE QUESTIONS set countOfAnswer = countOfAnswer + 1 WHERE questionId = ?";
         jdbcTemplate.update(sql, questionId);
+    }
+
+    private void validateExistsQuestion(final long questionId) {
+        final Question question = findById(questionId);
+        if (question == null) {
+            logger.error("존재하지 않는 질문에 답변함. 번호 : " + questionId);
+            throw new IllegalArgumentException("존재하지 않는 질문에 답변할 수 없습니다.");
+        }
     }
 }
