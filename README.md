@@ -69,9 +69,9 @@
     - [ ] Transaction 처리를 위한 Pointcut, Advice, ProxyPointcutAdvisor, BeanPostProcessor
     - [ ] Advisor 타입을 추가하여 다형성 활용, JdkProxy, CglibProxy 모두 적용
   - [ ] BeanFactory에 
-- [ ] Thread 별로 Connection 을 유지할 수 있도록 ThreadLocal 으로 관리한다.
-  - [ ] ConnectionHolder
-    - [ ] Connection을 ThreadLocal로 관리한다
+- [x] Thread 별로 Connection 을 유지할 수 있도록 ThreadLocal 으로 관리한다.
+  - [x] ConnectionHolder
+    - [x] Connection을 ThreadLocal로 관리한다
   - [x] DataSourceUtils
     - [x] ConnectionHolder를 활용하여 Connection 객체를 얻거나 반환한다.
 
