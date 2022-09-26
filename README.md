@@ -18,3 +18,8 @@
 #### Step2
 * Bean 컨테이너의 Bean과 Proxy를 연결
 * 재사용 가능한 FactoryBean을 생성
+#### Step3
+* 클래스, 메소드에 @Transactional 애노테이션을 추가하면 Transaction 처리를 한다.
+  * @Transactional 붙은 메소드는 한 묶음으로 처리
+  * Exception이 발생 할 경우 롤백
+  * Transaction은 Thread 별로 Connection을 유지 하여야 한다.

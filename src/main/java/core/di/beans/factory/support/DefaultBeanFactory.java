@@ -3,6 +3,7 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.BeanPostProcessor;
 import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
@@ -25,6 +26,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+
+    private List<BeanPostProcessor> beanPostProcessors = Lists.newArrayList();
 
     @Override
     public void preInstantiateSingletons() {
@@ -67,18 +70,40 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         return (T) bean;
     }
 
-    private <T> void putBean(Class<?> clazz, Object bean) {
+    public void addPostBeanProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    private void putBean(Class<?> clazz, Object bean) {
+        if (bean instanceof FactoryBean) {
+            putBean(bean);
+            return;
+        }
+
+        beans.put(clazz, applyBeanPostProcess(bean));
+    }
+
+    private <T> void putBean(Object bean) {
         if (FactoryBean.class.isAssignableFrom(bean.getClass())) {
             final FactoryBean<T> factoryBean = (FactoryBean<T>) bean;
             try {
-                beans.put(factoryBean.getClass(), factoryBean.getObject());
-                return;
+                beans.put(factoryBean.getClass(), applyBeanPostProcess(factoryBean.getObject()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
+    }
 
-        beans.put(clazz, bean);
+    private Object applyBeanPostProcess(Object existingBean) {
+        Object bean = existingBean;
+        for (BeanPostProcessor processor : beanPostProcessors) {
+            Object currentObject = processor.postProcess(bean);
+            if (currentObject == null) {
+                return bean;
+            }
+            bean = currentObject;
+        }
+        return bean;
     }
 
 

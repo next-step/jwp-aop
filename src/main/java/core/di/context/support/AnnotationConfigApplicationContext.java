@@ -2,6 +2,7 @@ package core.di.context.support;
 
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
+import core.aop.TransactionPostProcessor;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.DefaultBeanFactory;
 import core.di.context.ApplicationContext;
@@ -29,6 +30,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
         }
+        beanFactory.addPostBeanProcessor(new TransactionPostProcessor(beanFactory));
         beanFactory.preInstantiateSingletons();
     }
 
