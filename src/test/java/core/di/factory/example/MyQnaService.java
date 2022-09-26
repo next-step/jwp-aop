@@ -2,9 +2,11 @@ package core.di.factory.example;
 
 import core.annotation.Inject;
 import core.annotation.Service;
+import core.annotation.Transactional;
 
 @Service
 public class MyQnaService {
+
     private UserRepository userRepository;
     private QuestionRepository questionRepository;
 
@@ -20,5 +22,10 @@ public class MyQnaService {
 
     public QuestionRepository getQuestionRepository() {
         return questionRepository;
+    }
+
+    @Transactional
+    public void getQuestion() {
+
     }
 }
