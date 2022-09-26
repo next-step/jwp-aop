@@ -2,6 +2,8 @@ package core.di.factory.example;
 
 import core.annotation.Bean;
 import core.annotation.Configuration;
+import study.cglib.HelloFactoryBean;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -16,5 +18,10 @@ public class ExampleConfig {
         ds.setUsername("sa");
         ds.setPassword("");
         return ds;
+    }
+
+    @Bean
+    public HelloFactoryBean helloFactoryBean() {
+        return new HelloFactoryBean();
     }
 }
