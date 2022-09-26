@@ -5,5 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 public interface HandlerMapping {
     void initialize();
 
-    Object getHandler(HttpServletRequest request);
+    default Object getHandler(HttpServletRequest request) {
+        return null;
+    }
+
+    default Object getHandler(Throwable e) {
+        return null;
+    }
 }

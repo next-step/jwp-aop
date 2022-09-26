@@ -8,6 +8,7 @@ import core.annotation.web.Controller;
 import core.di.beans.factory.support.BeanDefinitionRegistry;
 import core.di.beans.factory.support.DefaultBeanDefinition;
 import org.reflections.Reflections;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class ClasspathBeanDefinitionScanner {
     public void doScan(Object... basePackages) {
         Reflections reflections = new Reflections(basePackages);
         Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
-                Repository.class, Component.class);
+                Repository.class, Component.class, ControllerAdvice.class);
         for (Class<?> clazz : beanClasses) {
             beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));
         }

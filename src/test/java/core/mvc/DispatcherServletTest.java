@@ -2,7 +2,8 @@ package core.mvc;
 
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.tobe.AnnotationHandlerMapping;
-import core.mvc.tobe.HandlerConverter;
+import core.mvc.tobe.ExceptionHandlerConverter;
+import core.mvc.tobe.RequestHandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import next.config.MyConfiguration;
 import next.controller.UserSessionUtils;
@@ -11,6 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +26,8 @@ class DispatcherServletTest {
     @BeforeEach
     void setUp() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(RequestHandlerConverter.class),
+                ac.getBean(ExceptionHandlerConverter.class));
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
@@ -75,5 +80,15 @@ class DispatcherServletTest {
 
         assertThat(secondResponse.getRedirectedUrl()).isEqualTo("/");
         assertThat(UserSessionUtils.userFromSession(secondRequest.getSession())).isNotNull();
+    }
+
+    @Test
+    void login_failed() throws ServletException, IOException {
+        request.setRequestURI("/users");
+        request.setMethod("GET");
+
+        dispatcher.service(request, response);
+
+        assertThat(response.getRedirectedUrl()).isEqualTo("/users/loginForm");
     }
 }
