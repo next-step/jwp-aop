@@ -24,7 +24,7 @@ public class ConnectionHolder {
             return CONNECTION_THREAD_LOCAL.get();
         }
 
-        throw new DataAccessException("JDBC 커넥션을 가져올 수 없습니다.");
+        return null;
     }
 
     private static boolean isClosed() {
