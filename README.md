@@ -72,6 +72,6 @@
 - [ ] Thread 별로 Connection 을 유지할 수 있도록 ThreadLocal 으로 관리한다.
   - [ ] ConnectionHolder
     - [ ] Connection을 ThreadLocal로 관리한다
-  - [ ] DataSourceUtils
-    - [ ] ConnectionHolder를 활용하여 Connection 객체를 얻거나 반환한다.
+  - [x] DataSourceUtils
+    - [x] ConnectionHolder를 활용하여 Connection 객체를 얻거나 반환한다.
 
