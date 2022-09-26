@@ -4,20 +4,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Proxy;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JDKDynamicProxyTest {
+public class JDKAopDynamicProxyTest {
 
     private Hello dynamicProxyHello;
     private static final String NAME = "Test";
 
     @BeforeEach
-    void setup() {
-        dynamicProxyHello = (Hello) Proxy.newProxyInstance(HelloTarget.class.getClassLoader(),
-                new Class[] {Hello.class},
-                new DynamicInvocationHandler(new HelloTarget(), new SayPrefixMethodMatcher()));
+    void setup() throws Exception {
+        AbstractAopAdvisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new HelloTarget(), advisor);
+        dynamicProxyHello = (Hello) proxyFactoryBean.getObject();
     }
 
     @Test
@@ -38,6 +36,6 @@ public class JDKDynamicProxyTest {
         assertThat(dynamicProxyHello.sayHello(NAME)).isEqualTo("HELLO TEST");
         assertThat(dynamicProxyHello.sayHi(NAME)).isEqualTo("HI TEST");
         assertThat(dynamicProxyHello.sayThankYou(NAME)).isEqualTo("THANK YOU TEST");
-        assertThat(dynamicProxyHello.pinpong(NAME)).isEqualTo("ping pong Test");
+        assertThat(dynamicProxyHello.pingpong(NAME)).isEqualTo("ping pong Test");
     }
 }

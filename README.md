@@ -15,3 +15,6 @@
 * Hello 인터페이스 구현클래스에 pingpong()과 같은 새로운 메소드가 추가 될 경우 say로 시작하는 메소드에 한해서만 메소드의 반환 값을 대문자로 변환
   * JDK Dynamic Proxy를 사용
   * CGLib Proxy를 사용
+#### Step2
+* Bean 컨테이너의 Bean과 Proxy를 연결
+* 재사용 가능한 FactoryBean을 생성

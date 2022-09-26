@@ -14,7 +14,11 @@ public class HelloCGLibTarget{
         return "Thank You " + name;
     }
 
-    public String pinpong(String name) {
+    public String pingpong(String name) {
         return "ping pong " + name;
+    }
+
+    public Object sayObjectTest() {
+        return new HelloCGLibTarget();
     }
 }

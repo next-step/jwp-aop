@@ -1,6 +1,5 @@
 package core.aop;
 
-import net.sf.cglib.proxy.Enhancer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +12,10 @@ public class CGLibTest {
     private HelloCGLibTarget target;
 
     @BeforeEach
-    void setup() {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(HelloCGLibTarget.class);
-        enhancer.setCallback(new HelloMethodInterceptor(new HelloCGLibTarget(), new SayPrefixMethodMatcher()));
-        target = (HelloCGLibTarget) enhancer.create();
+    void setup() throws Exception {
+        AbstractAopAdvisor advisor = new PointcutAdvisor(UppercaseAdvice.getInstance(), SayPointCut.getInstance());
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean(new HelloCGLibTarget(), advisor);
+        target = (HelloCGLibTarget) proxyFactoryBean.getObject();
     }
 
     @Test
@@ -38,6 +36,15 @@ public class CGLibTest {
         assertThat(target.sayHello(NAME)).isEqualTo("HELLO CGLIB");
         assertThat(target.sayHi(NAME)).isEqualTo("HI CGLIB");
         assertThat(target.sayThankYou(NAME)).isEqualTo("THANK YOU CGLIB");
-        assertThat(target.pinpong(NAME)).isEqualTo("ping pong CGLib");
+        assertThat(target.pingpong(NAME)).isEqualTo("ping pong CGLib");
+    }
+
+    @Test
+    @DisplayName("결과 값이 String이 아닌 Object 일 경우")
+    void resultIsObject() {
+        // when
+        String name = target.sayObjectTest().getClass().getName();
+        // then
+        assertThat(name).isEqualTo("core.aop.HelloCGLibTarget");
     }
 }
