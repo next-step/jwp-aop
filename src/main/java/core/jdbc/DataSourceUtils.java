@@ -23,6 +23,14 @@ public abstract class DataSourceUtils {
         return ConnectionHolder.getConnection();
     }
 
+    public static void releaseTransactionalConnection() {
+        try {
+            ConnectionHolder.releaseTransactionalConnection();
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public static void releaseConnection() {
         ConnectionHolder.releaseConnection();
     }

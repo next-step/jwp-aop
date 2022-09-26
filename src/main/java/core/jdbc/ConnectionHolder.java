@@ -36,6 +36,14 @@ public class ConnectionHolder {
         }
     }
 
+    public static void releaseTransactionalConnection() throws SQLException {
+        Connection connection = getConnection();
+        if (connection == null || transactionActive.get()) {
+            return;
+        }
+        connectionClose(connection);
+    }
+
     public static void releaseConnection()  {
         Connection connection = getConnection();
         if (connection == null) {
@@ -47,11 +55,10 @@ public class ConnectionHolder {
     private static void connectionClose(Connection connection) {
         try {
             connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
             currentConnection.remove();
             transactionActive.remove();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
