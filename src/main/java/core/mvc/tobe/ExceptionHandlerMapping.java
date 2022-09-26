@@ -11,13 +11,14 @@ import core.di.context.ApplicationContext;
 
 public class ExceptionHandlerMapping {
 
-    private final Map<Class<? extends Throwable>, HandlerExecution> handlerExecutions = Maps.newHashMap();
+    private final Map<Class<? extends Throwable>, HandlerExecution> controllerAdviceExceptionHandlers = Maps.newHashMap();
+    private final Map<Class<?>, HandlerExecution> controllerExceptionHandlers = Maps.newHashMap();
 
     public ExceptionHandlerMapping(ApplicationContext applicationContext, ExceptionHandlerConverter handlerConverter) {
         Map<Class<?>, Object> controllerAdvices = getHandlersAnnotatedWith(applicationContext, ControllerAdvice.class);
+        controllerAdviceExceptionHandlers.putAll(handlerConverter.convert(controllerAdvices));
         Map<Class<?>, Object> controllers = getHandlersAnnotatedWith(applicationContext, Controller.class);
-        handlerExecutions.putAll(handlerConverter.convert(controllerAdvices));
-        handlerExecutions.putAll(handlerConverter.convert(controllers));
+        controllerExceptionHandlers.putAll(handlerConverter.convert(controllers));
     }
 
     private Map<Class<?>, Object> getHandlersAnnotatedWith(ApplicationContext applicationContext, Class<? extends Annotation> annotationClass) {
@@ -29,7 +30,11 @@ public class ExceptionHandlerMapping {
         return handlers;
     }
 
-    public HandlerExecution getHandler(Class<? extends Throwable> exceptionClass) {
-        return handlerExecutions.get(exceptionClass);
+    public HandlerExecution getControllerExceptionHandler(Class<?> controllerClass) {
+        return controllerExceptionHandlers.get(controllerClass);
+    }
+
+    public HandlerExecution getControllerAdviceExceptionHandler(Class<? extends Throwable> exceptionClass) {
+        return controllerAdviceExceptionHandlers.get(exceptionClass);
     }
 }

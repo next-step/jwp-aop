@@ -1,15 +1,16 @@
 package core.mvc;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import core.mvc.tobe.ExceptionHandlerMapping;
 import core.mvc.tobe.HandlerExecution;
@@ -43,18 +44,20 @@ public class DispatcherServlet extends HttpServlet {
         String requestUri = req.getRequestURI();
         logger.debug("Method : {}, Request URI : {}", req.getMethod(), requestUri);
 
+        Object handler = null;
+
         try {
             Optional<Object> maybeHandler = handlerMappingRegistry.getHandler(req);
-            if (!maybeHandler.isPresent()) {
+            if (maybeHandler.isEmpty()) {
                 resp.setStatus(HttpStatus.NOT_FOUND.value());
                 return;
             }
 
-
-            ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
+            handler = maybeHandler.get();
+            ModelAndView mav = handlerExecutor.handle(req, resp, handler);
             render(mav, req, resp);
         } catch (Throwable e) {
-            processHandlerException(req, resp, e);
+            processHandlerException(req, resp, handler, e);
         }
     }
 
@@ -63,14 +66,22 @@ public class DispatcherServlet extends HttpServlet {
         view.render(mav.getModel(), req, resp);
     }
 
-    private void processHandlerException(HttpServletRequest request, HttpServletResponse response, Throwable throwable) throws ServletException {
+    private void processHandlerException(HttpServletRequest request, HttpServletResponse response, Object handler, Throwable throwable) throws ServletException {
         try {
-            HandlerExecution exceptionHandler = exceptionHandlerMapping.getHandler(throwable.getClass());
+            HandlerExecution exceptionHandler = getExceptionHandler(handler, throwable);
             ModelAndView mav = exceptionHandler.handle(request, response);
             render(mav, request, response);
         } catch (Exception e) {
             logger.error("Exception : {}", e.getMessage(), e);
             throw new ServletException(e);
         }
+    }
+
+    private HandlerExecution getExceptionHandler(Object handler, Throwable throwable) {
+        HandlerExecution exceptionHandler = exceptionHandlerMapping.getControllerExceptionHandler(handler.getClass());
+        if (exceptionHandler != null) {
+            return exceptionHandler;
+        }
+        return exceptionHandlerMapping.getControllerAdviceExceptionHandler(throwable.getClass());
     }
 }

@@ -2,43 +2,50 @@ package next.controller;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
-import core.mvc.ModelAndView;
+import core.mvc.DispatcherServlet;
+import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.ExceptionHandlerMapping;
-import core.mvc.tobe.HandlerExecution;
+import core.mvc.tobe.HandlerConverter;
+import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import next.config.MyConfiguration;
 
 class ControllerAdviceTest {
 
-    private ExceptionHandlerMapping mapping;
+    private DispatcherServlet dispatcher;
 
     @BeforeEach
-    void setup() {
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(MyConfiguration.class);
-        mapping = new ExceptionHandlerMapping(applicationContext, new ExceptionHandlerConverter());
+    void setUp() {
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
+        AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
+        dispatcher = new DispatcherServlet();
+        dispatcher.addHandlerMapping(ahm);
+        dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
+
+        ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
+        ExceptionHandlerMapping exceptionHandlerMapping = new ExceptionHandlerMapping(ac, exceptionHandlerConverter);
+        dispatcher.setExceptionHandlerMapping(exceptionHandlerMapping);
     }
 
+    @DisplayName("RequiredLoginException 예외가 발생하면 로그인 페이지로 이동한다.")
     @Test
-    @DisplayName("@ControllerAdvice, @ExceptionHandler 어노테이션을 이용하여 예외를 처리한다.")
-    void controllerAdvice() throws Exception {
-        HandlerExecution exceptionHandler = mapping.getHandler(IllegalStateException.class);
-        ModelAndView mav = exceptionHandler.handle(new MockHttpServletRequest(), new MockHttpServletResponse());
-        assertThat(mav.getObject("exception")).isEqualTo("IllegalStateException in ControllerAdvice");
-    }
+    void loginRequired() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/questions");
+        MockHttpServletResponse response = new MockHttpServletResponse();
 
-    @Test
-    @DisplayName("@ExceptionHandler 메서드가 @Controller, @ControllerAdvice 둘 다 존재한다면, @Controller 의 @ExceptionHandler 가 우선순위를 갖는다.")
-    void controller() throws Exception {
-        HandlerExecution exceptionHandler = mapping.getHandler(IllegalArgumentException.class);
-        ModelAndView mav = exceptionHandler.handle(new MockHttpServletRequest(), new MockHttpServletResponse());
-        assertThat(mav.getObject("exception")).isEqualTo("IllegalArgumentException in Controller");
+        dispatcher.service(request, response);
+
+        assertThat(response.getRedirectedUrl()).isEqualTo("/users/loginForm");
     }
 }
