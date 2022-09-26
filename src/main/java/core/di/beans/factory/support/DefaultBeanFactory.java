@@ -6,7 +6,9 @@ import core.annotation.PostConstruct;
 import core.di.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.context.BeanPostProcessor;
 import core.di.context.annotation.AnnotatedBeanDefinition;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +27,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     @Override
     public void preInstantiateSingletons() {
@@ -47,7 +51,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
             optionalBean.ifPresent(b -> putBean(clazz, b));
             initialize(bean, clazz);
@@ -74,7 +78,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             return;
         }
 
-        beans.put(clazz, bean);
+        for (final BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            beans.put(clazz, beanPostProcessor.postInitialization(bean));
+        }
     }
 
     private <T> T getProxy(FactoryBean<T> factoryBean) {
@@ -93,7 +99,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         for (Method initializeMethod : initializeMethods) {
             log.debug("@PostConstruct Initialize Method : {}", initializeMethod);
             BeanFactoryUtils.invokeMethod(initializeMethod, bean,
-                    populateArguments(initializeMethod.getParameterTypes()));
+                populateArguments(initializeMethod.getParameterTypes()));
         }
     }
 
@@ -161,5 +167,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     public void registerBeanDefinition(Class<?> clazz, BeanDefinition beanDefinition) {
         log.debug("register bean : {}", beanDefinition.getBeanClass());
         beanDefinitions.put(beanDefinition.getBeanClass(), beanDefinition);
+    }
+
+    public void registerBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
     }
 }

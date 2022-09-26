@@ -74,6 +74,6 @@
     - [x] Connection을 ThreadLocal로 관리한다
   - [x] DataSourceUtils
     - [x] ConnectionHolder를 활용하여 Connection 객체를 얻거나 반환한다.
-- [ ] DefaultBeanFactory에 BeanPostProcessor 등록
-  - [ ] 빈을 생성한 후 등록된 BeanPostProcessor 을 거쳐 후처리 한다.
-    - [ ] 트랜잭션이 필요한 빈은 프록시 빈으로 등록한다
+- [x] DefaultBeanFactory에 BeanPostProcessor 등록
+  - [x] 빈을 생성한 후 등록된 BeanPostProcessor 을 거쳐 후처리 한다.
+    - [x] 트랜잭션이 필요한 빈은 프록시 빈으로 등록한다
