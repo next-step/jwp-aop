@@ -1,31 +1,39 @@
 package core.di.beans.factory.proxy;
 
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import core.di.beans.factory.FactoryBean;
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.NoOp;
 
-public class ProxyFactoryBean<T> implements FactoryBean<Object> {
+public class ProxyFactoryBean implements FactoryBean<Object> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProxyFactoryBean.class);
 	private final Enhancer enhancer = new Enhancer();
-	private final Class<T> target;
+	private final Class<?> target;
+	private Advice advice;
 
-	public ProxyFactoryBean(Class<T> target) {
+	public ProxyFactoryBean(Class<?> target) {
 		this.target = target;
 	}
 
+	public void setAdvice(Advice advice) {
+		this.advice = advice;
+	}
+
 	@Override
-	public Object getObject() throws Exception {
+	public Object getObject() {
 		enhancer.setSuperclass(target);
-		enhancer.setCallback(NoOp.INSTANCE);
+		if (!Objects.isNull(advice)) {
+			enhancer.setCallback(advice);
+		}
 		return enhancer.create();
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return (Class<? extends T>) target.getClass();
+		return target.getClass();
 	}
 }
