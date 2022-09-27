@@ -1,7 +1,8 @@
-package core.aop;
+package core.aop.factorybean;
 
 import core.annotation.Bean;
 import core.annotation.Configuration;
+import core.aop.*;
 
 @Configuration
 public class ProxyFactory {

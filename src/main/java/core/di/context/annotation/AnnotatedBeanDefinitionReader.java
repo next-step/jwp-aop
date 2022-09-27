@@ -1,6 +1,7 @@
 package core.di.context.annotation;
 
 import core.annotation.Bean;
+import core.aop.FactoryBean;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.BeanDefinitionRegistry;
 import core.di.beans.factory.support.BeanFactoryUtils;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
 public class AnnotatedBeanDefinitionReader implements BeanDefinitionReader {
@@ -32,8 +34,17 @@ public class AnnotatedBeanDefinitionReader implements BeanDefinitionReader {
         Set<Method> beanMethods = BeanFactoryUtils.getBeanMethods(annotatedClass, Bean.class);
         for (Method beanMethod : beanMethods) {
             log.debug("@Bean method : {}", beanMethod);
-            AnnotatedBeanDefinition abd = new AnnotatedBeanDefinition(beanMethod.getReturnType(), beanMethod);
+            AnnotatedBeanDefinition abd = new AnnotatedBeanDefinition(returnType(beanMethod), beanMethod);
             beanDefinitionRegistry.registerBeanDefinition(beanMethod.getReturnType(), abd);
         }
+    }
+
+    private Class<?> returnType(Method beanMethod) {
+        Class<?> returnType = beanMethod.getReturnType();
+        if (returnType.isAssignableFrom(FactoryBean.class)) {
+            return (Class<?>) ((ParameterizedType) beanMethod.getGenericReturnType()).getActualTypeArguments()[0];
+        }
+
+        return returnType;
     }
 }
