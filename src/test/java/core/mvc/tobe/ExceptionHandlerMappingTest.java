@@ -22,10 +22,13 @@ class ExceptionHandlerMappingTest {
         final ExceptionHandlerMapping exceptionHandlerMapping = new ExceptionHandlerMapping(applicationContext, bean);
         exceptionHandlerMapping.initialize();
 
-        final HandlerExecution handler = exceptionHandlerMapping.getHandler(RequiredLoginException.class);
 
         final MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setAttribute("exceptionHandler", new RequiredLoginException("로그인이 필요합니다."));
         final MockHttpServletResponse response = new MockHttpServletResponse();
+
+        final HandlerExecution handler = exceptionHandlerMapping.getHandler(request);
+
         final ModelAndView actual = handler.handle(request, response);
 
         assertThat(actual.getView()).isInstanceOf(JspView.class);

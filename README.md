@@ -96,8 +96,8 @@
   - [x] ExceptionArgumentResolver 활용 HandlerExecution 생성
 - [x] ExceptionHandlerMapping
   - [x] ExceptionHandlerConverter를 주입받아 HandlerExcution을 관리
-- [ ] DispatcherSevlet
-  - [ ] ExceptionHandlerMapping을 주입 받는다.
-  - [ ] service 수행 중(handler를 가져오거나, hander 수행 중) 예외가 발생하면 ExceptionHandlerExecution을 찾아 수행한다. 
+- [x] DispatcherServlet
+  - [x] ExceptionHandlerMapping을 주입 받는다.
+  - [x] service 수행 중(handler를 가져오거나, hander 수행 중) 예외가 발생하면 ExceptionHandlerExecution을 찾아 수행한다. 
 
 

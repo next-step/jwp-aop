@@ -2,6 +2,8 @@ package core.mvc;
 
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerConverter;
+import core.mvc.tobe.ExceptionHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import next.config.MyConfiguration;
@@ -27,6 +29,11 @@ class DispatcherServletTest {
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
 
+        final ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
+        final ExceptionHandlerMapping exceptionHandlerMapping = new ExceptionHandlerMapping(ac, exceptionHandlerConverter);
+        exceptionHandlerMapping.initialize();
+
+        dispatcher.addExceptionHandlerMapping(exceptionHandlerMapping);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
     }

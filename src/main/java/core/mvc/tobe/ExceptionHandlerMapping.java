@@ -2,11 +2,13 @@ package core.mvc.tobe;
 
 import core.annotation.web.ControllerAdvice;
 import core.di.context.ApplicationContext;
+import core.mvc.HandlerMapping;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
-public class ExceptionHandlerMapping {
+public class ExceptionHandlerMapping implements HandlerMapping {
 
     private final ApplicationContext applicationContext;
     private final ExceptionHandlerConverter handlerConverter;
@@ -25,13 +27,16 @@ public class ExceptionHandlerMapping {
         }
     }
 
+    @Override
+    public HandlerExecution getHandler(final HttpServletRequest request) {
+        final Object exceptionHandler = request.getAttribute("exceptionHandler");
+        return handlerExecutions.get(exceptionHandler.getClass());
+    }
+
     private Map<Class<?>, Object> getControllerAdvices(final ApplicationContext applicationContext) {
         return applicationContext.getBeanClasses().stream()
             .filter(aClass -> aClass.isAnnotationPresent(ControllerAdvice.class))
             .collect(Collectors.toMap(aClass -> aClass, applicationContext::getBean));
     }
 
-    public HandlerExecution getHandler(Class<? extends Throwable> exceptionClazz) {
-        return handlerExecutions.get(exceptionClazz);
-    }
 }

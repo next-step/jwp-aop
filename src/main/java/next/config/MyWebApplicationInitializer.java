@@ -6,6 +6,8 @@ import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerConverter;
+import core.mvc.tobe.ExceptionHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
@@ -26,9 +28,15 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
         ahm.initialize();
 
+        final ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
+        final ExceptionHandlerMapping exceptionHandlerMapping = new ExceptionHandlerMapping(ac, exceptionHandlerConverter);
+        exceptionHandlerMapping.initialize();
+
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
+        dispatcherServlet.addExceptionHandlerMapping(exceptionHandlerMapping);
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
+//        dispatcherServlet.addHandlerMapping(exceptionHandlerMapping);
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
 
