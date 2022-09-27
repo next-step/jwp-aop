@@ -77,6 +77,15 @@ public class JdkProxyTest {
 }
 ```
 
+# 기능 요구사항 (Bean 컨테이너의 Bean 과 Proxy 를 연결)
+- Bean 컨테이너가 Bean 의 생성과 생명주기를 담당하고 있다.
+- 지금까지 Bean 컨테이너가 Bean 을 생성하는 방법은 `생성자`를 활용해서 생성했다. 그런데 Proxy 는 생성자를 활용해 생성하는 것이 아니라 훨씬 더 복잡한 과정을 거쳐야 한다.
+- Bean 컨테이너의 Bean 과 Proxy 를 연결하도록 Bean 컨테이너를 개선해야 한다.
+
+# 기능 요구사항 (재사용 가능한 FactoryBean)
+- Proxy 가 추가될 때마다 FactoryBean 을 매번 생성하는 것도 귀찮다. 공통적으로 사용할 수 있는 FactoryBean 을 만들자.
+- Target, Advice, PointCut 을 연결해 Proxy 를 생성하는 재사용 가능한 FactoryBean 을 추가한다.
+
 # 기능 목록
 - MethodMatcher 인터페이스
   - target 클래스의 특정 조건에 해당하는 메서드와 일치하는지에 대한 메서드를 제공한다.
@@ -95,3 +104,39 @@ public class JdkProxyTest {
   - 프록시 target 객체, methodMatcher 를 필드로 관리한다.
   - cglib proxy 생성 시, intercept 메서드가 호출되며 target 클래스의 메서드를 호출하기 전에 전후처리를 담당한다.
   - methodMatcher 를 통해, 특정 조건의 메서드에 대한 처리를 수행할 수 있다.
+
+** Advice, PointCut, Advisor 이용
+- Advice 인터페이스
+  - 특정 타겟 클래스에 대한 메서드를 실행하는 invoke 메서드를 제공한다.
+  - UpperCaseAdvice 구현체
+    - 특정 메서드의 반환 타입이 String 일 경우 대문자로 반환하는 부가 로직을 담당한다.
+- PointCut 인터페이스
+  - 특정 타겟 클래스에 대해 특정 조건과 일치하는 지에 대한 matches 메서드를 제공한다.
+  - SayPrefixPointCut 구현체
+    - 특정 메서드 이름이 "say" 로 시작하는지 에 대한 판별을 담당한다.
+- Advisor 객체
+  - Advice 와 PointCut 을 필드로 관리한다.
+  - 해당 advisor 를 통해 특정 메서드 조건과 일치하는 메서드를 찾고, 실행하는 역할을 담당한다.
+- AopProxy 인터페이스
+  - 타겟 클래스에 대한 프록시 객체를 반환하는 getProxy 메서드를 제공한다.
+  - JdkDynamicAopProxy 구현체
+    - 타겟 클래스와 어드바이저를 필드로 관리한다.
+    - 타겟 클래스에 대한 JdkDynamicProxy 를 반환한다.
+  - CglibAopProxy 구현체
+    - 타겟 클래스와 어드바이저를 필드로 관리한다.
+    - 타겟 클래스에 대한 CglibProxy 를 반환한다.
+- AopProxyFactory 객체
+  - 타겟 클래스에 따라 CglibProxy, 혹은 JdkDynamicProxy 를 반환하는 로직을 담당한다.  
+  - createAopProxy 메서드 (AopProxy 인터페이스 반환)
+    - 타겟 클래스와 어드바이저를 인자로 받는다.
+    - 타겟 클래스가 인터페이스를 구현할 경우 JdkDynamicProxy 를 사용한다.
+    - 타겟 클래스가 인터페이스를 구현하지 않은 경우 createAopProxy 를 사용한다.
+- FactoryBean 인터페이스
+  - 타겟 클래스에 대한 프록시 객체를 반환하는 getObject 메서드를 제공한다.
+  - 타겟 클래스의 타입을 반환하는 getObjectType 메서드를 제공한다.
+    - DefaultBeanFactory 에서 빈을 등록할 때 FactoryBean 인스턴스라면 타겟 클래스의 타입으로 빈을 등록한다. 
+  - ProxyFactoryBean 구현체
+    - 타겟 클래스와 어드바이저를 필드로 관리한다.
+      - 타겟 클래스의 타입을 제네릭으로 사용한다.
+    - 타겟 클래스에 대한 프록시 객체를 반환한다.
+    - 타겟 클래스의 타입을 반환한다.
