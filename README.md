@@ -83,9 +83,9 @@
 # 🚀 4단계 - ControllerAdvice, ExceptionHandler 구현
 
 ### 기능 목록
-- [ ] ControllerAdvice 애너테이션 추가 
-  - [ ] `@Component` 애너테이션 추가
-  - [ ] 클래스에 적용할 수 있도록 target TYPE 지정 
+- [x] ControllerAdvice 애너테이션 추가 
+  - [x] `@Component` 애너테이션 추가
+  - [x] 클래스에 적용할 수 있도록 target TYPE 지정 
 - [ ] ExceptionHandler 애너테이션 추가
   - [ ] 예외 클래스를 배열로 받을 수 있다.
   - [ ] 메서드에 적용할 수 있도록 target METHOD 로 지정
