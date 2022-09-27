@@ -1,4 +1,4 @@
-package aop;
+package core.aop;
 
 public class CGLIBHelloTarget implements Hello {
 
