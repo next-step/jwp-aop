@@ -77,3 +77,24 @@
 - [x] DefaultBeanFactory에 BeanPostProcessor 등록
   - [x] 빈을 생성한 후 등록된 BeanPostProcessor 을 거쳐 후처리 한다.
     - [x] 트랜잭션이 필요한 빈은 프록시 빈으로 등록한다
+
+---
+
+# 🚀 4단계 - ControllerAdvice, ExceptionHandler 구현
+
+### 기능 목록
+- [ ] ControllerAdvice 애너테이션 추가 
+  - [ ] `@Component` 애너테이션 추가
+  - [ ] 클래스에 적용할 수 있도록 target TYPE 지정 
+- [ ] ExceptionHandler 애너테이션 추가
+  - [ ] 예외 클래스를 배열로 받을 수 있다.
+  - [ ] 메서드에 적용할 수 있도록 target METHOD 로 지정
+- [ ] ExceptionHandlerMapping
+  - [ ] 예외클래스와 HandlerExecution들을 관리
+- [ ] ExceptionArgumentResolver
+  - [ ] 예외 클래스의 인스턴스를 받아 ExceptionHandler 애너테이션이 적용된 메서드에 주입한다.
+- [ ] DispatcherSevlet
+  - [ ] ExceptionHandlerMapping을 주입 받는다.
+  - [ ] service 수행 중(handler를 가져오거나, hander 수행 중) 예외가 발생하면 ExceptionHandlerExecution을 찾아 수행한다. 
+
+
