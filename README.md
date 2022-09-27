@@ -89,8 +89,9 @@
 - [x] ExceptionHandler 애너테이션 추가
   - [x] 예외 클래스를 값으로 받을 수 있다.
   - [x] 메서드에 적용할 수 있도록 target METHOD 로 지정
-- [ ] ExceptionArgumentResolver
-  - [ ] ExceptionHandler 애너테이션이 적용된 메서드의 인자를 반환한다
+- [x] ExceptionArgumentResolver
+  - [x] MethodParameter 의 타입이 예외인지 확인한다
+  - [x] ExceptionHandler 애너테이션이 적용된 메서드의 인자를 반환한다
 - [ ] ExceptionHandlerConverter
   - [ ] ExceptionArgumentResolver 활용 HandlerExecution 생성
 - [ ] ExceptionHandlerMapping
