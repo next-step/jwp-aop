@@ -58,3 +58,22 @@
   - [x] AnnotatedBeanDefinitionReader BeanDifinition을 생성할 때 프록시 빈의 경우 
 - [x] AopProxy
   - [x] Jdk Dynamic Proxy, CGLib Proxy를 생성할 수 있는 공통 인터페이스 
+
+---
+
+# 🚀 3단계 - Transaction AOP 구현
+
+### 기능 목록
+- [x] `@Transaction` 애너테이션 메서드가 있으면 Transaction 처리한다.
+  - [x] BeanFactory에 ProxyBean을 등록하기 위한 BeanPostProcessor
+    - [x] Transaction 처리를 위한 Pointcut, Advice, ProxyPointcutAdvisor, BeanPostProcessor
+    - [x] Advisor 타입을 추가하여 다형성 활용, JdkProxy, CglibProxy 모두 적용
+      - [x] PointcutAdvisor, ProxyPointcutAdvisor
+- [x] Thread 별로 Connection 을 유지할 수 있도록 ThreadLocal 으로 관리한다.
+  - [x] ConnectionHolder
+    - [x] Connection을 ThreadLocal로 관리한다
+  - [x] DataSourceUtils
+    - [x] ConnectionHolder를 활용하여 Connection 객체를 얻거나 반환한다.
+- [x] DefaultBeanFactory에 BeanPostProcessor 등록
+  - [x] 빈을 생성한 후 등록된 BeanPostProcessor 을 거쳐 후처리 한다.
+    - [x] 트랜잭션이 필요한 빈은 프록시 빈으로 등록한다

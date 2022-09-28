@@ -46,14 +46,14 @@ public class ApiQnaController extends AbstractNewController {
         }
 
         User user = UserSessionUtils.userFromSession(req.getSession());
+        final long questionId = Long.parseLong(req.getParameter("questionId"));
         Answer answer = new Answer(user.getUserId(), req.getParameter("contents"),
-                Long.parseLong(req.getParameter("questionId")));
+            questionId);
         logger.debug("answer : {}", answer);
 
-        Answer savedAnswer = answerDao.insert(answer);
-        questionDao.updateCountOfAnswer(savedAnswer.getQuestionId());
+        qnaService.addAnswer(questionId, answer);
 
-        return jsonView().addObject("answer", savedAnswer).addObject("result", Result.ok());
+        return jsonView().addObject("answer", answer).addObject("result", Result.ok());
     }
 
     @RequestMapping(value = "/api/qna/deleteAnswer", method = RequestMethod.POST)

@@ -16,7 +16,7 @@ class CglibAopProxyTest {
     void create() {
         // given
         final Advice advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
-        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
+        final ProxyPointcutAdvisor advisor = new ProxyPointcutAdvisor(advice, SayMethodPointcut.getInstance(), null);
         final CglibAopProxy cglibAopProxy = new CglibAopProxy(HelloService.class, advisor);
 
         // when
@@ -35,7 +35,7 @@ class CglibAopProxyTest {
     @Test
     void must_have_target() {
         final Advice advice = methodInvocation -> methodInvocation.proceed().toString().toUpperCase();
-        final PointcutAdvisor advisor = new PointcutAdvisor(advice, SayMethodPointcut.getInstance());
+        final ProxyPointcutAdvisor advisor = new ProxyPointcutAdvisor(advice, SayMethodPointcut.getInstance(), null);
 
         assertThatThrownBy(() -> new CglibAopProxy(null, advisor))
             .isInstanceOf(ProxyGenerateException.class)
