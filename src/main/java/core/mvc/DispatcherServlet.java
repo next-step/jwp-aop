@@ -1,19 +1,17 @@
 package core.mvc;
 
-import java.io.IOException;
-import java.util.Optional;
+import core.mvc.tobe.ExceptionHandlerMappings;
+import core.mvc.tobe.HandlerExecution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-
-import core.mvc.tobe.ExceptionHandlerMappings;
-import core.mvc.tobe.HandlerExecution;
+import java.io.IOException;
+import java.util.Optional;
 
 public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -77,11 +75,11 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private HandlerExecution getExceptionHandler(Object handler, Throwable throwable) {
-        HandlerExecution exceptionHandler = exceptionHandlerMappings.getControllerExceptionHandler(handler.getClass());
-        if (exceptionHandler != null) {
-            return exceptionHandler;
+    private HandlerExecution getExceptionHandler(Object handler, Throwable throwable) throws ServletException {
+        HandlerExecution exceptionHandler = exceptionHandlerMappings.getExceptionHandler(handler, throwable);
+        if (exceptionHandler == null) {
+            throw new ServletException("No exception handler is found");
         }
-        return exceptionHandlerMappings.getControllerAdviceExceptionHandler(throwable.getClass());
+        return exceptionHandler;
     }
 }

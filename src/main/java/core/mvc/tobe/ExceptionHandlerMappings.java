@@ -1,40 +1,34 @@
 package core.mvc.tobe;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
-import com.google.common.collect.Maps;
-
 import core.annotation.web.Controller;
-import core.annotation.web.ControllerAdvice;
 import core.di.context.ApplicationContext;
 
 public class ExceptionHandlerMappings {
 
-    private final Map<Class<? extends Throwable>, HandlerExecution> controllerAdviceExceptionHandlers = Maps.newHashMap();
-    private final Map<Class<?>, HandlerExecution> controllerExceptionHandlers = Maps.newHashMap();
+    private final ControllerExceptionHandlerMapping controllerExceptionMapping;
+    private final ControllerAdviceExceptionHandlerMapping controllerAdviceExceptionMapping;
 
-    public ExceptionHandlerMappings(ApplicationContext applicationContext, ExceptionHandlerConverter handlerConverter) {
-        Map<Class<?>, Object> controllerAdvices = getHandlersAnnotatedWith(applicationContext, ControllerAdvice.class);
-        controllerAdviceExceptionHandlers.putAll(handlerConverter.convert(controllerAdvices));
-        Map<Class<?>, Object> controllers = getHandlersAnnotatedWith(applicationContext, Controller.class);
-        controllerExceptionHandlers.putAll(handlerConverter.convert(controllers));
+    public ExceptionHandlerMappings(ApplicationContext applicationContext, ExceptionHandlerConverter converter) {
+        this.controllerExceptionMapping = new ControllerExceptionHandlerMapping(applicationContext, converter);
+        this.controllerAdviceExceptionMapping = new ControllerAdviceExceptionHandlerMapping(applicationContext, converter);
     }
 
-    private Map<Class<?>, Object> getHandlersAnnotatedWith(ApplicationContext applicationContext, Class<? extends Annotation> annotationClass) {
-        Map<Class<?>, Object> handlers = Maps.newHashMap();
-        applicationContext.getBeanClasses()
-            .stream()
-            .filter(clazz -> clazz.isAnnotationPresent(annotationClass))
-            .forEach(clazz -> handlers.put(clazz, applicationContext.getBean(clazz)));
-        return handlers;
+    public ExceptionHandlerExecution getExceptionHandler(Object handler, Throwable throwable) {
+        ExceptionHandlerExecution exceptionHandler = null;
+
+        if (isController(handler)) {
+            exceptionHandler = controllerExceptionMapping.getExceptionHandler(handler);
+        }
+
+        if (exceptionHandler == null) {
+            exceptionHandler = controllerAdviceExceptionMapping.getExceptionHandler(throwable);
+        }
+
+        return exceptionHandler;
     }
 
-    public HandlerExecution getControllerExceptionHandler(Class<?> controllerClass) {
-        return controllerExceptionHandlers.get(controllerClass);
-    }
-
-    public HandlerExecution getControllerAdviceExceptionHandler(Class<? extends Throwable> exceptionClass) {
-        return controllerAdviceExceptionHandlers.get(exceptionClass);
+    private static boolean isController(Object handler) {
+        HandlerExecution handlerExecution = (HandlerExecution) handler;
+        return handlerExecution.getTargetClass().isAnnotationPresent(Controller.class);
     }
 }
