@@ -2,5 +2,5 @@ package core.mvc.tobe;
 
 public interface ExceptionHandlerMapping {
 
-    ExceptionHandlerExecution getExceptionHandler(Object key);
+    HandlerExecution getExceptionHandler(Object handler, Throwable throwable);
 }

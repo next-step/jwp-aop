@@ -1,23 +1,32 @@
 package core.mvc.tobe;
 
+import java.util.Map;
+
 import com.google.common.collect.Maps;
+
 import core.annotation.web.Controller;
 import core.di.context.ApplicationContext;
 
-import java.util.Map;
+public class ControllerExceptionHandlerMapping extends AbstractExceptionHandlerMapping {
 
-public class ControllerExceptionHandlerMapping implements ExceptionHandlerMapping {
+    private final Map<Class<?>, HandlerExecution> handlers = Maps.newHashMap();
 
-    private final Map<Class<?>, ExceptionHandlerExecution> handlers = Maps.newHashMap();
-
-    public ControllerExceptionHandlerMapping(ApplicationContext applicationContext, ExceptionHandlerConverter converter) {
+    public ControllerExceptionHandlerMapping(ApplicationContext applicationContext,
+                                             ExceptionHandlerConverter converter) {
         Map<Class<?>, Object> controllers = applicationContext.getBeansAnnotatedWith(Controller.class);
         handlers.putAll(converter.convert(controllers));
     }
 
     @Override
-    public ExceptionHandlerExecution getExceptionHandler(Object key) {
-        HandlerExecution handler = (HandlerExecution) key;
-        return handlers.get(handler.getTargetClass());
+    public HandlerExecution getExceptionHandler(Object handler, Throwable throwable) {
+        HandlerExecution exceptionHandler = handlers.get(throwable.getClass());
+        if (exceptionHandler != null && hasSameTargetClass(handler, exceptionHandler)) {
+            return exceptionHandler;
+        }
+        return null;
+    }
+
+    private boolean hasSameTargetClass(Object handler, HandlerExecution exceptionHandler) {
+        return ((HandlerExecution) handler).hasSameTarget(exceptionHandler);
     }
 }

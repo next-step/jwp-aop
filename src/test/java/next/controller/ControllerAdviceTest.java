@@ -1,19 +1,27 @@
 package next.controller;
 
-import core.di.context.support.AnnotationConfigApplicationContext;
-import core.mvc.DispatcherServlet;
-import core.mvc.tobe.*;
-import next.config.MyConfiguration;
+import static org.assertj.core.api.Assertions.*;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import core.di.context.support.AnnotationConfigApplicationContext;
+import core.mvc.DispatcherServlet;
+import core.mvc.tobe.AbstractExceptionHandlerMapping;
+import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ControllerAdviceExceptionHandlerMapping;
+import core.mvc.tobe.ControllerExceptionHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerConverter;
+import core.mvc.tobe.HandlerConverter;
+import core.mvc.tobe.HandlerExecutionHandlerAdapter;
+import next.config.MyConfiguration;
 
 class ControllerAdviceTest {
 
@@ -23,13 +31,20 @@ class ControllerAdviceTest {
     void setUp() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
+
+        ExceptionHandlerConverter converter = ac.getBean(ExceptionHandlerConverter.class);
+        AbstractExceptionHandlerMapping controllerExceptionHandlerMapping = new ControllerExceptionHandlerMapping(ac, converter);
+        controllerExceptionHandlerMapping.setOrder(0);
+        AbstractExceptionHandlerMapping controllerAdviceExceptionHandlerMapping = new ControllerAdviceExceptionHandlerMapping(ac, converter);
+        controllerAdviceExceptionHandlerMapping.setOrder(1);
+
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
+        dispatcher.addExceptionHandlerMapping(controllerAdviceExceptionHandlerMapping);
+        dispatcher.addExceptionHandlerMapping(controllerExceptionHandlerMapping);
 
-        ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
-        ExceptionHandlerMappings exceptionHandlerMappings = new ExceptionHandlerMappings(ac, exceptionHandlerConverter);
-        dispatcher.setExceptionHandlerMapping(exceptionHandlerMappings);
+        dispatcher.initStrategiesByExceptionHandlers();
     }
 
     @DisplayName("@ControllerAdvice 의 @ExceptionHandler 로 예외를 처리한다.")

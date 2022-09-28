@@ -1,6 +1,7 @@
 package core.mvc;
 
-import core.mvc.tobe.ExceptionHandlerMappings;
+import core.mvc.tobe.ExceptionHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerMappingRegistry;
 import core.mvc.tobe.HandlerExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class DispatcherServlet extends HttpServlet {
 
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
-    private ExceptionHandlerMappings exceptionHandlerMappings;
+    private final ExceptionHandlerMappingRegistry exceptionHandlerMappingRegistry = new ExceptionHandlerMappingRegistry();
 
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
@@ -33,8 +34,12 @@ public class DispatcherServlet extends HttpServlet {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
     }
 
-    public void setExceptionHandlerMapping(ExceptionHandlerMappings exceptionHandlerMappings) {
-        this.exceptionHandlerMappings = exceptionHandlerMappings;
+    public void addExceptionHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
+        exceptionHandlerMappingRegistry.addExceptionHandlerMapping(exceptionHandlerMapping);
+    }
+
+    public void initStrategiesByExceptionHandlers() {
+        exceptionHandlerMappingRegistry.initExceptionHandlerMappings();
     }
 
     @Override
@@ -76,7 +81,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private HandlerExecution getExceptionHandler(Object handler, Throwable throwable) throws ServletException {
-        HandlerExecution exceptionHandler = exceptionHandlerMappings.getExceptionHandler(handler, throwable);
+        HandlerExecution exceptionHandler = exceptionHandlerMappingRegistry.getExceptionHandler(handler, throwable);
         if (exceptionHandler == null) {
             throw new ServletException("No exception handler is found");
         }
