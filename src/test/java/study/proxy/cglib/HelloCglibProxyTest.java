@@ -3,18 +3,18 @@ package study.proxy.cglib;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.cglib.proxy.Enhancer;
-import study.proxy.NameMethodMatcher;
+import study.proxy.SayPrefixMethodMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class HelloCglibProxyTest {
+class HelloCglibProxyTest {
     @Test
     @DisplayName("Cglib Proxy 학습 테스트 (say 로 시작하지 않는 메소드는 대문자로 변경 X)")
     void cglibProxyTest() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback(new HelloUpperCaseMethodInterceptor(new HelloTarget(), new NameMethodMatcher("say")));
+        enhancer.setCallback(new HelloUpperCaseMethodInterceptor(new HelloTarget(), new SayPrefixMethodMatcher()));
         HelloTarget helloProxy = (HelloTarget) enhancer.create();
 
         assertAll(
