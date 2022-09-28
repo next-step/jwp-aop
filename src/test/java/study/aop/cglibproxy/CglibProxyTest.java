@@ -14,10 +14,7 @@ public class CglibProxyTest {
 
     @BeforeEach
     void setUp() {
-        final Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(HelloTarget.class);
-        enhancer.setCallback(new CustomMethodInterceptor());
-        proxyInstance = (HelloTarget) enhancer.create();
+        proxyInstance = (HelloTarget) Enhancer.create(HelloTarget.class, new CustomMethodInterceptor());
     }
 
     @DisplayName("프록시 객체의 sayHello 메서드를 호출하면 대문자로 변환된 결과를 반환한다.")

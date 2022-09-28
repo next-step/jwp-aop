@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DynamicInvocationHandler implements InvocationHandler {
+public class DynamicInvocationHandler extends SayMethodMatcher implements InvocationHandler {
 	private final Object target;
 	private final Map<String, Method> methods = new HashMap<>();
 
@@ -22,7 +22,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		System.out.printf("invoke method name: %s, args: %s%n", method.getName(), Arrays.toString(args));
 		final Object result = methods.get(method.getName()).invoke(target, args);
-		if (new SayMethodMatcher().matches(method, target.getClass(), args)) {
+		if (matches(method, target.getClass(), args)) {
 			return result.toString().toUpperCase();
 		}
 		return result;
