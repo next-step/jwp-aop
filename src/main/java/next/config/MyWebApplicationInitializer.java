@@ -7,7 +7,7 @@ import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.ExceptionHandlerConverter;
-import core.mvc.tobe.ExceptionHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerMappings;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
@@ -29,14 +29,14 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         ahm.initialize();
 
         ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
-        ExceptionHandlerMapping exceptionHandlerMapping = new ExceptionHandlerMapping(ac, exceptionHandlerConverter);
+        ExceptionHandlerMappings exceptionHandlerMappings = new ExceptionHandlerMappings(ac, exceptionHandlerConverter);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
-        dispatcherServlet.setExceptionHandlerMapping(exceptionHandlerMapping);
+        dispatcherServlet.setExceptionHandlerMapping(exceptionHandlerMappings);
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);

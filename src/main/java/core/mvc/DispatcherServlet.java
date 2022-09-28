@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import core.mvc.tobe.ExceptionHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerMappings;
 import core.mvc.tobe.HandlerExecution;
 
 public class DispatcherServlet extends HttpServlet {
@@ -25,7 +25,7 @@ public class DispatcherServlet extends HttpServlet {
 
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
-    private ExceptionHandlerMapping exceptionHandlerMapping;
+    private ExceptionHandlerMappings exceptionHandlerMappings;
 
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
@@ -35,8 +35,8 @@ public class DispatcherServlet extends HttpServlet {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
     }
 
-    public void setExceptionHandlerMapping(ExceptionHandlerMapping exceptionHandlerMapping) {
-        this.exceptionHandlerMapping = exceptionHandlerMapping;
+    public void setExceptionHandlerMapping(ExceptionHandlerMappings exceptionHandlerMappings) {
+        this.exceptionHandlerMappings = exceptionHandlerMappings;
     }
 
     @Override
@@ -78,10 +78,10 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private HandlerExecution getExceptionHandler(Object handler, Throwable throwable) {
-        HandlerExecution exceptionHandler = exceptionHandlerMapping.getControllerExceptionHandler(handler.getClass());
+        HandlerExecution exceptionHandler = exceptionHandlerMappings.getControllerExceptionHandler(handler.getClass());
         if (exceptionHandler != null) {
             return exceptionHandler;
         }
-        return exceptionHandlerMapping.getControllerAdviceExceptionHandler(throwable.getClass());
+        return exceptionHandlerMappings.getControllerAdviceExceptionHandler(throwable.getClass());
     }
 }

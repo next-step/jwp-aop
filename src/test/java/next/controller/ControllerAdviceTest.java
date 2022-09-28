@@ -16,7 +16,7 @@ import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.DispatcherServlet;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.ExceptionHandlerConverter;
-import core.mvc.tobe.ExceptionHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerMappings;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import next.config.MyConfiguration;
@@ -34,8 +34,8 @@ class ControllerAdviceTest {
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
 
         ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
-        ExceptionHandlerMapping exceptionHandlerMapping = new ExceptionHandlerMapping(ac, exceptionHandlerConverter);
-        dispatcher.setExceptionHandlerMapping(exceptionHandlerMapping);
+        ExceptionHandlerMappings exceptionHandlerMappings = new ExceptionHandlerMappings(ac, exceptionHandlerConverter);
+        dispatcher.setExceptionHandlerMapping(exceptionHandlerMappings);
     }
 
     @DisplayName("RequiredLoginException 예외가 발생하면 로그인 페이지로 이동한다.")
