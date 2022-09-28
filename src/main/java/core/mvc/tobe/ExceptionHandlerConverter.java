@@ -1,20 +1,18 @@
 package core.mvc.tobe;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import core.annotation.web.Controller;
+import core.annotation.web.ExceptionHandler;
+import core.mvc.tobe.support.ArgumentResolver;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import core.annotation.web.Controller;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import core.annotation.web.ExceptionHandler;
-import core.mvc.tobe.support.ArgumentResolver;
 
 public class ExceptionHandlerConverter {
 
@@ -44,11 +42,19 @@ public class ExceptionHandlerConverter {
 
     private void addExceptionHandler(Map<Class<?>, ExceptionHandlerExecution> exceptionHandlers, Object target, Method method) {
         ExceptionHandler exceptionHandler = method.getAnnotation(ExceptionHandler.class);
-        Class<? extends Throwable>[] exceptions = exceptionHandler.value();
-        for (Class<? extends Throwable> exception : exceptions) {
-            ExceptionHandlerExecution handlerExecution = new ExceptionHandlerExecution(nameDiscoverer, argumentResolvers, target, method, exception);
-            Class<?> key = target.getClass().isAnnotationPresent(Controller.class) ? target.getClass() : exception;
+        Class<? extends Throwable>[] exceptionClasses = exceptionHandler.value();
+        for (Class<? extends Throwable> exceptionClass : exceptionClasses) {
+            ExceptionHandlerExecution handlerExecution = new ExceptionHandlerExecution(nameDiscoverer, argumentResolvers, target, method, exceptionClass);
+            Class<?> key = getKey(target, exceptionClass);
             exceptionHandlers.put(key, handlerExecution);
         }
+    }
+
+    private Class<?> getKey(Object target, Class<? extends Throwable> exceptionClass) {
+        Class<?> targetClass = target.getClass();
+        if (targetClass.isAnnotationPresent(Controller.class)) {
+            return targetClass;
+        }
+        return exceptionClass;
     }
 }
