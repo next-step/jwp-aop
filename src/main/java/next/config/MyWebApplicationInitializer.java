@@ -36,7 +36,6 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         dispatcherServlet.addExceptionHandlerMapping(exceptionHandlerMapping);
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
-//        dispatcherServlet.addHandlerMapping(exceptionHandlerMapping);
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
 
