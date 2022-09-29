@@ -1,16 +1,18 @@
 package core.mvc.tobe;
 
-import core.mvc.ModelAndView;
-import core.mvc.tobe.support.ArgumentResolver;
-import org.springframework.core.ParameterNameDiscoverer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.core.ParameterNameDiscoverer;
+
+import core.mvc.ModelAndView;
+import core.mvc.tobe.support.ArgumentResolver;
 
 public class HandlerExecution {
 
@@ -67,5 +69,11 @@ public class HandlerExecution {
         throw new IllegalStateException("No suitable resolver for argument: " + methodParameter.getType());
     }
 
+    public boolean hasSameTarget(HandlerExecution handlerExecution) {
+        return getTargetClass() == handlerExecution.getTargetClass();
+    }
 
+    public Class<?> getTargetClass() {
+        return target.getClass();
+    }
 }

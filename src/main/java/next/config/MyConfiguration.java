@@ -4,6 +4,7 @@ import core.annotation.Bean;
 import core.annotation.ComponentScan;
 import core.annotation.Configuration;
 import core.jdbc.JdbcTemplate;
+import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.support.*;
 import next.security.LoginUserArgumentResolver;
@@ -32,6 +33,12 @@ public class MyConfiguration {
         return new JdbcTemplate(dataSource);
     }
 
+    @Bean
+    public ExceptionHandlerConverter exceptionHandlerConverter() {
+        ExceptionHandlerConverter exceptionHandlerConverter = new ExceptionHandlerConverter();
+        exceptionHandlerConverter.setArgumentResolvers(defaultArgumentResolvers());
+        return exceptionHandlerConverter;
+    }
 
     @Bean
     public HandlerConverter handlerConverter() {
