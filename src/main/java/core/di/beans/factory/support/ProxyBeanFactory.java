@@ -3,15 +3,18 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.annotation.Transactional;
+import core.aop.ProxyFactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
-import core.aop.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -30,6 +33,25 @@ public class ProxyBeanFactory implements BeanDefinitionRegistry, ConfigurableLis
     public void preInstantiateSingletons() {
         for (Class<?> clazz : getBeanClasses()) {
             getBean(clazz);
+        }
+
+        transactionalAop();
+    }
+
+    private void transactionalAop() {
+        for (Entry<Class<?>, Object> classObjectEntry : beans.entrySet()) {
+            Class<?> key = classObjectEntry.getKey();
+            Object value = classObjectEntry.getValue();
+
+            if (key.isAnnotationPresent(Transactional.class)
+                || Arrays.stream(key.getDeclaredMethods()).anyMatch(method -> method.isAnnotationPresent(Transactional.class))) {
+                try {
+                    ProxyFactoryBean transactionalBean = ProxyFactoryBean.transactionalBean(value, this);
+                    beans.put(key, transactionalBean.getObject());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -64,16 +86,17 @@ public class ProxyBeanFactory implements BeanDefinitionRegistry, ConfigurableLis
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
 
-        if (bean instanceof FactoryBean) {
-            FactoryBean factory = (FactoryBean) bean;
-            try {
-                Object beanObject = factory.getObject();
-                beans.put(factory.getObjectType(), beanObject);
-                return (T) beanObject;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        // FactoryBean 확인
+//        if (bean instanceof FactoryBean) {
+//            FactoryBean factory = (FactoryBean) bean;
+//            try {
+//                Object beanObject = factory.getObject();
+//                beans.put(factory.getObjectType(), beanObject);
+//                return (T) beanObject;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         beans.put(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());

@@ -3,6 +3,8 @@ package core.aop;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import core.aop.Advice.UpperCaseAdvice;
+import core.aop.PointCut.MethodNameStartsWithPointCut;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import study.aop.Hello;
@@ -15,9 +17,13 @@ class ProxyFactoryBeanTest {
         Advice advice = new UpperCaseAdvice();
         PointCut pointCut = new MethodNameStartsWithPointCut("say");
         Advisor advisor = new Advisor(advice, pointCut);
-        Hello hello = new HelloTarget();
+        Hello originHello = new HelloTarget();
 
-        FactoryBean helloProxyFactoryBean = new ProxyFactoryBean(hello, Arrays.asList(advisor));
+        assertThat(originHello.sayHello("test")).isEqualTo("Hello test");
+        assertThat(originHello.sayHi("test")).isEqualTo("Hi test");
+        assertThat(originHello.sayThankYou("test")).isEqualTo("Thank You test");
+
+        FactoryBean helloProxyFactoryBean = new ProxyFactoryBean(originHello, Arrays.asList(advisor), null);
 
         Hello helloProxy = (Hello) helloProxyFactoryBean.getObject();
 

@@ -1,10 +1,13 @@
 package next.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
-import java.util.Date;
+import core.jdbc.DataAccessException;
+import java.util.List;
+import javassist.NotFoundException;
 import next.config.MyConfiguration;
 import next.model.Answer;
 import next.model.Question;
@@ -37,7 +40,7 @@ class QnaServiceTest {
 
     @DisplayName("Question 에 Answer 을 추가하면 코멘트 개수가 증가한다.")
     @Test
-    void addAnswerTest1() {
+    void addAnswerTest1() throws NotFoundException {
         final Long questionId = 7L;
         final int initialCount = 2;
         Answer answer = new Answer("testWriter", "testContents", questionId);
@@ -51,14 +54,15 @@ class QnaServiceTest {
     @DisplayName("Question 에 Answer 추가하고 코멘트 개수 증가 중 에러가 나면 추가했던 것이 롤백된다.")
     @Test
     void addAnswerTest2() {
-        final Long questionId = 7L;
-        final int initialCount = 2;
+        final Long questionId = 77L;
         Answer answer = new Answer("testWriter", "testContents", questionId);
 
-        qnaService.addAnswer(answer);
-        Question foundQuestion = qnaService.findById(questionId);
+        assertThatThrownBy(
+            () -> qnaService.addAnswer(answer)
+        ).isInstanceOf(DataAccessException.class);
 
-        assertThat(foundQuestion.getCountOfComment()).isEqualTo(initialCount);
+        List<Answer> answers = qnaService.findAllByQuestionId(questionId);
+        assertThat(answers).isEmpty();
     }
 
 }
