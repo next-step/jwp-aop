@@ -6,8 +6,12 @@
 - [x] 부가기능이 추가될 Method 선정을 위한 MethodMatcher 적용
 
 ## 3단계 요구사항
-- [ ] DB Transaction 처리를 하고 싶은 메소드에 @Transactional 애노테이션을 추가하면 Transaction 처리가 가능하도록 해야 한다.
-- [ ] 다음 예제 코드와 같이 addAnswer() 메소드에 Transactional을 설정하면 addAnswer() 메소드는 하나의 Transaction으로 묶여서 처리되어야 한다.
+- [x] DB Transaction 처리를 하고 싶은 메소드에 @Transactional 애노테이션을 추가하면 Transaction 처리가 가능하도록 해야 한다.
+- [x] 다음 예제 코드와 같이 addAnswer() 메소드에 Transactional을 설정하면 addAnswer() 메소드는 하나의 Transaction으로 묶여서 처리되어야 한다.
+
+## 4단계 요구사항
+- [ ] Controller, ArgumentResolver와 같은 곳에서 Exception이 발생할 경우 Exception을 처리할 수 있어야 한다. 
+  - (현재 구현된 버전의 코드는 로그인하지 않은 사용자가 글쓰기 버튼을 클릭하면 Exception이 발생해 에러 메시지가 보인다. Exception 처리를 통해 로그인 페이지로 이동하도록 해야 한다.)
 
 ---
 
