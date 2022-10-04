@@ -11,13 +11,8 @@ public class TransactionalClassFilter implements ClassFilter {
             return true;
         }
 
-        if (Arrays.stream(clazz.getDeclaredMethods())
-            .anyMatch(method -> method.isAnnotationPresent(Transactional.class)))
-        {
-            return true;
-        }
-
-        return false;
+        return Arrays.stream(clazz.getDeclaredMethods())
+            .anyMatch(method -> method.isAnnotationPresent(Transactional.class));
     }
 
 }
