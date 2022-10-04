@@ -2,8 +2,10 @@ package core.di.context.support;
 
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
+import core.di.beans.factory.BeanFactory;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.DefaultBeanFactory;
+import core.di.beans.factory.support.ProxyBeanFactory;
 import core.di.context.ApplicationContext;
 import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
@@ -17,11 +19,11 @@ import java.util.Set;
 public class AnnotationConfigApplicationContext implements ApplicationContext {
     private static final Logger log = LoggerFactory.getLogger(AnnotationConfigApplicationContext.class);
 
-    private DefaultBeanFactory beanFactory;
+    private ProxyBeanFactory beanFactory;
 
     public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
         Object[] basePackages = findBasePackages(annotatedClasses);
-        beanFactory = new DefaultBeanFactory();
+        beanFactory = new ProxyBeanFactory();
         BeanDefinitionReader abdr = new AnnotatedBeanDefinitionReader(beanFactory);
         abdr.loadBeanDefinitions(annotatedClasses);
 

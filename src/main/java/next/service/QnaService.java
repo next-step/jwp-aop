@@ -2,6 +2,8 @@ package next.service;
 
 import core.annotation.Inject;
 import core.annotation.Service;
+import core.annotation.Transactional;
+import javassist.NotFoundException;
 import next.CannotDeleteException;
 import next.dao.AnswerDao;
 import next.dao.QuestionDao;
@@ -13,6 +15,7 @@ import java.util.List;
 
 @Service
 public class QnaService {
+
     private QuestionDao questionDao;
     private AnswerDao answerDao;
 
@@ -20,6 +23,18 @@ public class QnaService {
     public QnaService(QuestionDao questionDao, AnswerDao answerDao) {
         this.questionDao = questionDao;
         this.answerDao = answerDao;
+    }
+
+    @Transactional
+    public void addAnswer(Answer answer) throws NotFoundException {
+        answerDao.insert(answer);
+
+        Question question = questionDao.findById(answer.getQuestionId());
+        if (question == null) {
+            throw new NotFoundException("Question 없음");
+        }
+
+        questionDao.updateCountOfAnswer(answer.getQuestionId());
     }
 
     public Question findById(long questionId) {
@@ -30,6 +45,7 @@ public class QnaService {
         return answerDao.findAllByQuestionId(questionId);
     }
 
+    @Transactional
     public void deleteQuestion(long questionId, User user) throws CannotDeleteException {
         Question question = questionDao.findById(questionId);
         if (question == null) {
