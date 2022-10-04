@@ -34,7 +34,7 @@ class TransactionalClassFilterTest {
     static class UseTransactionalClass { }
 
     @ActiveProfiles
-    @Service
+    @ComponentScan
     static class UnuseTransactionalClass { }
 
 }
