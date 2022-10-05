@@ -1,45 +1,25 @@
 package core.aop.factorybean;
 
-import core.aop.DynamicInvocationHandler;
+import core.aop.Advisor;
+import core.aop.CGLIBProxy;
 import core.aop.FactoryBean;
-import core.aop.PrefixSayMatcher;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.InvocationHandler;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.Proxy;
+import core.aop.JDKProxy;
 
 public class ProxyFactoryBean<T> implements FactoryBean<T> {
 
-    private T target;
-    private Class<?> superClass;
-    private MethodInterceptor methodInterceptor;
-    private InvocationHandler invocationHandler;
+    private final T target;
+    private final Advisor advisor;
+
+    public ProxyFactoryBean(T target, Advisor advisor) {
+        this.target = target;
+        this.advisor = advisor;
+    }
 
     @Override
     public T getObject() {
-        if (methodInterceptor != null) {
-            return (T) Enhancer.create(target.getClass(), methodInterceptor);
+        if (target.getClass().getInterfaces().length > 0) {
+            return (T) new JDKProxy(target, advisor).proxy();
         }
-
-        return (T) Proxy.newProxyInstance(superClass.getClassLoader(),
-                new Class[]{superClass},
-                new DynamicInvocationHandler(target, new PrefixSayMatcher()));
-
-    }
-
-    public void setMethodInterceptor(MethodInterceptor methodInterceptor) {
-        this.methodInterceptor = methodInterceptor;
-    }
-
-    public void setTarget(T target) {
-        this.target = target;
-    }
-
-    public void setSuperClass(Class<T> superClass) {
-        this.superClass = superClass;
-    }
-
-    public void setInvocationHandler(InvocationHandler invocationHandler) {
-        this.invocationHandler = invocationHandler;
+        return (T) new CGLIBProxy(target, advisor).proxy();
     }
 }
