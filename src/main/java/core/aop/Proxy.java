@@ -1,2 +1,5 @@
-package core.aop;public class Proxy {
+package core.aop;
+
+public interface Proxy {
+    Object proxy();
 }
