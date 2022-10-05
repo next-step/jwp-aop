@@ -1,8 +1,8 @@
 package aop;
 
-import core.aop.HelloTarget;
-import core.aop.PrefixSayMatcher;
-import core.aop.UpperMethodInterceptor;
+import core.aop.test.HelloTarget;
+import core.aop.test.PrefixSayMatcher;
+import core.aop.test.UpperMethodInterceptor;
 import net.sf.cglib.proxy.Enhancer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

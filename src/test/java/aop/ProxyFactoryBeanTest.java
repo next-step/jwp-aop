@@ -1,7 +1,11 @@
 package aop;
 
-import core.aop.*;
+import core.aop.Advice;
+import core.aop.Advisor;
+import core.aop.FactoryAdvisor;
+import core.aop.Pointcut;
 import core.aop.factorybean.ProxyFactoryBean;
+import core.aop.test.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,16 +17,13 @@ public class ProxyFactoryBeanTest {
 
     @BeforeEach
     void setup() {
-        CGLIBHelloTarget cglibHelloTarget = new CGLIBHelloTarget();
-        HelloTarget helloTarget = new HelloTarget();
+        Advice upperAdvice = new UpperAdvice();
+        Pointcut pointcut = new SayPointcut();
+        Advisor advisor = new FactoryAdvisor(upperAdvice, pointcut);
 
-        cglibHelloTargetProxyFactoryBean = new ProxyFactoryBean<>();
-        cglibHelloTargetProxyFactoryBean.setTarget(cglibHelloTarget);
-        cglibHelloTargetProxyFactoryBean.setMethodInterceptor(new UpperMethodInterceptor(new PrefixSayMatcher()));
+        jdkHelloFactoryBean = new ProxyFactoryBean<>(new HelloTarget(), advisor);
 
-        jdkHelloFactoryBean = new ProxyFactoryBean<>();
-        jdkHelloFactoryBean.setSuperClass(Hello.class);
-        jdkHelloFactoryBean.setInvocationHandler(new DynamicInvocationHandler(helloTarget, new PrefixSayMatcher()));
+        cglibHelloTargetProxyFactoryBean = new ProxyFactoryBean<>(new CGLIBHelloTarget(), advisor);
     }
 
     @Test

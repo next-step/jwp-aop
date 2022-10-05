@@ -1,4 +1,4 @@
-package core.aop;
+package core.aop.test;
 
 public class HelloTarget implements Hello {
 

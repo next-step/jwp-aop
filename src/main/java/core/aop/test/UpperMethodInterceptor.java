@@ -1,5 +1,6 @@
-package core.aop;
+package core.aop.test;
 
+import core.aop.MethodMatcher;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 

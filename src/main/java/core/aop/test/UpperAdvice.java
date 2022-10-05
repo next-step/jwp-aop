@@ -1,4 +1,6 @@
-package core.aop;
+package core.aop.test;
+
+import core.aop.Advice;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

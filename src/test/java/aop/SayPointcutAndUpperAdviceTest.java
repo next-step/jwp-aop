@@ -1,9 +1,8 @@
 package aop;
 
-import core.aop.Hello;
-import core.aop.HelloTarget;
-import core.aop.SayPointcut;
-import core.aop.UpperAdvice;
+import core.aop.test.HelloTarget;
+import core.aop.test.SayPointcut;
+import core.aop.test.UpperAdvice;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

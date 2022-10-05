@@ -1,9 +1,9 @@
 package aop;
 
-import core.aop.DynamicInvocationHandler;
-import core.aop.Hello;
-import core.aop.HelloTarget;
-import core.aop.PrefixSayMatcher;
+import core.aop.test.DynamicInvocationHandler;
+import core.aop.test.Hello;
+import core.aop.test.HelloTarget;
+import core.aop.test.PrefixSayMatcher;
 import net.sf.cglib.proxy.Proxy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

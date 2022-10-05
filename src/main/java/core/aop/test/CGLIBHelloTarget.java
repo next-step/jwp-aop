@@ -1,6 +1,6 @@
-package core.aop;
+package core.aop.test;
 
-public class CGLIBHelloTarget implements Hello {
+public class CGLIBHelloTarget {
 
     public String sayHello(String name) {
         return "Hello " + name;
@@ -14,7 +14,6 @@ public class CGLIBHelloTarget implements Hello {
         return "Thank You " + name;
     }
 
-    @Override
     public String pinpong(String name) {
         return "pingpong " + name;
     }
