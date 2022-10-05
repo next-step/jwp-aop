@@ -3,6 +3,7 @@ package core.di.beans.factory.support;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
+import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
@@ -48,7 +49,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
         if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(b -> putBean(clazz, b));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
@@ -61,9 +62,20 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
+        putBean(concreteClazz.get(), bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
+    }
+
+    private <T> void putBean(Class<T> clazz, Object bean) {
+
+        if (FactoryBean.class.isAssignableFrom(bean.getClass())) {
+            FactoryBean<T> factoryBean = (FactoryBean<T>) bean;
+            beans.put(factoryBean.getClass(), factoryBean.getObject());
+            return ;
+        }
+
+        beans.put(clazz, bean);
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
@@ -141,6 +153,6 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     @Override
     public void registerBeanDefinition(Class<?> clazz, BeanDefinition beanDefinition) {
         log.debug("register bean : {}", clazz);
-        beanDefinitions.put(clazz, beanDefinition);
+        beanDefinitions.put(beanDefinition.getBeanClass(), beanDefinition);
     }
 }
