@@ -11,6 +11,7 @@ import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
 public class ClasspathBeanDefinitionScanner {
     private final BeanDefinitionRegistry beanDefinitionRegistry;
@@ -23,7 +24,7 @@ public class ClasspathBeanDefinitionScanner {
     public void doScan(Object... basePackages) {
         Reflections reflections = new Reflections(basePackages);
         Set<Class<?>> beanClasses = getTypesAnnotatedWith(reflections, Controller.class, Service.class,
-                Repository.class, Component.class);
+                Repository.class, Component.class, ControllerAdvice.class);
         for (Class<?> clazz : beanClasses) {
             beanDefinitionRegistry.registerBeanDefinition(clazz, new DefaultBeanDefinition(clazz));
         }

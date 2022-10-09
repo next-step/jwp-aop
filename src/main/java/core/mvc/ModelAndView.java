@@ -31,4 +31,8 @@ public class ModelAndView {
     public View getView() {
         return view;
     }
+
+    public boolean hasView() {
+        return view != null;
+    }
 }
