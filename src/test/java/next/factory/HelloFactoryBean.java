@@ -19,4 +19,9 @@ public class HelloFactoryBean implements FactoryBean<HelloTarget> {
     public HelloTarget getObject() throws Exception {
         return enhancerWrapper.create();
     }
+
+    @Override
+    public Class<HelloTarget> getObjectType() {
+        return clazz;
+    }
 }

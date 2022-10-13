@@ -49,7 +49,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
         if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, getBeanInstance(b)));
+            optionalBean.ifPresent(b -> putBeans(clazz, b));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
@@ -62,16 +62,18 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
-        beans.put(clazz, getBeanInstance(bean));
+        putBeans(clazz, bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
     }
 
-    private <T> Object getBeanInstance(Object beanInstance) {
+    private <T> void putBeans(Class<T> clazz, Object beanInstance) {
         if (beanInstance instanceof FactoryBean) {
-            return getFactoryBean((FactoryBean<T>) beanInstance);
+            FactoryBean<T> factoryBean = (FactoryBean<T>) beanInstance;
+            beans.put(((FactoryBean) beanInstance).getObjectType(), getFactoryBean(factoryBean));
+            return;
         }
-        return beanInstance;
+        beans.put(clazz, beanInstance);
     }
 
     private <T> T getFactoryBean(FactoryBean<T> factoryBean) {

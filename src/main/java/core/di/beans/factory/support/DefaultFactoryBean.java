@@ -18,4 +18,9 @@ public class DefaultFactoryBean<T> implements FactoryBean<T> {
     public T getObject() throws Exception {
         return enhancerWrapper.create();
     }
+
+    @Override
+    public Class<T> getObjectType() {
+        return clazz;
+    }
 }
