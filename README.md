@@ -37,5 +37,5 @@
     2. [x] FactoryBean 구현체를 생성하고, getObject() 메서드를 구현한다.
     3. [x] bean을 생성하는 위치 (DefaultBeanFactory)에서 bean을 생성시 FactoryBean을 사용하는 형태로 구현한다.
 2. [] 재사용 가능한 Factory Bean
-    1. [] Target, Advice, PointCut 인터페이스를 생성한다.
+    1. [x] Target, Advice, PointCut 인터페이스를 생성한다.
     2. [] 생성한 Target, Advice, PointCut을 사용해서 재사용 가능하도록 FactoryBean을 개선한다.
