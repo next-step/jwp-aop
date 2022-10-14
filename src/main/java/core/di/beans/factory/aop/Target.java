@@ -2,12 +2,12 @@ package core.di.beans.factory.aop;
 
 public class Target {
 
-    private final Object target;
     private final Class<?> clazz;
+    private final Object target;
 
-    public Target(Object target, Class<?> clazz) {
-        this.target = target;
+    public Target(Class<?> clazz, Object target) {
         this.clazz = clazz;
+        this.target = target;
     }
 
     public Class<?> getClazz() {
