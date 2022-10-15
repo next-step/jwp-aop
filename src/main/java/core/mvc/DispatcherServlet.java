@@ -42,37 +42,44 @@ public class DispatcherServlet extends HttpServlet {
 
         ModelAndView mav = null;
         Exception dispatchException = null;
-        Optional<Object> maybeHandler = Optional.empty();
+        Optional<Object> maybeHandler = getHandler(req, resp);
+        if (!maybeHandler.isPresent()) {
+            return;
+        }
 
         try {
-            maybeHandler = handlerMappingRegistry.getHandler(req);
-            if (!maybeHandler.isPresent()) {
-                resp.setStatus(HttpStatus.NOT_FOUND.value());
-                return;
-            }
-
             mav = handlerExecutor.handle(req, resp, maybeHandler.get());
         } catch (Exception e) {
             dispatchException = e;
         }
 
-        try {
-            processDispatchResult(req, resp, maybeHandler.get(), mav, dispatchException);
-        } catch (Exception e) {
-            logger.error("Exception : {}", e);
-            throw new ServletException(e.getMessage());
+        processDispatchResult(req, resp, maybeHandler.get(), mav, dispatchException);
+    }
+
+    private Optional<Object> getHandler(HttpServletRequest req, HttpServletResponse resp) {
+        Optional<Object> maybeHandler;
+        maybeHandler = handlerMappingRegistry.getHandler(req);
+        if (!maybeHandler.isPresent()) {
+            resp.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
         }
+        return maybeHandler;
     }
 
     private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
-        @Nullable Object handler, @Nullable ModelAndView mv, @Nullable Exception exception) throws Exception {
+        @Nullable Object handler, @Nullable ModelAndView mv, @Nullable Exception exception) throws ServletException {
         if (exception != null) {
-            mv = processHandlerException(request, response, handler, exception);
-        }
+            try {
+                mv = processHandlerException(request, response, handler, exception);
 
-        if (mv != null) {
-            render(mv, request, response);
-            return;
+                if (mv != null) {
+                    render(mv, request, response);
+                    return;
+                }
+            } catch (Exception e) {
+                logger.error("Exception : {}", e);
+                throw new ServletException(e.getMessage());
+            }
         }
 
         if (logger.isTraceEnabled()) {
