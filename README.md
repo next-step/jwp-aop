@@ -39,3 +39,4 @@
 2. [x] 재사용 가능한 Factory Bean
     1. [x] Target, Advice, PointCut 인터페이스를 생성한다.
     2. [x] 생성한 Target, Advice, PointCut을 사용해서 재사용 가능하도록 FactoryBean을 개선한다.
+    3. [x] 설정에 따라 jdk proxy, cglib proxy를 모두 지원하도록 개선한다.
