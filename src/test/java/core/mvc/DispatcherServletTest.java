@@ -1,6 +1,7 @@
 package core.mvc;
 
 import core.di.context.support.AnnotationConfigApplicationContext;
+import core.mvc.tobe.AnnotationExceptionHandlerMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
@@ -23,8 +24,13 @@ class DispatcherServletTest {
     void setUp() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, ac.getBean(HandlerConverter.class));
+        ahm.initialize();
+        AnnotationExceptionHandlerMapping aehm = new AnnotationExceptionHandlerMapping(ac);
+        aehm.initialize();
+
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
+        dispatcher.addExceptionHandlerMapping(aehm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
 
         request = new MockHttpServletRequest();
