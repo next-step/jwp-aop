@@ -11,7 +11,7 @@ public class EnhancerWrapper {
         enhancer.setCallback(callback);
     }
 
-    public Object create() {
-        return enhancer.create();
+    public <T> T create() {
+        return (T) enhancer.create();
     }
 }

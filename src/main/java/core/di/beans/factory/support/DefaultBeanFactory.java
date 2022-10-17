@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import core.annotation.PostConstruct;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
+import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
@@ -46,24 +47,41 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
-            optionalBean.ifPresent(b -> beans.put(clazz, b));
+            optionalBean.ifPresent(b -> putBeans(clazz, b));
             initialize(bean, clazz);
             return (T) optionalBean.orElse(null);
         }
 
         Optional<Class<?>> concreteClazz = BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses());
-        if (!concreteClazz.isPresent()) {
+        if (concreteClazz.isEmpty()) {
             return null;
         }
 
         beanDefinition = beanDefinitions.get(concreteClazz.get());
         log.debug("BeanDefinition : {}", beanDefinition);
         bean = inject(beanDefinition);
-        beans.put(concreteClazz.get(), bean);
+        putBeans(clazz, bean);
         initialize(bean, concreteClazz.get());
         return (T) bean;
+    }
+
+    private <T> void putBeans(Class<T> clazz, Object beanInstance) {
+        if (beanInstance instanceof FactoryBean) {
+            FactoryBean<T> factoryBean = (FactoryBean<T>) beanInstance;
+            beans.put(((FactoryBean) beanInstance).getObjectType(), getFactoryBean(factoryBean));
+            return;
+        }
+        beans.put(clazz, beanInstance);
+    }
+
+    private <T> T getFactoryBean(FactoryBean<T> factoryBean) {
+        try {
+            return factoryBean.getObject();
+        } catch (Exception e) {
+            throw new RuntimeException("FactoryBean을 사용한 Bean 생성에 실패하였습니다.");
+        }
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
