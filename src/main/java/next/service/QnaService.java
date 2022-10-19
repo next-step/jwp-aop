@@ -2,6 +2,8 @@ package next.service;
 
 import core.annotation.Inject;
 import core.annotation.Service;
+import core.annotation.Transactional;
+import core.jdbc.DataAccessException;
 import next.CannotDeleteException;
 import next.dao.AnswerDao;
 import next.dao.QuestionDao;
@@ -40,5 +42,26 @@ public class QnaService {
         if (question.canDelete(user, answers)) {
             questionDao.delete(questionId);
         }
+    }
+
+    @Transactional
+    public Answer addAnswer(long questionId, Answer answer) {
+        Answer savedAnswer = answerDao.insert(answer);
+        Question question = questionDao.findById(questionId);
+        if (question == null) {
+            throw new DataAccessException("질문이 없으므로 답변을 달 수 없습니다.");
+        }
+        questionDao.updateCountOfAnswer(questionId);
+        return savedAnswer;
+    }
+
+    public Answer addAnswerNoTransactional(long questionId, Answer answer) {
+        Answer savedAnswer = answerDao.insert(answer);
+        Question question = questionDao.findById(questionId);
+        if (question == null) {
+            throw new DataAccessException("질문이 없으므로 답변을 달 수 없습니다.");
+        }
+        questionDao.updateCountOfAnswer(questionId);
+        return savedAnswer;
     }
 }
