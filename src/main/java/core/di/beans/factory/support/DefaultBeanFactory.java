@@ -23,8 +23,12 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
     private Map<Class<?>, Object> beans = Maps.newHashMap();
-
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private List<BeanPostProcessor> beanPostProcessors = Lists.newArrayList();
+
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        beanPostProcessors.add(beanPostProcessor);
+    }
 
     @Override
     public void preInstantiateSingletons() {
@@ -47,7 +51,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
         }
 
         BeanDefinition beanDefinition = beanDefinitions.get(clazz);
-        if (beanDefinition != null && beanDefinition instanceof AnnotatedBeanDefinition) {
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             Optional<Object> optionalBean = createAnnotatedBean(beanDefinition);
             optionalBean.ifPresent(beanInstance -> registerBean(clazz, beanInstance));
             initialize(bean, clazz);
@@ -70,10 +74,17 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private <T> void registerBean(Class<T> clazz, Object beanInstance) {
         if (beanInstance instanceof FactoryBean) {
             FactoryBean<T> factoryBean = (FactoryBean<T>) beanInstance;
-            beans.put(factoryBean.getObjectType(), factoryBean.getObject());
+            beans.put(factoryBean.getObjectType(), applyBeanPostProcessor(factoryBean.getObject()));
             return;
         }
-        beans.put(clazz, beanInstance);
+        beans.put(clazz, applyBeanPostProcessor(beanInstance));
+    }
+
+    private Object applyBeanPostProcessor(Object bean) {
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            return beanPostProcessor.postProcessAfterInitialization(bean);
+        }
+        return bean;
     }
 
     private void initialize(Object bean, Class<?> beanClass) {
