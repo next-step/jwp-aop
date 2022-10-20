@@ -45,13 +45,12 @@ public class ApiQnaController extends AbstractNewController {
             return jsonView().addObject("result", Result.fail("Login is required"));
         }
 
+        long questionId = Long.parseLong(req.getParameter("questionId"));
         User user = UserSessionUtils.userFromSession(req.getSession());
-        Answer answer = new Answer(user.getUserId(), req.getParameter("contents"),
-                Long.parseLong(req.getParameter("questionId")));
+        Answer answer = new Answer(user.getUserId(), req.getParameter("contents"), questionId);
         logger.debug("answer : {}", answer);
 
-        Answer savedAnswer = answerDao.insert(answer);
-        questionDao.updateCountOfAnswer(savedAnswer.getQuestionId());
+        Answer savedAnswer = qnaService.addAnswer(questionId, answer);
 
         return jsonView().addObject("answer", savedAnswer).addObject("result", Result.ok());
     }

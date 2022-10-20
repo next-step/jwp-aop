@@ -86,6 +86,27 @@ public class JdkProxyTest {
 - Proxy 가 추가될 때마다 FactoryBean 을 매번 생성하는 것도 귀찮다. 공통적으로 사용할 수 있는 FactoryBean 을 만들자.
 - Target, Advice, PointCut 을 연결해 Proxy 를 생성하는 재사용 가능한 FactoryBean 을 추가한다.
 
+# 기능 요구사항 (Transaction AOP 구현)
+- DB Transaction 처리를 하고 싶은 메소드에 @Transactional 애노테이션을 추가하면 Transaction 처리가 가능하도록 해야 한다.
+- 다음 예제 코드와 같이 addAnswer() 메소드에 Transactional 을 설정하면 addAnswer() 메소드는 하나의 Transaction 으로 묶여서 처리되어야 한다.
+```java
+@Service
+class QnaService {
+    @Inject
+    private QuestionRepository questionRepository;
+    
+    @Inject
+    private AnswerRepository answerRepository;
+    
+    @Transactional
+    public void addAnswer(long questionId, Answer answer) {
+        answerRepository.insert(questionId, answer);
+        questionRepository.updateAnswerCount(questionId);
+    }
+}
+```
+- 위 코드에서 questionRepository.updateAnswerCount() 에서 Exception 이 발생하면 앞에 추가한 댓글로 롤백되어야 한다.
+
 # 기능 목록
 - MethodMatcher 인터페이스
   - target 클래스의 특정 조건에 해당하는 메서드와 일치하는지에 대한 메서드를 제공한다.
@@ -110,10 +131,15 @@ public class JdkProxyTest {
   - 특정 타겟 클래스에 대한 메서드를 실행하는 invoke 메서드를 제공한다.
   - UpperCaseAdvice 구현체
     - 특정 메서드의 반환 타입이 String 일 경우 대문자로 반환하는 부가 로직을 담당한다.
+  - TransactionalAdvice 구현체
+    - dataSource 를 필드로 관리한다.
+    - 특정 메서드에 @Transactional 이 붙은 경우, 해당 메서드의 비즈니스 로직이 정상 처리될 경우 트랜잭션을 commit, 비즈니스 로직이 비정상 처리될 경우 트랜잭션을 rollback 하는 부가 로직을 담당한다. 
 - PointCut 인터페이스
   - 특정 타겟 클래스에 대해 특정 조건과 일치하는 지에 대한 matches 메서드를 제공한다.
   - SayPrefixPointCut 구현체
     - 특정 메서드 이름이 "say" 로 시작하는지 에 대한 판별을 담당한다.
+  - TransactionalPointCut 구현체
+    - 타겟 클래스에 @Transactional 애노테이션이 붙어있거나, 메서드에 @Transactional 이 애노테이션이 붙어있는지 확인하는 역할을 담당한다.
 - Advisor 객체
   - Advice 와 PointCut 을 필드로 관리한다.
   - 해당 advisor 를 통해 특정 메서드 조건과 일치하는 메서드를 찾고, 실행하는 역할을 담당한다.
@@ -122,9 +148,14 @@ public class JdkProxyTest {
   - JdkDynamicAopProxy 구현체
     - 타겟 클래스와 어드바이저를 필드로 관리한다.
     - 타겟 클래스에 대한 JdkDynamicProxy 를 반환한다.
+      - PointCut 에 해당하는 메서드는 프록시를 통해 advice 추가 로직과 원본 메서드의 invoke 가 함꼐 이루어 진다.
+      - PointCut 에 해당하지 않는 메서드는 원본 메서드만 invoke 한다.
   - CglibAopProxy 구현체
     - 타겟 클래스와 어드바이저를 필드로 관리한다.
     - 타겟 클래스에 대한 CglibProxy 를 반환한다.
+      - 기본 생성자가 없을 경우, 선언된 생성자를 통해 프록시를 반환한다.
+    - PointCut 에 해당하는 메서드는 프록시를 통해 advice 추가 로직과 원본 메서드의 invoke 가 함꼐 이루어 진다.
+    - PointCut 에 해당하지 않는 메서드는 원본 메서드만 invoke 한다.
 - AopProxyFactory 객체
   - 타겟 클래스에 따라 CglibProxy, 혹은 JdkDynamicProxy 를 반환하는 로직을 담당한다.  
   - createAopProxy 메서드 (AopProxy 인터페이스 반환)
@@ -140,3 +171,31 @@ public class JdkProxyTest {
       - 타겟 클래스의 타입을 제네릭으로 사용한다.
     - 타겟 클래스에 대한 프록시 객체를 반환한다.
     - 타겟 클래스의 타입을 반환한다.
+- BeanPostProcessor 인터페이스
+  - postProcessAfterInitialization 메서드
+    - 빈 후처리기를 통해 빈 컨테이너에 등록될 빈의 후처리를 담당한다.
+  - TransactionalBeanPostProcessor 구현체
+    - 전달받은 빈의 클래스에서 @Transactional 애노테이션이 붙어있는 클래스 혹은 메서드가 있다면 ProxyFactoryBean 을 통해 만들어진 프록시를 빈 컨테이너에 등록한다.
+- ConnectionHolder 객체
+  - Connection 을 스레드 로컬로 관리한다.
+  - 현재 스레드에 커넥션이 있는지 확인할 수 있다.
+  - 현재 스레드에 커넥션을 셋팅할 수 있다.
+  - 현재 스레드의 커넥션을 닫고, 스레드 로컬에서 지울 수 있다.
+- DataSourceUtils 객체
+  - ConnectionHolder 를 이용한 유틸성 클래스이다.
+  - 현재 스레드에 커넥션을 셋팅하도록 한다.
+  - 현재 스레드의 커넥션을 닫고, 스레드 로컬에서 지울 수 있도록 한다.
+  - 현재 스레드에 커넥션이 있다면 해당 커넥션을 반환하고, 현재 스레드에 커넥션이 없다면 새로운 커넥션을 반환한다.
+  - releaseConnection 메서드
+    - 인자로 전달 받은 커넥션이 현재 스레드 로컬에서 관리하고있는 커넥션이라면 커넥션을 닫지 않는다.
+    - 인자로 전달 받은 커넥션이 현재 스레드 로컬에서 관리하고 있지 않는 커넥션이라면 해당 커넥션을 닫는다.
+
+- QnaService 객체
+  - addAnswer 메서드
+    - @Transactional 애노테이션이 붙어있다.
+    - 질문에 대한 답변을 등록하는 메서드이다.
+    - 만약 질문이 없다면 답변을 등록할 수 없도록 예외를 발생하고, 데이터베이스에는 답변이 등록되지 않도록 롤백된다.
+  - addAnswerNoTransactional 메서드
+    - @Transactional 애노테이션이 붙어있지 않다.
+    - addAnswer 와 로직은 동일하다.
+    - 만약 질문이 없다면 답변을 등록할 수 없도록 예외가 발생한다. 하지만 트랜잭션 롤백이 되지 않기 떄문에 데이터베이스에 답변이 등록된다.

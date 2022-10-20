@@ -19,7 +19,6 @@ class AopProxyFactoryTest {
         assertThat(aopProxy)
                 .isInstanceOf(JdkDynamicAopProxy.class)
                 .isNotInstanceOf(CglibAopProxy.class);
-
     }
 
     @Test

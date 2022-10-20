@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.DefaultBeanFactory;
+import core.di.beans.factory.support.TransactionalBeanPostProcessor;
 import core.di.context.ApplicationContext;
 import core.di.context.annotation.AnnotatedBeanDefinitionReader;
 import core.di.context.annotation.ClasspathBeanDefinitionScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +31,7 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
         }
+        beanFactory.addBeanPostProcessor(new TransactionalBeanPostProcessor(beanFactory.getBean(DataSource.class)));
         beanFactory.preInstantiateSingletons();
     }
 

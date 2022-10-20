@@ -6,6 +6,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 public class CglibAopProxy implements AopProxy {
@@ -24,7 +25,20 @@ public class CglibAopProxy implements AopProxy {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(this.target.getClass());
         enhancer.setCallback(getMethodInterceptor());
+
+        Constructor<?> constructor = getDeclaredConstructor();
+        if (constructor != null) {
+            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            return enhancer.create(parameterTypes, new Object[parameterTypes.length]);
+        }
         return enhancer.create();
+    }
+
+    private Constructor<?> getDeclaredConstructor() {
+        for (Constructor<?> constructor : target.getClass().getDeclaredConstructors()) {
+            return constructor;
+        }
+        return null;
     }
 
     private MethodInterceptor getMethodInterceptor() {

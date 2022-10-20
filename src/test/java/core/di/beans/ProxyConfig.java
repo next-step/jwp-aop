@@ -6,7 +6,6 @@ import core.annotation.Configuration;
 import core.aop.Advisor;
 import core.aop.SayPrefixPointCut;
 import core.aop.UpperCaseAdvice;
-import core.di.beans.ProxyFactoryBean;
 import core.di.beans.factory.FactoryBean;
 import study.proxy.cglib.HelloTarget;
 
