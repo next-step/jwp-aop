@@ -28,12 +28,8 @@ public class TransactionalAdvice implements Advice {
             rollback(connection);
             throw new DataAccessException(e);
         } finally {
-            releaseConnection();
+            DataSourceUtils.releaseConnection(connection);
         }
-    }
-
-    private static void releaseConnection() {
-        DataSourceUtils.releaseConnection();
     }
 
     private static void rollback(Connection connection) {
