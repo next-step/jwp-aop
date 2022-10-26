@@ -24,3 +24,19 @@
 - `HelloTarget` 에 `pingpong()` 메소드 추가
 - `say` 로 시작하는 메소드만 반환 값을 대문자로 변환
 - JDK Dynamic Proxy와 CGLib Proxy 모두 동작하도록 구현
+
+## 2단계 - Bean 컨테이너의 Bean과 Proxy를 연결
+
+```java
+public interface FactoryBean<T> {
+    T getObject() throws Exception;
+}
+```
+
+```java
+if (beanInstance instanceof FactoryBean) {
+        FactoryBean factory = (FactoryBean) beanInstance;
+        beanInstance = factory.getObject();
+}
+return beanInstance;
+```
