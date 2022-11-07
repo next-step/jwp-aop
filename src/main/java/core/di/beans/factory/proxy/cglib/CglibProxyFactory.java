@@ -21,14 +21,14 @@ public class CglibProxyFactory implements ProxyFactory {
         enhancer.setSuperclass(targetClass);
 
         enhancer.setCallback((MethodInterceptor)(obj, method, args, proxy) -> {
-            JoinPoint joinPoint = () -> invokeSuper(targetObject, args, proxy);
+            JoinPoint joinPoint = () -> invoke(targetObject, args, proxy);
             return new AdvisorMethodInvocation(advisor, targetClass, method, joinPoint).proceed();
         });
 
         return enhancer.create();
     }
 
-    private Object invokeSuper(Object obj, Object[] objects, MethodProxy proxy) {
+    private Object invoke(Object obj, Object[] objects, MethodProxy proxy) {
         try {
             return proxy.invoke(obj, objects);
         } catch (Throwable e) {
