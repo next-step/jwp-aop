@@ -7,13 +7,13 @@ import java.lang.reflect.Proxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class HelloTargetTest {
+public class ByeTargetTest {
 
     private Hello helloTarget;
 
     @BeforeEach
     void setUp() {
-        var proxyInstance = (Hello)Proxy.newProxyInstance(HelloTargetTest.class.getClassLoader(),
+        var proxyInstance = (Hello)Proxy.newProxyInstance(ByeTargetTest.class.getClassLoader(),
             new Class[] {Hello.class},
             new DynamicInvocationHandler(new HelloTarget()));
 
