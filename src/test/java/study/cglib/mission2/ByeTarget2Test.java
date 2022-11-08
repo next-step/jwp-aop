@@ -9,7 +9,7 @@ import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 
-public class HelloTarget2Test {
+public class ByeTarget2Test {
 
     private HelloTarget2 helloTarget;
 
