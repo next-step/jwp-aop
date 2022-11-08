@@ -2,13 +2,13 @@ package core.aop;
 
 public class AopProxyFactoryBean<T> implements FactoryBean<T> {
 
-    private final Class<T> targetClass;
+    private final Class<? extends T> targetClass;
     private final T targetSource;
     private final Advisor advisor;
 
     private final AopProxyFactory aopProxyFactory;
 
-    public AopProxyFactoryBean(Class<T> targetClass,
+    public AopProxyFactoryBean(Class<? extends T> targetClass,
                                T targetSource,
                                Advisor advisor) {
         this.targetClass = targetClass;
