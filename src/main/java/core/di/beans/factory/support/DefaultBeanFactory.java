@@ -6,6 +6,7 @@ import core.annotation.PostConstruct;
 import core.aop.FactoryBean;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.config.BeanDefinition;
+import core.di.beans.factory.config.BeanPostProcessor;
 import core.di.context.annotation.AnnotatedBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +27,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     @Override
     public void preInstantiateSingletons() {
@@ -46,16 +49,28 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             return (T) bean;
         }
 
-
         return (T) createBean(clazz).map(instance -> {
             initialize(instance, clazz);
-            return beans.put(clazz, extractProxyBean(instance));
+            Object appliedProcessedBean = extractProxyBean(applyBeanPostProcessor(instance));
+            beans.put(clazz, appliedProcessedBean);
+            return appliedProcessedBean;
         }).orElse(null);
     }
 
+    public void addBeanPostProcessor(BeanPostProcessor postProcessor) {
+        beanPostProcessors.add(postProcessor);
+    }
+
+    private Object applyBeanPostProcessor(Object bean) {
+        return beanPostProcessors.stream()
+                .map(postProcessor -> postProcessor.postProcess(bean))
+                .filter(appliedBean -> !bean.equals(appliedBean))
+                .findAny()
+                .orElse (bean);
+    }
     private Object extractProxyBean(Object bean) {
         if (bean instanceof FactoryBean) {
-            FactoryBean factory = (FactoryBean) bean;
+            FactoryBean<?> factory = (FactoryBean<?>) bean;
             return factory.object();
         }
 
@@ -72,7 +87,7 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     private Optional<Object> createConcreteBean(Class<?> clazz) {
         return BeanFactoryUtils.findConcreteClass(clazz, getBeanClasses())
-                .map(concreteClass -> {
+                .flatMap(concreteClass -> {
                     BeanDefinition beanDefinition = beanDefinitions.get(concreteClass);
                     log.info("BeanDefinition : {}", beanDefinition);
                     return Optional.of(inject(beanDefinition));

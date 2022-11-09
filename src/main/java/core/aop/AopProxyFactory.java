@@ -12,6 +12,6 @@ public class AopProxyFactory {
             return new JdkDynamicAopProxy(targetClass, source, advisor).proxy();
         }
 
-        return new CglibAopProxy(targetClass, advisor).proxy();
+        return new CglibAopProxy(targetClass, source, advisor).proxy();
     }
 }

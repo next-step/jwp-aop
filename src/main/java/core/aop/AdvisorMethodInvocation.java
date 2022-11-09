@@ -2,7 +2,7 @@ package core.aop;
 
 import java.lang.reflect.Method;
 
-public class AdvisorMethodInvocation implements Joinpoint{
+public class AdvisorMethodInvocation implements Joinpoint {
 
     private final Advisor advisor;
     private final Class<?> targetClass;
