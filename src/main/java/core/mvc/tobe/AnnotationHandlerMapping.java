@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-public class AnnotationHandlerMapping implements HandlerMapping {
+public class AnnotationHandlerMapping implements HandlerMapping<HttpServletRequest> {
     private static final Logger logger = LoggerFactory.getLogger(AnnotationHandlerMapping.class);
 
-    private ApplicationContext applicationContext;
-    private HandlerConverter handlerConverter;
+    private final ApplicationContext applicationContext;
+    private final HandlerConverter handlerConverter;
 
-    private Map<HandlerKey, HandlerExecution> handlerExecutions = Maps.newHashMap();
+    private final Map<HandlerKey, HandlerExecution> handlerExecutions = Maps.newHashMap();
 
     public AnnotationHandlerMapping(ApplicationContext applicationContext, HandlerConverter handlerConverter) {
         this.applicationContext = applicationContext;

@@ -1,13 +1,17 @@
 package core.mvc;
 
+import core.annotation.web.ControllerAdvice;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerExecutionHandlerAdapter;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
+import core.mvc.tobe.support.ControllerAdviceExceptionHandlerMapping;
 import next.config.MyConfiguration;
 import next.controller.UserSessionUtils;
 import next.model.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -26,6 +30,8 @@ class DispatcherServletTest {
         dispatcher = new DispatcherServlet();
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
+        dispatcher.addExceptionHandlerMapping(new ControllerAdviceExceptionHandlerMapping(ac.beansAnnotatedWith(ControllerAdvice.class)));
+        dispatcher.addExceptionHandlerAdapter(new ExceptionHandlerExecutionHandlerAdapter());
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
@@ -48,17 +54,6 @@ class DispatcherServletTest {
         assertThat(response.getRedirectedUrl()).isEqualTo("/");
     }
 
-    private void createUser(User user) throws Exception {
-        request.setRequestURI("/users");
-        request.setMethod("POST");
-        request.setParameter("userId", user.getUserId());
-        request.setParameter("password", user.getPassword());
-        request.setParameter("name", user.getName());
-        request.setParameter("email", user.getEmail());
-
-        dispatcher.service(request, response);
-    }
-
     @Test
     void login_success() throws Exception {
         User user = new User("pobi", "password", "포비", "pobi@nextstep.camp");
@@ -75,5 +70,29 @@ class DispatcherServletTest {
 
         assertThat(secondResponse.getRedirectedUrl()).isEqualTo("/");
         assertThat(UserSessionUtils.userFromSession(secondRequest.getSession())).isNotNull();
+    }
+
+    @Test
+    @DisplayName("로그인하지 않고 유저 리스트를 조회하면 로그인 페이지로 이동")
+    void login_failed() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/users");
+        request.setMethod("GET");
+        MockHttpServletResponse repsonse = new MockHttpServletResponse();
+
+        dispatcher.service(request, repsonse);
+
+        assertThat(repsonse.getRedirectedUrl()).isEqualTo("/users/loginForm");
+    }
+
+    private void createUser(User user) throws Exception {
+        request.setRequestURI("/users");
+        request.setMethod("POST");
+        request.setParameter("userId", user.getUserId());
+        request.setParameter("password", user.getPassword());
+        request.setParameter("name", user.getName());
+        request.setParameter("email", user.getEmail());
+
+        dispatcher.service(request, response);
     }
 }

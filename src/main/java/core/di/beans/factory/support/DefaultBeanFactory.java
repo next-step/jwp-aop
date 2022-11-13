@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,13 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
     private static final Logger log = LoggerFactory.getLogger(DefaultBeanFactory.class);
 
-    private Map<Class<?>, Object> beans = Maps.newHashMap();
+    private final Map<Class<?>, Object> beans = Maps.newHashMap();
 
-    private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+    private final Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     @Override
@@ -59,6 +61,14 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
 
     public void addBeanPostProcessor(BeanPostProcessor postProcessor) {
         beanPostProcessors.add(postProcessor);
+    }
+
+    public List<Object> beansAnnotatedWith(Class<? extends Annotation> annotation) {
+        return getBeanClasses()
+                .stream()
+                .filter(clazz -> clazz.isAnnotationPresent(annotation))
+                .map(this::getBean)
+                .collect(Collectors.toList());
     }
 
     private Object applyBeanPostProcessor(Object bean) {
