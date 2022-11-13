@@ -1,4 +1,4 @@
-package next.config;
+package core.di.factory.example;
 
 import core.annotation.Bean;
 import core.annotation.ComponentScan;
@@ -6,7 +6,12 @@ import core.annotation.Configuration;
 import core.jdbc.JdbcTemplate;
 import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.HandlerConverter;
-import core.mvc.tobe.support.*;
+import core.mvc.tobe.support.ArgumentResolver;
+import core.mvc.tobe.support.HttpRequestArgumentResolver;
+import core.mvc.tobe.support.HttpResponseArgumentResolver;
+import core.mvc.tobe.support.ModelArgumentResolver;
+import core.mvc.tobe.support.PathVariableArgumentResolver;
+import core.mvc.tobe.support.RequestParamArgumentResolver;
 import next.security.LoginUserArgumentResolver;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -16,8 +21,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 @Configuration
-@ComponentScan({ "next", "core" })
-public class MyConfiguration {
+@ComponentScan({ "core.di.factory.example" })
+public class MyTestConfiguration {
     @Bean
     public DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();

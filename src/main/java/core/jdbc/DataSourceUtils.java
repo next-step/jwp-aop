@@ -27,10 +27,6 @@ public class DataSourceUtils {
         }
     }
 
-    public static void releaseConnection() {
-        ConnectionHolder.releaseConnection();
-    }
-
     public static void releaseConnection(Connection currentConnection) {
         if (currentConnection == ConnectionHolder.getConnection()) {
             return;
