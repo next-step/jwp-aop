@@ -3,9 +3,13 @@ package next.config;
 import core.di.context.ApplicationContext;
 import core.di.context.support.AnnotationConfigApplicationContext;
 import core.mvc.DispatcherServlet;
+import core.mvc.ExceptionHandlerMapping;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ControllerAdviceExceptionHandlerMapping;
+import core.mvc.tobe.ControllerExceptionHandlerMapping;
+import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.HandlerConverter;
 import core.mvc.tobe.HandlerExecutionHandlerAdapter;
 import core.web.WebApplicationInitializer;
@@ -22,15 +26,24 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         ApplicationContext ac = new AnnotationConfigApplicationContext(MyConfiguration.class);
+
         HandlerConverter handlerConverter = ac.getBean(HandlerConverter.class);
         AnnotationHandlerMapping ahm = new AnnotationHandlerMapping(ac, handlerConverter);
         ahm.initialize();
+
+        ExceptionHandlerConverter exceptionHandlerConverter = ac.getBean(ExceptionHandlerConverter.class);
+        ExceptionHandlerMapping controllerExceptionHandlerMapping = new ControllerExceptionHandlerMapping(ac, exceptionHandlerConverter);
+        ExceptionHandlerMapping controllerAdviceExceptionHandlerMapping = new ControllerAdviceExceptionHandlerMapping(ac, exceptionHandlerConverter);
+        controllerExceptionHandlerMapping.initialize();
+        controllerAdviceExceptionHandlerMapping.initialize();
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
         dispatcherServlet.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcherServlet.addHandlerAdapter(new ControllerHandlerAdapter());
+        dispatcherServlet.addExceptionHandlerMapping(controllerExceptionHandlerMapping);
+        dispatcherServlet.addExceptionHandlerMapping(controllerAdviceExceptionHandlerMapping);
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
