@@ -107,6 +107,20 @@ class QnaService {
 ```
 - 위 코드에서 questionRepository.updateAnswerCount() 에서 Exception 이 발생하면 앞에 추가한 댓글로 롤백되어야 한다.
 
+# 기능 요구사항 (ControllerAdvice, ExceptionHandler 구현)
+- Controller, ArgumentResolver 와 같은 곳에서 Exception 이 발생할 경우, Exception 을 처리할 수 있어야 한다.
+- 현재 구현된 버전의 코드는 로그인 하지 않은 사용자가 글쓰기 버튼을 클릭하면 Exception 이 발생하여 에러 메시지가 보인다. Exception 처리를 통해 로그인 페이지로 이동하도록 해야 한다.
+```java
+@ControllerAdvice 
+public class MyAdvice { 
+    @ExceptionHandler(LoginRequiredException.class) 
+    public ModelAndView loginRequired() { 
+        return jspView("redirect:/users/loginForm")
+    }
+}
+```
+
+
 # 기능 목록
 - MethodMatcher 인터페이스
   - target 클래스의 특정 조건에 해당하는 메서드와 일치하는지에 대한 메서드를 제공한다.
@@ -199,3 +213,19 @@ class QnaService {
     - @Transactional 애노테이션이 붙어있지 않다.
     - addAnswer 와 로직은 동일하다.
     - 만약 질문이 없다면 답변을 등록할 수 없도록 예외가 발생한다. 하지만 트랜잭션 롤백이 되지 않기 떄문에 데이터베이스에 답변이 등록된다.
+
+- ControllerAdvice 애노테이션
+  - @Controller 애노테이션이 붙은 클래스의 메서드에서 특정 예외를 전역으로 처리하도록 한다.
+- ExceptionHandler 애노테이션
+  - @Controller 애노테이션이 붙은 클래스의 메서드에서 특정 예외가 발생할 경우 @ExceptionHandler 애노테이션이 붙은 메서드에서 예외처리를 새롭게 진행하도록 한다.
+- ExceptionHandlerMapping 인터페이스
+  - 특정 예외에 대한 예외 처리를 담당하는 핸들러 역할을 담당한다.
+  - ControllerExceptionHandlerMapping 구현체
+    - @Controller 애노테이션이 붙은 클래스 내부에 @ExceptionHandler 애노테이션이 붙은 메서드가 존재할 경우 @ExceptionHandler 가 붙은 메서드를 찾아서 우선적으로 예외 처리한다.
+  - ControllerAdviceExceptionHandlerMapping 구현체
+    - @Controller 애노테이션 붙은 클래스 내부에 @ExceptionHandler 애노테이션이 붙은 메서드가 존재하지 않을 경우, @ControllerAdvice 애노테이션이 붙은 전역 예외 처리 핸들러를 찾아서 예외 처리한다.
+- ExceptionHandlerConverter 객체
+  - @ExceptionHandler 에 의해 예외 처리할 HandlerExecution 을 예외 클래스 정보와 함께 반환한다.
+- ExceptionHandlerMappingRegistry 객체
+  - ExceptionHandlerMapping 을 관리하는 일급 컬렉션
+  - 특정 예외와, 예외가 발생한 핸들러를 이용하여 예외 핸들러를 찾아온다.
