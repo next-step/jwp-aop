@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,7 @@ import java.util.Set;
 public class AnnotationConfigApplicationContext implements ApplicationContext {
     private static final Logger log = LoggerFactory.getLogger(AnnotationConfigApplicationContext.class);
 
-    private DefaultBeanFactory beanFactory;
+    private final DefaultBeanFactory beanFactory;
 
     public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
         Object[] basePackages = findBasePackages(annotatedClasses);
@@ -58,5 +59,10 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
     @Override
     public Set<Class<?>> getBeanClasses() {
         return beanFactory.getBeanClasses();
+    }
+
+    @Override
+    public List<Object> beansAnnotatedWith(Class<? extends Annotation> annotation) {
+        return beanFactory.beansAnnotatedWith(annotation);
     }
 }

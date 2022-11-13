@@ -4,9 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class HandlerExecutor {
-    private final HandlerAdapterRegistry handlerAdapterRegistry;
+    private final HandlerAdapterRegistry<HandlerAdapter> handlerAdapterRegistry;
 
-    public HandlerExecutor(HandlerAdapterRegistry handlerAdapterRegistry) {
+    public HandlerExecutor(HandlerAdapterRegistry<HandlerAdapter> handlerAdapterRegistry) {
         this.handlerAdapterRegistry = handlerAdapterRegistry;
     }
 
