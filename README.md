@@ -100,4 +100,6 @@
   - [x] ExceptionHandlerMapping을 주입 받는다.
   - [x] service 수행 중(handler를 가져오거나, hander 수행 중) 예외가 발생하면 ExceptionHandlerExecution을 찾아 수행한다. 
 
-
+### 피드백
+- [ ] Controller에서 ExceptionHandler 애너테이션 적용
+ 
