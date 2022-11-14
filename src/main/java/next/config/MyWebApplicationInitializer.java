@@ -6,6 +6,7 @@ import core.mvc.DispatcherServlet;
 import core.mvc.asis.ControllerHandlerAdapter;
 import core.mvc.asis.RequestMapping;
 import core.mvc.tobe.AnnotationHandlerMapping;
+import core.mvc.tobe.ControllerExceptionHandlerMapping;
 import core.mvc.tobe.ExceptionHandlerConverter;
 import core.mvc.tobe.ExceptionHandlerMapping;
 import core.mvc.tobe.HandlerConverter;
@@ -32,7 +33,11 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
         final ExceptionHandlerMapping exceptionHandlerMapping = new ExceptionHandlerMapping(ac, exceptionHandlerConverter);
         exceptionHandlerMapping.initialize();
 
+        final ControllerExceptionHandlerMapping controllerExceptionHandlerMapping = new ControllerExceptionHandlerMapping(ac, exceptionHandlerConverter);
+        controllerExceptionHandlerMapping.initialize();
+
         DispatcherServlet dispatcherServlet = new DispatcherServlet();
+        dispatcherServlet.addExceptionHandlerMapping(controllerExceptionHandlerMapping);
         dispatcherServlet.addExceptionHandlerMapping(exceptionHandlerMapping);
         dispatcherServlet.addHandlerMapping(ahm);
         dispatcherServlet.addHandlerMapping(new RequestMapping());
