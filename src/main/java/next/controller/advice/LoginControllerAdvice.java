@@ -11,6 +11,6 @@ public class LoginControllerAdvice extends AbstractNewController {
 
     @ExceptionHandler(RequiredLoginException.class)
     public ModelAndView requiredLoginException() {
-        return jspView("/user/form.jsp");
+        return jspView("/user/login.jsp");
     }
 }
