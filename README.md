@@ -102,4 +102,8 @@
 
 ### 피드백
 - [ ] Controller에서 ExceptionHandler 애너테이션 적용
- 
+  - [x] ControllerExceptionHandlerMapping 추가
+    - [x] Controller에서 ExceptionHandler 애너테이션 적용한 메서드를 찾아 HandlerExecution을 생성한다.
+  - [ ] HandlerMappingRegistry를 활용하여 여러 ExceptionHandlerMapping을 관리한다.
+  - [ ] Application 초기화 시 ControllerExceptionHandlerMapping을 DispatcherServlet에 추가한다.
+    - [ ] Controller 내부의 ExceptionHandler를 우선하기 위해 먼저 등록한다.
