@@ -59,7 +59,7 @@ public class UserController extends AbstractNewController {
         return mav;
     }
 
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
     public ModelAndView update(@LoginUser User loginUser,
                                @PathVariable String userId,
                                UserUpdatedDto updateUser) throws Exception {
@@ -113,6 +113,12 @@ public class UserController extends AbstractNewController {
     public ModelAndView logout(HttpServletRequest request) throws Exception {
         HttpSession session = request.getSession();
         session.removeAttribute("user");
+        return jspView("redirect:/");
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ModelAndView whoAreYouException() {
+        log.debug("whoAreYouException");
         return jspView("redirect:/");
     }
 }
