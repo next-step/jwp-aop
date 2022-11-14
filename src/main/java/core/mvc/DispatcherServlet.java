@@ -1,7 +1,5 @@
 package core.mvc;
 
-import core.mvc.tobe.ExceptionHandlerMapping;
-import core.mvc.tobe.HandlerExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,7 +21,7 @@ public class DispatcherServlet extends HttpServlet {
 
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
-    private ExceptionHandlerMapping exceptionHandlerMapping;
+    private final HandlerMappingRegistry exceptionHandlerMappingRegistry = new HandlerMappingRegistry();
 
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
@@ -33,8 +31,8 @@ public class DispatcherServlet extends HttpServlet {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
     }
 
-    public void addExceptionHandlerMapping(final ExceptionHandlerMapping exceptionHandlerMapping) {
-        this.exceptionHandlerMapping = exceptionHandlerMapping;
+    public void addExceptionHandlerMapping(final HandlerMapping exceptionHandlerMapping) {
+        exceptionHandlerMappingRegistry.addHandlerMpping(exceptionHandlerMapping);
     }
 
     @Override
@@ -59,13 +57,12 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void exceptionHandle(final HttpServletRequest req, final HttpServletResponse resp, final Throwable e) throws ServletException {
-        if (exceptionHandlerMapping == null) {
-            throw new ServletException(e.getMessage());
-        }
-
-        final HandlerExecution handler = exceptionHandlerMapping.getHandler(req);
         try {
-            final ModelAndView modelAndView = handler.handle(req, resp);
+
+            Object handler = exceptionHandlerMappingRegistry.getHandler(req)
+                    .orElseThrow(() -> new ServletException(e.getMessage()));
+
+            ModelAndView modelAndView = handlerExecutor.handle(req, resp, handler);
             render(modelAndView, req, resp);
         } catch (Throwable ex) {
             logger.error("Exception : {}", e);
