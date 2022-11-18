@@ -21,12 +21,18 @@ public class DispatcherServlet extends HttpServlet {
 
     private HandlerExecutor handlerExecutor = new HandlerExecutor(handlerAdapterRegistry);
 
+    private final HandlerMappingRegistry exceptionHandlerMappingRegistry = new HandlerMappingRegistry();
+
     public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMappingRegistry.addHandlerMpping(handlerMapping);
     }
 
     public void addHandlerAdapter(HandlerAdapter handlerAdapter) {
         handlerAdapterRegistry.addHandlerAdapter(handlerAdapter);
+    }
+
+    public void addExceptionHandlerMapping(final HandlerMapping exceptionHandlerMapping) {
+        exceptionHandlerMappingRegistry.addHandlerMpping(exceptionHandlerMapping);
     }
 
     @Override
@@ -45,6 +51,20 @@ public class DispatcherServlet extends HttpServlet {
             ModelAndView mav = handlerExecutor.handle(req, resp, maybeHandler.get());
             render(mav, req, resp);
         } catch (Throwable e) {
+            req.setAttribute("exceptionHandler", e);
+            exceptionHandle(req, resp, e);
+        }
+    }
+
+    private void exceptionHandle(final HttpServletRequest req, final HttpServletResponse resp, final Throwable e) throws ServletException {
+        try {
+
+            Object handler = exceptionHandlerMappingRegistry.getHandler(req)
+                    .orElseThrow(() -> new ServletException(e.getMessage()));
+
+            ModelAndView modelAndView = handlerExecutor.handle(req, resp, handler);
+            render(modelAndView, req, resp);
+        } catch (Throwable ex) {
             logger.error("Exception : {}", e);
             throw new ServletException(e.getMessage());
         }
@@ -54,4 +74,5 @@ public class DispatcherServlet extends HttpServlet {
         View view = mav.getView();
         view.render(mav.getModel(), req, resp);
     }
+
 }
