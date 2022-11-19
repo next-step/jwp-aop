@@ -2,6 +2,7 @@ package core.di.context.support;
 
 import com.google.common.collect.Lists;
 import core.annotation.ComponentScan;
+import core.aop.transaction.TransactionBeanPostProcessor;
 import core.di.beans.factory.support.BeanDefinitionReader;
 import core.di.beans.factory.support.DefaultBeanFactory;
 import core.di.context.ApplicationContext;
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import javax.sql.DataSource;
 
 public class AnnotationConfigApplicationContext implements ApplicationContext {
     private static final Logger log = LoggerFactory.getLogger(AnnotationConfigApplicationContext.class);
@@ -29,6 +32,9 @@ public class AnnotationConfigApplicationContext implements ApplicationContext {
             ClasspathBeanDefinitionScanner scanner = new ClasspathBeanDefinitionScanner(beanFactory);
             scanner.doScan(basePackages);
         }
+
+        var transactionBeanPostProcessor = new TransactionBeanPostProcessor(beanFactory.getBean(DataSource.class));
+        beanFactory.addBeanPostProcessor(transactionBeanPostProcessor);
         beanFactory.preInstantiateSingletons();
     }
 

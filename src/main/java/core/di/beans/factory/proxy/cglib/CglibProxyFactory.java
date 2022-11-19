@@ -1,5 +1,6 @@
 package core.di.beans.factory.proxy.cglib;
 
+import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -20,10 +21,11 @@ public class CglibProxyFactory implements ProxyFactory {
     public <T> Object createProxy(Class<T> targetClass, T targetObject, Advisor advisor) {
         enhancer.setSuperclass(targetClass);
 
-        enhancer.setCallback((MethodInterceptor)(obj, method, args, proxy) -> {
+        var methodInterceptor = (MethodInterceptor)(obj, method, args, proxy) -> {
             JoinPoint joinPoint = () -> invoke(targetObject, args, proxy);
             return new AdvisorMethodInvocation(advisor, targetClass, method, joinPoint).proceed();
-        });
+        };
+        enhancer.setCallbacks(new Callback[] {methodInterceptor});
 
         return enhancer.create();
     }
