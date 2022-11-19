@@ -12,4 +12,8 @@ public interface AnswerDao {
     List<Answer> findAllByQuestionId(long questionId);
 
     void delete(Long answerId);
+
+    Long count();
+
+    void deleteAll();
 }

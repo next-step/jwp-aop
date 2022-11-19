@@ -76,4 +76,16 @@ public class JdbcAnswerDao implements AnswerDao {
         String sql = "DELETE FROM ANSWERS WHERE answerId = ?";
         jdbcTemplate.update(sql, answerId);
     }
+
+    @Override
+    public Long count() {
+        var query = jdbcTemplate.query("SELECT count(1) as count FROM ANSWERS", rs -> rs.getString("count"));
+
+        return Long.valueOf(query.get(0));
+    }
+
+    @Override
+    public void deleteAll() {
+        jdbcTemplate.update("delete from ANSWERS");
+    }
 }
