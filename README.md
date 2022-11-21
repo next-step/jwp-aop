@@ -19,3 +19,8 @@
   - HelloTarget에 say로 시작하는 메소드 이외에 pingpong()과 같은 새로운 메소드가 추가됐다.
     say로 시작하는 메소드에 한해서만 메소드의 반환 값을 대문자로 변환해야한다. 가 동작하도록 한다.
     JDK Dynamic Proxy와 CGLib Proxy 모두 동작하도록 구현한다.
+
+## 미션3. 요구사항
+- DB Transaction 처리를 하고 싶은 메소드에 @Transactional 애노테이션을 추가하면 Transaction 처리가 가능하도록 해야 한다.
+- 예) addAnswer() 메소드에 Transactional을 설정하면 addAnswer() 메소드는 하나의 Transaction으로 묶여서 처리되어야 한다.
+- Transaction은 각 Thread별로 Connection을 유지할 수 있어야 한다. 현재 Transaction을 시작하는 시점에 Thread에 Connection을 저정하고, 필요한 시점에 가져오기 위해 ThreadLocal을 활용한다. 앞의 힌트에서 ConnectionHolder는 ThreadLocal을 활용해 Connection을 관리할 수 있어야 한다.

@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +18,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import core.annotation.PostConstruct;
+import core.aop.transaction.BeanPostProcessor;
+import core.aop.transaction.TransactionBeanPostProcessor;
 import core.di.beans.factory.ConfigurableListableBeanFactory;
 import core.di.beans.factory.FactoryBean;
 import core.di.beans.factory.config.BeanDefinition;
@@ -28,6 +31,8 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     private Map<Class<?>, Object> beans = Maps.newHashMap();
 
     private Map<Class<?>, BeanDefinition> beanDefinitions = Maps.newHashMap();
+
+    private Set<BeanPostProcessor> postProcessors = new HashSet<>();
 
     @Override
     public void preInstantiateSingletons() {
@@ -76,7 +81,12 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
             return putFactoryBean(factoryBean);
         }
 
-        return beans.put(clazz, bean);
+        var postProcessedBean = postProcessors.stream()
+            .map(it -> it.process(bean))
+            .findAny()
+            .orElse(bean);
+
+        return beans.put(clazz, postProcessedBean);
     }
 
     private Object putFactoryBean(FactoryBean<?> factoryBean) {
@@ -164,5 +174,9 @@ public class DefaultBeanFactory implements BeanDefinitionRegistry, ConfigurableL
     public void registerBeanDefinition(Class<?> clazz, BeanDefinition beanDefinition) {
         log.debug("register bean : {}", clazz);
         beanDefinitions.put(clazz, beanDefinition);
+    }
+
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        postProcessors.add(beanPostProcessor);
     }
 }
