@@ -19,8 +19,6 @@ import next.config.MyConfiguration;
 
 public class ExceptionHandlerTest {
     private DispatcherServlet dispatcher;
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
 
     @BeforeEach
     void setUp() {
@@ -30,9 +28,6 @@ public class ExceptionHandlerTest {
         dispatcher.addHandlerMapping(ahm);
         dispatcher.addHandlerAdapter(new HandlerExecutionHandlerAdapter());
         dispatcher.addExceptionHandlerMapping(new ExceptionHandlerMapping(ac, new ExceptionHandlerConverter()));
-
-        request = new MockHttpServletRequest();
-        response = new MockHttpServletResponse();
     }
 
     @DisplayName("세션없이 권한이 있는 페이지 접근시, 로그인페이지로 이동시킨다.")
