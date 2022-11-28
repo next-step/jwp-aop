@@ -1,18 +1,26 @@
 package next.config;
 
+import static java.util.Arrays.*;
+
+import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import core.annotation.Bean;
 import core.annotation.ComponentScan;
 import core.annotation.Configuration;
 import core.jdbc.JdbcTemplate;
 import core.mvc.tobe.HandlerConverter;
-import core.mvc.tobe.support.*;
+import core.mvc.tobe.support.ArgumentResolver;
+import core.mvc.tobe.support.HttpRequestArgumentResolver;
+import core.mvc.tobe.support.HttpResponseArgumentResolver;
+import core.mvc.tobe.support.ModelArgumentResolver;
+import core.mvc.tobe.support.PathVariableArgumentResolver;
+import core.mvc.tobe.support.RequestParamArgumentResolver;
+import next.controller.GlobalExceptionHandler;
 import next.security.LoginUserArgumentResolver;
-import org.apache.commons.dbcp2.BasicDataSource;
-
-import javax.sql.DataSource;
-import java.util.List;
-
-import static java.util.Arrays.asList;
 
 @Configuration
 @ComponentScan({ "next", "core" })
@@ -39,6 +47,11 @@ public class MyConfiguration {
         handlerConverter.setArgumentResolvers(defaultArgumentResolvers());
         handlerConverter.addArgumentResolver(loginUserArgumentResolver());
         return handlerConverter;
+    }
+
+    @Bean
+    public GlobalExceptionHandler globalExceptionHandler() {
+        return new GlobalExceptionHandler();
     }
 
     LoginUserArgumentResolver loginUserArgumentResolver() {

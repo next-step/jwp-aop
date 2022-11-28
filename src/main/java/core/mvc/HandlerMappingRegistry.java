@@ -1,15 +1,16 @@
 package core.mvc;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class HandlerMappingRegistry {
     private final List<HandlerMapping> handlerMappings = new ArrayList<>();
 
-    public void addHandlerMpping(HandlerMapping handlerMapping) {
+    public void addHandlerMapping(HandlerMapping handlerMapping) {
         handlerMapping.initialize();
         handlerMappings.add(handlerMapping);
     }

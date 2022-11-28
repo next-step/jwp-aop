@@ -24,3 +24,8 @@
 - DB Transaction 처리를 하고 싶은 메소드에 @Transactional 애노테이션을 추가하면 Transaction 처리가 가능하도록 해야 한다.
 - 예) addAnswer() 메소드에 Transactional을 설정하면 addAnswer() 메소드는 하나의 Transaction으로 묶여서 처리되어야 한다.
 - Transaction은 각 Thread별로 Connection을 유지할 수 있어야 한다. 현재 Transaction을 시작하는 시점에 Thread에 Connection을 저정하고, 필요한 시점에 가져오기 위해 ThreadLocal을 활용한다. 앞의 힌트에서 ConnectionHolder는 ThreadLocal을 활용해 Connection을 관리할 수 있어야 한다.
+
+## 미션4. 요구사항
+- Controller, ArgumentResolver와 같은 곳에서 Exception이 발생할 경우 Exception을 처리할 수 있어야 한다.
+- 현재 구현된 버전의 코드는 로그인하지 않은 사용자가 글쓰기 버튼을 클릭하면 Exception이 발생해 에러 메시지가 보인다. Exception 처리를 통해 로그인 페이지로 이동하도록 해야 한다.
+- ControllerAdvice의 메소드도 HandlerExecution의 하나로 생각할 수 있다. 단, Mapping이 요청 URL 기반이 아니라 Exception 기반이로 매핑한다는 것이 다를 뿐이다.
